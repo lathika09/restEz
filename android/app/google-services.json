@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "861406143290",
+    "project_id": "restez-82af7",
+    "storage_bucket": "restez-82af7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861406143290:android:dc0be6c4d60ae7f0416603",
+        "android_client_info": {
+          "package_name": "com.example.rest_ez_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnT_PrYdayJZeWeCn1CXtn49CF01bDQGY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

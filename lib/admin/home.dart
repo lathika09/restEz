@@ -13,7 +13,6 @@ class _AdminPageState extends State<AdminPage> {
     return Scaffold(
       appBar:AppBar(
         automaticallyImplyLeading: false,
-
       ) ,
     );
   }

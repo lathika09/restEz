@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:rest_ez_app/screens/welcome.dart';
-// import 'package:new_project/screens/welcome.dart';
 import 'package:rest_ez_app/splashScreens/splash_screen.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'dart:developer';
+import 'package:flutter/services.dart';
 
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+        apiKey: "AIzaSyBnT_PrYdayJZeWeCn1CXtn49CF01bDQGY",
+        appId: "1:861406143290:android:dc0be6c4d60ae7f0416603",
+        messagingSenderId: "861406143290",
+        projectId: "restez-82af7"
+    )
+  );
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
