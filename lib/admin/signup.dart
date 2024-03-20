@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 
@@ -228,53 +230,53 @@ class SignupPage extends StatelessWidget {
                   minWidth:MediaQuery.of(context).size.width/2,
                   height: 50,
                   onPressed:()async{
-                    // if (!SplashScreenController.find.animate.value) {
-                    //
-                    //   FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email.text, password: _pswd.text).then((value) {
-                    //     print("account created");
-                    //     addUserToFirestore(_name.text, _email.text, _phn.text);//ADD TO FIREBASE
-                    //     Navigator.push(context,MaterialPageRoute(builder: (context)=>LoginPage()));
-                    //   }).onError((error, stackTrace) {
-                    //     print("error ${error.toString()}");
-                    //   });
-                    // }
-                    //
-                    // if (_name.text.isEmpty) {
-                    //   _showErrorDialog(context, "Please enter your name.");
-                    // } else if (!validateEmail(_email.text)) {
-                    //   _showErrorDialog(context, "Invalid email format.");
-                    // } else if (!validatePhoneNumber(_phn.text)|| (_phn.text.isEmpty)) {
-                    //   _showErrorDialog(context, "Enter valid phone number.");
-                    // } else if (_pswd.text.isEmpty || _conpswd.text.isEmpty) {
-                    //   _showErrorDialog(context, "Please enter a password and confirm it.");
-                    // } else if (_pswd.text != _conpswd.text) {
-                    //   _showErrorDialog(context, "Passwords do not match.");
-                    // } else {
-                    //   try {
-                    //     await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                    //       email: _email.text,
-                    //       password: _pswd.text,
-                    //     );
-                    //     print("Account created");
-                    //     addUserToFirestore(_name.text, _email.text, _phn.text);//ADD TO FIREBASE
-                    //     _showSuccessDialog(context, "Account created successfully!");
-                    //
-                    //   } catch (error) {
-                    //     print("Error: ${error.toString()}");
-                    //
-                    //     String errorMessage = "Error creating account: ${error.toString()}";
-                    //
-                    //     if (error is FirebaseAuthException) {
-                    //       if (error.code == "email-already-in-use") {
-                    //         errorMessage = "This email is already registered.";
-                    //       } else {
-                    //         errorMessage = "Error: ${error.code} - ${error.message}";
-                    //       }
-                    //     }
-                    //
-                    //     _showErrorDialog(context, errorMessage);
-                    //   }
-                    // }
+                    if (!SplashScreenController.find.animate.value) {
+
+                      FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email.text, password: _pswd.text).then((value) {
+                        print("account created");
+                        addUserToFirestore(_name.text, _email.text, _phn.text,loc.text,_pswd.text);//ADD TO FIREBASE
+                        Navigator.push(context,MaterialPageRoute(builder: (context)=>LoginPage()));
+                      }).onError((error, stackTrace) {
+                        print("error ${error.toString()}");
+                      });
+                    }
+
+                    if (_name.text.isEmpty) {
+                      _showErrorDialog(context, "Please enter your name.");
+                    } else if (!validateEmail(_email.text)) {
+                      _showErrorDialog(context, "Invalid email format.");
+                    } else if (!validatePhoneNumber(_phn.text)|| (_phn.text.isEmpty)) {
+                      _showErrorDialog(context, "Enter valid phone number.");
+                    } else if (_pswd.text.isEmpty || _conpswd.text.isEmpty) {
+                      _showErrorDialog(context, "Please enter a password and confirm it.");
+                    } else if (_pswd.text != _conpswd.text) {
+                      _showErrorDialog(context, "Passwords do not match.");
+                    } else {
+                      try {
+                        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                          email: _email.text,
+                          password: _pswd.text,
+                        );
+                        print("Account created");
+                        addUserToFirestore(_name.text, _email.text, _phn.text,loc.text,_pswd.text);//ADD TO FIREBASE
+                        _showSuccessDialog(context, "Account created successfully!");
+
+                      } catch (error) {
+                        print("Error: ${error.toString()}");
+
+                        String errorMessage = "Error creating account: ${error.toString()}";
+
+                        if (error is FirebaseAuthException) {
+                          if (error.code == "email-already-in-use") {
+                            errorMessage = "This email is already registered.";
+                          } else {
+                            errorMessage = "Error: ${error.code} - ${error.message}";
+                          }
+                        }
+
+                        _showErrorDialog(context, errorMessage);
+                      }
+                    }
 
 
                   },
@@ -318,25 +320,26 @@ class SignupPage extends StatelessWidget {
   }
 
 
-  // void addUserToFirestore(String name, String email, String phoneNumber) async {
-  //   CollectionReference patients = FirebaseFirestore.instance.collection('patients');
-  //
-  //   // Add the document without specifying the ID
-  //   DocumentReference docRef = await patients.add({
-  //     'name': name,
-  //     'email': email,
-  //     'phoneNumber': phoneNumber,
-  //     "push_token":"",
-  //     "is_online":false,
-  //     "last_active":"",
-  //
-  //   });
-  //
-  //   // Set the 'id' field to the same value as the Firestore document ID
-  //   await docRef.set({'id': docRef.id}, SetOptions(merge: true));
-  //
-  //   print('Document added with ID: ${docRef.id}');
-  // }
+  void addUserToFirestore(String name, String email, String phoneNumber,String location,String pass) async {
+    CollectionReference admins = FirebaseFirestore.instance.collection('admins');
+
+    String documentId = email;
+    DocumentReference docRef = admins.doc(documentId);
+
+    // Add data to the document
+    await docRef.set({
+      'name': name,
+      'email': email,
+      'phone': phoneNumber,
+      'prof_img': "",
+      "location": location,
+      'password': pass,
+    });
+    //
+
+    print('Document added with ID: ${docRef}');
+    // print('Document added with ID email: ${email}');
+  }
 
 
   void _showErrorDialog(BuildContext context, String errorMessage) {

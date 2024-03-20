@@ -28,22 +28,10 @@ class SplashScreen extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            // Obx(
-            //       ()=> AnimatedPositioned(
-            //     duration: const Duration(milliseconds: 1600),
-            //     top:0,
-            //     left: splashScreenController.animate.value ? 0:-30,
-            //     child:AnimatedOpacity(
-            //       duration: const Duration(milliseconds: 1000),
-            //       opacity: splashScreenController.animate.value ? 1 : 0,
-            //       child:Container(width:MediaQuery.of(context).size.width ,child: Image.asset(SplashAbove,fit: BoxFit.cover,)),
-            //     ),
-            //   ),
-            // ),
             Obx(
                   ()=> AnimatedPositioned(
                 duration:const Duration(milliseconds: 1600),
-                top: 120,
+                top: 110,
                 left:splashScreenController.animate.value ? 0:30,
                 right:splashScreenController.animate.value ? 0:30,
                 child:AnimatedOpacity(
@@ -67,8 +55,8 @@ class SplashScreen extends StatelessWidget {
             ),
             Obx(
                   ()=> AnimatedPositioned(duration:const Duration(milliseconds: 1100),
-                bottom: 200,
-                left:80,
+                bottom: 190,
+                left:20,
                 child:AnimatedOpacity(
                   duration: const Duration(milliseconds: 1000),
                   opacity: splashScreenController.animate.value ? 1 : 0,
@@ -76,11 +64,13 @@ class SplashScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width/6),
                     child:RichText(
                       text: TextSpan(
-                          style: TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              // fontFamily: 'Headland One',
+                              fontSize: 60, fontWeight: FontWeight.bold),
                           children: <TextSpan>[
                             TextSpan(text: 'Rest', style: TextStyle(color: Colors.black)),
                             TextSpan(
-                                text: 'Ez', style: TextStyle(color: Color(0xFF0D426D)))
+                                text: 'Ez', style: TextStyle(color: Colors.blue[900]))
                           ]),
                     ),
                     // Text(appname,style: TextStyle(
@@ -94,17 +84,6 @@ class SplashScreen extends StatelessWidget {
                 ),
               ),
             ),
-            // Obx(
-            //       ()=> AnimatedPositioned(duration:const Duration(milliseconds: 1100),
-            //     bottom:0,
-            //     left: splashScreenController.animate.value ? 0:-40,
-            //     child:AnimatedOpacity(
-            //         duration: const Duration(milliseconds: 1000),
-            //         opacity: splashScreenController.animate.value ? 1 : 0,
-            //         child:Container(width: MediaQuery.of(context).size.width,child: Image.asset(Splashbelow,fit: BoxFit.cover,))
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
