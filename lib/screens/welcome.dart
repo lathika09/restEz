@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rest_ez_app/admin/home.dart';
 import 'package:rest_ez_app/constant/imageString.dart';
 
 import '../admin/loginPage.dart';
@@ -28,8 +29,9 @@ class WelcomePage extends StatelessWidget {
                   children: [
                     Text("Welcome !!!",
                       style: TextStyle(
+                        fontFamily: 'Headland One',
                         fontWeight: FontWeight.bold,
-                        fontSize: 40,
+                        fontSize: 38,
                       ),
                     ),
                     SizedBox(
@@ -55,6 +57,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
               ),
+              SizedBox(height: 20,),
               Expanded(
                 flex: 1,
                 child: SingleChildScrollView(
@@ -67,9 +70,9 @@ class WelcomePage extends StatelessWidget {
                         height: 50,
                         onPressed:(){
                           // Replacement
-                          Navigator.push(context,MaterialPageRoute(builder: (context)=>UserPage()));//FOR PATIENTS
+                          Navigator.push(context,MaterialPageRoute(builder: (context)=>UserPage(name: 'Hari Kumar',)));//FOR USER
                         },
-                        color: Color(0XFF92C7F2),
+                        color: Colors.blue[100],
                         shape: RoundedRectangleBorder(
                             side: const BorderSide(
                                 color:Colors.black
@@ -78,8 +81,10 @@ class WelcomePage extends StatelessWidget {
                         ),
                         child: const Text("USER",
                           style: TextStyle(
+                            fontFamily: 'Merriweather Sans',
                             color: Colors.black,
-                            fontSize: 25,
+
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                           ),),
                       ),
@@ -88,9 +93,12 @@ class WelcomePage extends StatelessWidget {
                         minWidth:double.infinity,
                         height: 50,
                         onPressed:(){
-                          Navigator.push(context,MaterialPageRoute(builder: (context)=>LoginPage()));//FOR  DOCTOR BUTTON GO TO HOMEPAGE
+                          Navigator.push(context,MaterialPageRoute(builder: (context)=>LoginPage()
+                              // Navigator.push(context,MaterialPageRoute(builder: (context)=>AdminPage(email: "admin@gmail.com")
+
+                          ));//FOR  ADMIN
                         },
-                        color: Color(0XFF0E4674),
+                        color: Colors.blue[900],
                         shape: RoundedRectangleBorder(
                             side: const BorderSide(
                                 color:Colors.black
@@ -99,8 +107,9 @@ class WelcomePage extends StatelessWidget {
                         ),
                         child: const Text("ADMIN",
                           style: TextStyle(
+                            fontFamily: 'Merriweather Sans',
                             color: Colors.white,
-                            fontSize: 25,
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                           ),),
                       ),

@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rest_ez_app/admin/signup.dart';
 
 import '../constant/imageString.dart';
+import 'home.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController login_email = TextEditingController();
@@ -52,7 +54,7 @@ class LoginPage extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold,fontSize: 33),
                       ),
                       const SizedBox(height:8,),
-                      Text("Login to your Patient account",
+                      Text("Login to your Admin account",
                         style: TextStyle(fontSize: 16, color: Colors.grey[800],),
                       ),
                     ],
@@ -130,68 +132,67 @@ class LoginPage extends StatelessWidget {
                         minWidth:MediaQuery.of(context).size.width/2,
                         height: 50,
                         onPressed:() async {
-                          // if (login_email.text.isEmpty) {
-                          //   _showErrorDialog(context, "Please enter your Email to login.");
-                          // } else if (login_pswd.text.isEmpty) {
-                          //   _showErrorDialog(context, "Please enter your Password to Login.");
-                          // }else{
-                          //   try {
-                          //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-                          //       email: login_email.text,
-                          //       password: login_pswd.text,
-                          //     ).then((value) {
-                          //       Navigator.push(context,MaterialPageRoute(builder: (context)=>MainPage(pemail: login_email.text,)));
-                          //
-                          //     });
-                          //   }
-                          //   catch(error){
-                          //     print("Error caught: ${error.toString()}");
-                          //
-                          //     if (error is FirebaseAuthException) {
-                          //       String errorMessage = 'An error occurred during sign-in.';
-                          //
-                          //       switch (error.code) {
-                          //         case 'invalid-email':
-                          //           errorMessage = 'Invalid email address. Please enter a valid email.';
-                          //           break;
-                          //         case 'user-not-found':
-                          //           errorMessage = 'User not found. Please check your email and try again.';
-                          //           break;
-                          //         case 'wrong-password':
-                          //           errorMessage = 'Incorrect password. Please try again.';
-                          //           break;
-                          //         case 'user-disabled':
-                          //           errorMessage = 'Your account has been disabled. Please contact support.';
-                          //           break;
-                          //         case 'too-many-requests':
-                          //           errorMessage = 'Too many login attempts. Please try again later.';
-                          //           break;
-                          //         case 'email-already-in-use':
-                          //           errorMessage = 'Email address is already in use. Please use a different email.';
-                          //           break;
-                          //         case 'weak-password':
-                          //           errorMessage = 'Weak password. Please use a stronger password.';
-                          //           break;
-                          //         default:
-                          //           errorMessage = 'An error occurred during sign-in.';
-                          //           break;
-                          //       }
-                          //
-                          //       // Check for the "user-not-found" error specifically
-                          //       if (error.code == 'user-not-found') {
-                          //         errorMessage = 'User not found. Please check your email and try again.';
-                          //       }
-                          //
-                          //       print('Firebase Authentication Error: ${error.code} - ${error.message}');
-                          //
-                          //       _showErrorDialog(context, errorMessage);
-                          //     } else {
-                          //       // Handle other non-Firebase exceptions, if any
-                          //       print('Non-Firebase Exception: $error');
-                          //       _showErrorDialog(context, 'An unexpected error occurred.');
-                          //     }
-                          //   }
-                          // }
+                          if (login_email.text.isEmpty) {
+                            _showErrorDialog(context, "Please enter your Email to login.");
+                          } else if (login_pswd.text.isEmpty) {
+                            _showErrorDialog(context, "Please enter your Password to Login.");
+                          }else{
+                            try {
+                              await FirebaseAuth.instance.signInWithEmailAndPassword(
+                                email: login_email.text,
+                                password: login_pswd.text,
+                              ).then((value) {
+                                Navigator.push(context,MaterialPageRoute(builder: (context)=>AdminPage(email: login_email.text,)));
+
+                              });
+                            }
+                            catch(error){
+                              print("Error caught: ${error.toString()}");
+
+                              if (error is FirebaseAuthException) {
+                                String errorMessage = 'An error occurred during sign-in.';
+
+                                switch (error.code) {
+                                  case 'invalid-email':
+                                    errorMessage = 'Invalid email address. Please enter a valid email.';
+                                    break;
+                                  case 'user-not-found':
+                                    errorMessage = 'User not found. Please check your email and try again.';
+                                    break;
+                                  case 'wrong-password':
+                                    errorMessage = 'Incorrect password. Please try again.';
+                                    break;
+                                  case 'user-disabled':
+                                    errorMessage = 'Your account has been disabled. Please contact support.';
+                                    break;
+                                  case 'too-many-requests':
+                                    errorMessage = 'Too many login attempts. Please try again later.';
+                                    break;
+                                  case 'email-already-in-use':
+                                    errorMessage = 'Email address is already in use. Please use a different email.';
+                                    break;
+                                  case 'weak-password':
+                                    errorMessage = 'Weak password. Please use a stronger password.';
+                                    break;
+                                  default:
+                                    errorMessage = 'An error occurred during sign-in.';
+                                    break;
+                                }
+
+                                // Check for the "user-not-found" error specifically
+                                if (error.code == 'user-not-found') {
+                                  errorMessage = 'User not found. Please check your email and try again.';
+                                }
+                                print('Firebase Authentication Error: ${error.code} - ${error.message}');
+
+                                _showErrorDialog(context, errorMessage);
+                              } else {
+                                // Handle other non-Firebase exceptions, if any
+                                print('Non-Firebase Exception: $error');
+                                _showErrorDialog(context, 'An unexpected error occurred.');
+                              }
+                            }
+                          }
                         },
                         color: Colors.blue[600],
                         shape: RoundedRectangleBorder(
@@ -218,13 +219,7 @@ class LoginPage extends StatelessWidget {
                       TextButton(
                         onPressed: (){
                           Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>SignupPage()));//SIGNUP PAGE NAVIGATE
-                          // Navigator.pushNamed(
-                          //   context,
-                          //   'main',//MainPage
-                          //   arguments: {
-                          //     'email':login_email.text
-                          //   },
-                          // );
+
                         },
                         child: const Text("Sign up",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),
                         ),
@@ -277,16 +272,17 @@ class LoginPage extends StatelessWidget {
             TextButton(
               child: Text('Reset Password'),
               onPressed: () async {
-                // try {
-                //   await FirebaseAuth.instance.sendPasswordResetEmail(
-                //     email: login_email.text,
-                //   );
-                //   _showSuccessDialog(context, 'Password reset instructions sent to ${login_email.text}');
-                //   Navigator.of(context).pop();
-                // } catch (error) {
-                //   print("Error sending reset instructions: ${error.toString()}");
-                //   _showErrorDialog(context, 'Error sending reset instructions: ${error.toString()}');
-                // }
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(
+                    email: login_email.text,
+                  );
+                  _showSuccessDialog(context, 'Password reset instructions sent to ${login_email.text}');
+                  Navigator.of(context).pop();
+                }
+                catch (error) {
+                  print("Error sending reset instructions: ${error.toString()}");
+                  _showErrorDialog(context, 'Error sending reset instructions: ${error.toString()}');
+                }
               },
             ),
           ],
