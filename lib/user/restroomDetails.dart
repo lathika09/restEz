@@ -17,7 +17,7 @@ import 'Profile.dart';
 
 class RestroomPageUser extends StatefulWidget {
   const RestroomPageUser({Key? key,
-    required this.document,required this.dist,required this.pos,required this.restroomloc,required this.name, required this.id
+    required this.document,required this.dist,required this.pos,required this.restroomloc,required this.name,
   });
 
   final DocumentSnapshot document;
@@ -25,7 +25,7 @@ class RestroomPageUser extends StatefulWidget {
   final Position pos;
   final LatLng restroomloc;
   final String name;
-  final String id;
+  // final String id;
 
   @override
   State<RestroomPageUser> createState() => _RestroomPageUserState();
@@ -65,7 +65,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
   void Bookmark(List<dynamic> savedBy)async{
     await FirebaseFirestore.instance
         .collection('restrooms')
-        .doc(widget.id)
+        .doc(widget.document.id)
         .update({
       'savedBy': savedBy,
     });
@@ -73,7 +73,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
   Future<double> calculateAverageRating() async {
     CollectionReference reviewsRef = FirebaseFirestore.instance
         .collection('restrooms')
-        .doc(widget.id) // Assuming widget.id is the ID of the restroom document
+        .doc(widget.document.id) // Assuming widget.id is the ID of the restroom document
         .collection('reviews');
 
     QuerySnapshot querySnapshot = await reviewsRef.get();
@@ -90,8 +90,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
       } else if (ratingValue is double) {
         totalRatings += ratingValue.toInt();
       } else {
-        // Handle the case where ratingValue is not a numeric type
-        // For example, you could skip adding it to totalRatings or handle it differently based on your requirements
+
       }
     });
 
@@ -101,25 +100,82 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
     return averageRating;
   }
 
+  Future<void> setAverageRating(String restroomId) async {
+    try {
+      CollectionReference reviewsRef = FirebaseFirestore.instance
+          .collection('restrooms')
+          .doc(restroomId)
+          .collection('reviews');
+
+      QuerySnapshot querySnapshot = await reviewsRef.get();
+
+
+      int totalRatings = 0;
+      int totalReviews = querySnapshot.size;
+
+      // Iterate
+      querySnapshot.docs.forEach((reviewDoc) {
+        dynamic ratingValue = reviewDoc['rating'];
+        if (ratingValue is int) {
+          totalRatings += ratingValue;
+        } else if (ratingValue is double) {
+          totalRatings += ratingValue.toInt();
+        } else {
+        }
+      });
+
+      // Calculate the average rating
+      double averageRating = totalReviews > 0 ? totalRatings / totalReviews : 0;
+      double avgRating=double.parse(averageRating.toStringAsFixed(1));
+
+      await FirebaseFirestore.instance
+          .collection('restrooms')
+          .doc(restroomId)
+          .set({'ratings': avgRating}, SetOptions(merge: true));
+
+
+    } catch (error) {
+      print('Error calculating average rating: $error');
+
+    }
+  }
   Future<double> convertRatingToValue(int rate) async {
 
     CollectionReference reviewsRef = FirebaseFirestore.instance.collection('restrooms')
-        .doc(widget.id).collection('reviews');
+        .doc(widget.document.id).collection('reviews');
 
     QuerySnapshot querySnapshot = await reviewsRef.where('rating', isEqualTo: rate).get();
     // print(querySnapshot.data);
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('restrooms').doc(widget.id).get();
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('restrooms').doc(widget.document.id).get();
 
 
     int rateDocuments = querySnapshot.docs.length;
     print("rateDocuments$rateDocuments and rate :$rate");
     int totalDocuments=snapshot['no_of_reviews'];
     print('total $totalDocuments');
+    if (totalDocuments == 0) {
+      return 0.0;
+    }
 
 
-    return rateDocuments/totalDocuments;
+
+    double value = rateDocuments / totalDocuments;
+    // Round the value to one decimal point
+    double roundedValue = double.parse(value.toStringAsFixed(1));
+
+    return roundedValue;
 
   }
+
+  Future<List<dynamic>> getSavedBy() async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+        .collection('restrooms')
+        .doc(widget.document.id)
+        .get();
+    List<dynamic> savedBy = snapshot.data()?['savedBy'] ?? [];
+    return savedBy;
+  }
+
   void update_no_of_review(String id)async{
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('restrooms')
@@ -150,22 +206,24 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
   @override
   void initState() {
     super.initState();
-    fetchRestroomById(widget.id);
-    update_no_of_review(widget.id);
+    fetchRestroomById(widget.document.id);
+    update_no_of_review(widget.document.id);
     print("${widget.document['no_of_reviews']}");
+    setAverageRating(widget.document.id);
+    print("priny : $restRoomData");
   }
 
   @override
   void didChangeDependencies() {
-    fetchRestroomById(widget.id);
-    update_no_of_review(widget.id);
+    fetchRestroomById(widget.document.id);
+    update_no_of_review(widget.document.id);
     print("${widget.document['no_of_reviews']}");
   }
 
   @override
   Widget build(BuildContext context) {
     // List<dynamic> savedBy =restRoomData['savedBy']??[];
-
+    late double avgRating;
 
     return DefaultTabController(
         length: 3,//4
@@ -196,7 +254,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
               Text(widget.document['name'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),),
               Row(
                 children: [
-                  Text("${widget.document['ratings']}.0 ",style: TextStyle(fontSize: 16)),
+                  Text("${widget.document['ratings']}",style: TextStyle(fontSize: 16)),
                   RatingBar.builder(
                     initialRating: double.parse(widget.document['ratings'].toString()),
                     itemSize: 20,
@@ -265,11 +323,14 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                       elevation: 0,
                       onPressed: ()async {
                         print("In onPResed");
+                        print("object : $restRoomData");
                         List<dynamic> savedBy =restRoomData['savedBy']??[];
+                        print("hish");
+                        print(savedBy);
                         print("before bookmark");
                         Bookmark(savedBy);
                         print("after bookmark");
-                        bool isFav = savedBy.contains(widget.name);
+                        bool isFav = savedBy.contains(widget.name)??false;
                         if (isFav) {
                           //savedBy.remove(widget.name);
                           isSaved=isFav;
@@ -278,7 +339,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                         print("is saved false");
                         await FirebaseFirestore.instance
                             .collection('restrooms')
-                            .doc(widget.id)
+                            .doc(widget.document.id)
                             .update({'savedBy': savedBy});
 
                         print("after update");
@@ -296,6 +357,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                             savedBy.add(widget.name);
                           }
                           print("SET END");
+                          print(widget.name);
 
                         });
 
@@ -312,11 +374,28 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                       ),
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 6,vertical: 4),
-                        child: restRoomData.isEmpty?Row(
+                        child: Row(
                           children: [
-                            widget.document['savedBy'].contains(widget.name)
-                                ?Icon(Icons.bookmark,color: Colors.indigo,)
-                                :Icon(Icons.bookmark_border,color: Colors.blue[700],),
+                            // restRoomData['savedBy'].contains("Hari Kumar")==true
+                            //     ?Icon(Icons.bookmark,color: Colors.indigo,)
+                            //     :Icon(Icons.bookmark_border,color: Colors.blue[700],),
+                            FutureBuilder<List<dynamic>>(
+                              future: getSavedBy(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+
+                                  bool isSaved = snapshot.data?.contains(widget.name) ?? false;
+
+                                  return isSaved
+                                      ? Icon(Icons.bookmark, color: Colors.indigo)
+                                      : Icon(Icons.bookmark_border, color: Colors.blue[700]);
+                                }
+                              },
+                            ),
 
 
                             Text(
@@ -327,30 +406,14 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                   fontWeight: FontWeight.bold),
                             ),
                           ],
-                        )
-                            :
-                        Row(
-                          children: [
-                            restRoomData['savedBy'].contains(widget.name)
-                                ?Icon(Icons.bookmark,color: Colors.indigo,)
-                                :Icon(Icons.bookmark_border,color: Colors.blue[700],),
-
-                            Text(
-                              "Save",
-                              style: TextStyle(
-                                  color: Colors.blue[700],
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        )
+                        ),
                       )
                   ),
                   MaterialButton(
                       elevation: 0,
 
                       onPressed: () {
-                        List<dynamic> savedBy =restRoomData['savedBy']??[];
+                        List<dynamic> savedBy =widget.document['savedBy']??[];
                         print(savedBy);
                         // Navigator.push(
                         //   context,
@@ -571,15 +634,16 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                       future: calculateAverageRating(),
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState == ConnectionState.waiting) {
-                                          // Display a loading indicator while the future is being fetched
                                           return CircularProgressIndicator();
                                         } else if (snapshot.hasError) {
-                                          // Display an error message if the future encounters an error
+
                                           return Text('Error: ${snapshot.error}');
                                         } else {
-                                          // Render the widget with the calculated average rating
+
                                           double averageRating = snapshot.data ?? 0;
+                                          avgRating = double.parse((snapshot.data ?? 0).toStringAsFixed(1));
                                           String formattedAverageRating = averageRating.toStringAsFixed(1);
+                                          // setAverageRating(widget.document.id,avgRating);
                                           return Text(formattedAverageRating,style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),);
                                         }
                                       },
@@ -607,7 +671,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                       },
                                     ),
                                     FutureBuilder<int>(
-                                      future: get_review(widget.id),
+                                      future: get_review(widget.document.id),
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState == ConnectionState.waiting) {
                                           // Display a loading indicator while the future is being fetched
@@ -619,7 +683,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                           // Render the widget with the calculated average rating
                                           int reviews = snapshot.data ?? 0;
                                           String reviewString = reviews.toString();
-                                          return Text(reviewString,style: TextStyle());
+                                          return Text('(${reviewString})',style: TextStyle());
                                         }
                                       },
                                     ),
@@ -644,7 +708,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                               return Text('Error: ${snapshot.error}');
                                             } else {
                                               // If the future completes successfully, use the data to build the UI.
-                                              return RatingProgress(text: rate.toString(), value: snapshot.data ?? 0.0);
+                                              return RatingProgress(text: rate.toString(), value: (snapshot.data ?? 0.0));
                                             }
                                           },
                                         ),
@@ -673,7 +737,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => RatingPage(uname: widget.name, document: widget.document, id: widget.id,)));
+                                            builder: (context) => RatingPage(uname: widget.name, document: widget.document, id: widget.document.id,)));
                       
                                   },
                                   child: Row(
@@ -707,14 +771,14 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                 Center(
                                   child: Container(
                                     margin: EdgeInsets.only(left: 16,top: 8,right: 16),
-                                    width: MediaQuery.of(context).size.height/5,
+                                    width: MediaQuery.of(context).size.width/2,
                                     child: MaterialButton(
                                         elevation: 0,
                                         onPressed: () async{
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) => RatingPage(uname: widget.name, document: widget.document, id: widget.id,)));
+                                                  builder: (context) => RatingPage(uname: widget.name, document: widget.document, id: widget.document.id,)));
 
                                         },
                                         color: Colors.white,
@@ -752,10 +816,11 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                 StreamBuilder<QuerySnapshot>(
                                   stream: FirebaseFirestore.instance
                                       .collection('restrooms')
-                                      .doc(widget.id)
+                                      .doc(widget.document.id)
                                       .collection('reviews')
                                       .snapshots(),
                                   builder: (context, snapshot) {
+
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
                                       return Center(child: CircularProgressIndicator());
@@ -773,7 +838,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                       children: snapshot.data!.docs.map((reviewDoc) {
                                         int likesCount = reviewDoc['likeCounts'];
                                         List<dynamic> likedBy = reviewDoc['likedBy'] ?? [];
-
+                                        print(reviewDoc['name']);
                                         return Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 15),
                                           decoration: BoxDecoration(
@@ -793,11 +858,16 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                   CircleAvatar(
                                                     backgroundColor: Colors.blue[800],
                                                     radius: 23,
-                                                    child: Text(
-                                                      Utils.getInitials(reviewDoc['name']),
-                                                      style: TextStyle(
-                                                          fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
+                                                    child:Icon(
+                                                      Icons.person,
+                                                      size: 25,
+                                                      color: Colors.white,
                                                     ),
+                                                    // Text(
+                                                    //   Utils.getInitials(reviewDoc['name']),
+                                                    //   style: TextStyle(
+                                                    //       fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
+                                                    // ),
                                                   ),
                                                   Padding(
                                                     padding: const EdgeInsets.only(left:14.0,right: 14),
@@ -847,7 +917,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                       // Delete review
                                                                       await FirebaseFirestore.instance
                                                                           .collection('restrooms')
-                                                                          .doc(widget.id)
+                                                                          .doc(widget.document.id)
                                                                           .collection('reviews')
                                                                           .doc(reviewDoc.id)
                                                                           .delete();
@@ -855,7 +925,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                       //update NO. OF REVIEWS
                                                                       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
                                                                           .collection('restrooms')
-                                                                          .doc(widget.id)
+                                                                          .doc(widget.document.id)
                                                                           .collection('reviews')
                                                                           .get();
 
@@ -863,7 +933,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                       print('Number of reviews: $reviewsLength');
                                                                       FirebaseFirestore.instance
                                                                           .collection('restrooms')
-                                                                          .doc(widget.id).set({
+                                                                          .doc(widget.document.id).set({
                                                                         'no_of_reviews':reviewsLength ,
                                                                       }, SetOptions(merge: true));
                                                                       // get_review(widget.id);
@@ -994,7 +1064,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                         });
                                                         FirebaseFirestore.instance
                                                             .collection('restrooms')
-                                                            .doc(widget.id)
+                                                            .doc(widget.document.id)
                                                             .collection('reviews')
                                                             .doc(reviewDoc.id) // Assuming reviewDoc.id is the document ID of the review
                                                             .update({

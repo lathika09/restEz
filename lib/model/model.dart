@@ -69,7 +69,7 @@ class Restroom {
   final GeoPoint location;
   final String name;
   final String? profImg;
-  final int ratings;
+  final double ratings;
   final List<Review> reviews;
   final List<Report> reports;
   final int no_of_reviews;
@@ -98,7 +98,8 @@ class Restroom {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     List<Review> reviews = [];
     List<Report> reports = [];
-    int ratingsInt= ( data['ratings'] is int) ?  data['ratings'] : 0;
+    // (data['ratings'] ?? 0.0).toDouble(),
+    double ratingsInt= ( data['ratings'] is double) ?  data['ratings'] : 0.0;
     int no_of_reviewsInt= ( data['no_of_reviews'] is int) ?  data['no_of_reviews'] : 0;
     int no_of_reportsInt= ( data['no_of_reports'] is int) ?  data['no_of_reports'] : 0;
 

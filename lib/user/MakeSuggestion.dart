@@ -71,4 +71,5 @@ class _MakeSuggestionState extends State<MakeSuggestion> {
         ),
     );
   }
+
 }

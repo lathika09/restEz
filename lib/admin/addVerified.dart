@@ -1,374 +1,18 @@
-
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
-import 'package:multi_select_flutter/util/multi_select_item.dart';
-import 'package:multi_select_flutter/util/multi_select_list_type.dart';
-import 'package:rest_ez_app/admin/EditRestroomData.dart';
-import 'package:rest_ez_app/user/fetchRestRoomDoc.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
+import 'package:rest_ez_app/admin/suggestionsList.dart';
 
-import '../constant/imageString.dart';
-import '../model/model.dart';
-
-
-class ManageRestroom extends StatefulWidget {
+class AddVerifiedRestroom extends StatefulWidget {
+  const AddVerifiedRestroom({super.key, required this.adminEmail, required this.address});
   final String adminEmail;
-
-  const ManageRestroom({required this.adminEmail});
-
+  final String address;
   @override
-  _ManageRestroomState createState() => _ManageRestroomState(adminEmail);
+  State<AddVerifiedRestroom> createState() => _AddVerifiedRestroomState();
 }
 
-class _ManageRestroomState extends State<ManageRestroom> {
-  final String adminEmail;
-
-  _ManageRestroomState(this.adminEmail);
-
-
-  Future<void> deleteRestroom(String docId) async {
-    try {
-      CollectionReference restroomsRef = FirebaseFirestore.instance.collection('restrooms');
-      await restroomsRef.doc(docId).delete();
-      print('Restroom with ID $docId deleted successfully.');
-    } catch (e) {
-      print('Error deleting restroom: $e');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 3,
-        title: RichText(
-          text: TextSpan(
-              style: const TextStyle(fontSize: 28,
-                  // fontFamily: 'El Messiri',
-                  fontWeight: FontWeight.bold),
-              children: <TextSpan>[
-                const TextSpan(text: 'Rest', style: TextStyle(color: Colors.black)),
-                TextSpan(
-                    text: 'Ez', style: TextStyle(color: Colors.blueAccent[700]))
-              ]
-          ),
-        ),
-        // actions: [
-        //   IconButton(
-        //       onPressed: () {
-        //         // Navigator.push(context,
-        //         //     MaterialPageRoute(builder: (context) => HelpPage()));
-        //       },
-        //       icon: Icon(
-        //         Icons.help,
-        //         color: Colors.black,
-        //         size: 25,
-        //       )),
-        //
-        //   IconButton(
-        //       onPressed: () {
-        //         // Navigator.push(
-        //         //     context,
-        //         //     MaterialPageRoute(
-        //         //         builder: (context) => RestroomPageUser()));
-        //       },
-        //       icon: Icon(
-        //         Icons.notifications,
-        //         color: Colors.black,
-        //         size: 25,
-        //       ))
-        // ],
-      ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('restrooms')
-            .where('handledBy', isEqualTo: adminEmail)
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          List<Restroom> restrooms = snapshot.data!.docs
-              .map((doc) => Restroom.fromFirestore(doc))
-              .toList();
-
-          return ListView.builder(
-            itemCount: restrooms.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => FetchRestroom(adminEmail: adminEmail, rest_id: restrooms[index].id, gen:  restrooms[index].gender,)
-                      )
-                  );
-                },
-                child: Column(
-                  children: [
-                    Card(
-                      // margin: EdgeInsets.symmetric(horizontal: 4,vertical: 4),
-                      //   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                        // height: MediaQuery.of(context).size.height*0.06,
-                        color: Colors.blue[50],
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
-                          // side: BorderSide(color: Colors.indigoAccent, width: 0.5), // Set border color and width here
-                          borderRadius: BorderRadius.circular(15), // Set border radius here
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 15,right:15,top: 10,bottom:0),
-                              child: Row(
-                                // crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    //margin: const EdgeInsets.symmetric(vertical: 40),
-                                    width: MediaQuery.of(context).size.width/6,
-                                    height: MediaQuery.of(context).size.height/8,
-                                    decoration: const BoxDecoration(
-                                      image: DecorationImage(image: AssetImage(restroom),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      // color: Colors.white,
-                                      padding: EdgeInsets.only(left: 10,bottom:5,top: 5),
-                                      margin: const EdgeInsets.only(left: 10),
-                                      // width: MediaQuery.of(context).size.height*0.,
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(bottom: 3.0),
-                                            child: RichText(
-                                              text: TextSpan(
-                                                  style: const TextStyle(fontSize: 15, ),
-                                                  children: <TextSpan>[
-                                                    TextSpan(text: 'Name : ', style: TextStyle(color: Colors.indigo[900],fontWeight: FontWeight.w500)),
-                                                    TextSpan(
-                                                        text: restrooms[index].name, style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold))
-                                                  ]),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(bottom: 3.0),
-                                            child: RichText(
-                                              text: TextSpan(
-                                                  style: const TextStyle(fontSize: 15, ),
-                                                  children: <TextSpan>[
-                                                    TextSpan(text: 'Location : ', style: TextStyle(color: Colors.indigo[900],fontWeight: FontWeight.w500)),
-                                                    TextSpan(
-                                                        text: restrooms[index].address, style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold))
-                                                  ]),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(bottom: 3.0),
-                                            child: Row(
-                                              children: [
-                                                Text("${restrooms[index].ratings}",style: const TextStyle(fontSize: 15,fontWeight: FontWeight.w600)),
-                                                RatingBar.builder(
-                                                  initialRating: double.parse(restrooms[index].ratings.toString()),
-                                                  itemSize: 16,
-                                                  minRating: 0,
-                                                  direction: Axis.horizontal,
-                                                  allowHalfRating: true,
-                                                  itemCount: 5,
-                                                  ignoreGestures: true,
-                                                  // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                                                  itemBuilder: (context, _) =>  const Icon(
-                                                    Icons.star,
-                                                    color: Colors.amber,
-                                                    // size: 10, // Adjust the size of the stars as needed
-                                                  ),
-                                                  onRatingUpdate: (rating) {
-                                                    print(rating);
-                                                    // You can update the rating here if needed
-                                                  },
-                                                ),
-                                                Text("(${restrooms[index].no_of_reviews}) ",style: const TextStyle(fontSize: 15)),
-                                              ],
-                                            ),
-                                          ),
-
-                                          Padding(
-                                            padding: const EdgeInsets.only(bottom: 3.0),
-                                            child:
-                                            Text("Issues : ${restrooms[index].no_of_reports} ",style: const TextStyle(fontSize: 15,fontWeight: FontWeight.w600)),
-
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 15,right:15,top: 0,bottom:10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 16),
-                                  width: MediaQuery.of(context).size.width/3,
-                                  child: MaterialButton(
-                                      // elevation: 2,
-                                      onPressed: () async{
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder:
-                                              (context) => EditRestroomData(
-                                                adminEmail: widget.adminEmail,
-                                                rest_id: restrooms[index].id,
-                                                rest_name:restrooms[index].name,
-                                                address: restrooms[index].address,
-                                                res_hours: restrooms[index].availabilityHours,
-                                                rest_gender: restrooms[index].gender,
-                                                isHandicap: restrooms[index].handicappedAccessible,
-                                              ),
-                                          ),
-                                        );
-
-                                      },
-                                      color: Colors.white,
-                                      textColor: Colors.indigo[900],
-                                      padding: EdgeInsets.all(8),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                        side: BorderSide(
-                                          color: Color.fromRGBO(113, 130, 213, 1.0),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      child:Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.edit,color: Colors.indigo[900],),
-                                          SizedBox(width: 10,),
-                                          Text("Edit",style: TextStyle(color:Colors.indigo[900],fontSize: 20,fontWeight: FontWeight.bold
-                                          ),),
-                                        ],
-                                      )
-                                  ),
-                                ),
-
-                                Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 16),
-                                  width: MediaQuery.of(context).size.width/3,
-                                  child: MaterialButton(
-                                      // elevation: 2,
-                                      onPressed: () async{
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Delete Restroom Data'),
-                                              content: Text("Are you sure you want to delete this data"),
-                                              actions: <Widget>[
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text('Cancel'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    Navigator.of(context).pop();
-                                                    deleteRestroom(restrooms[index].id);
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                         SnackBar(
-                                                          content: Text('${restrooms[index].name} is Deleted Succesfully.'),
-                                                    ));
-
-
-                                                  },
-                                                  child: Text('Delete'),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-
-                                      },
-                                      color: Colors.white,
-                                      textColor: Colors.indigo[900],
-                                      padding: EdgeInsets.all(8),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30),
-                                        side: BorderSide(
-                                          color: Color.fromRGBO(113, 130, 213, 1.0),
-                                          width: 1.0,
-                                        ),
-                                      ),
-                                      child:Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.delete,color: Colors.indigo[900],),
-                                          SizedBox(width: 10,),
-                                          Text("Delete",style: TextStyle(color:Colors.indigo[900],fontSize: 20,fontWeight: FontWeight.bold
-                                          ),),
-                                        ],
-                                      )
-                                  ),
-                                ),
-                              ],
-                            ),
-                            )
-                          ],
-                        )
-
-                    ),
-                    const SizedBox(height: 5,)
-                  ],
-                ),
-              );
-              //   ListTile(
-              //   title: Text(restrooms[index].name),
-              //   subtitle: Text(restrooms[index].address),
-              //   // You can display more information about the restroom here
-              // );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue.shade900,
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => AddRestroomData(adminEmail: widget.adminEmail,)));
-        },
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-          // weight: 4,
-          size: 30,
-        ),
-      ),
-    );
-  }
-}
-
-class AddRestroomData extends StatefulWidget {
-  const AddRestroomData({super.key,required this.adminEmail});
-  final String adminEmail;
-
-  @override
-  State<AddRestroomData> createState() => _AddRestroomDataState();
-}
-
-class _AddRestroomDataState extends State<AddRestroomData> {
+class _AddVerifiedRestroomState extends State<AddVerifiedRestroom> {
   String? selectedFilter;
   final List<String> _filterOptions = ['true','false'];
 
@@ -379,7 +23,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
     MultiSelectItem<String>('Male', 'Male'),];
 
   String? selectedHours;
-  List<String> availableItems = ['Open 24 Hours', 'Closed'];
+  List<String> availableItems = ['Open for 24 Hours', 'Closed'];
 
 
   TextEditingController nameController = TextEditingController();
@@ -411,13 +55,40 @@ class _AddRestroomDataState extends State<AddRestroomData> {
       throw Exception('Failed to convert address to coordinates.');
     }
   }
+  @override
+  void initState() {
+    super.initState();
+    // Set the initial value of the address TextField
+    addressController.text = widget.address;
+  }
+  Future<void> deleteNewRestroomByAddress(String adminEmail,String address) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('newRestroom')
+          .where('address', isEqualTo: address)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        for (DocumentSnapshot docSnapshot in querySnapshot.docs) {
+          await docSnapshot.reference.delete();
+          print('Document with address $address deleted successfully.');
+
+        }
+      } else {
+        print('Document with address $address does not exist.');
+      }
+    } catch (error) {
+      print('Error deleting document: $error');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          elevation: 3,
-          title: const Text("Add Restroom", style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),)
+            elevation: 3,
+            title: const Text("Add Restroom", style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),)
         ),
         body:Column(
             children: [
@@ -653,6 +324,9 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                             selectedHours!,
                             widget.adminEmail,
                           );
+                          deleteNewRestroomByAddress(widget.adminEmail,widget.address);
+                          print("DELETED NEW RESTROOM AS IT IS ADDED IN RESTROOM IF");
+
                         }
                         else{
                           addRestroomToFirestore(
@@ -663,8 +337,13 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                             selectedHours!,
                             widget.adminEmail,
                           );
+                          deleteNewRestroomByAddress(widget.adminEmail,widget.address);
+                          print("DELETED NEW RESTROOM AS IT IS ADDED IN RESTROOM ELSE");
                         }
                         _showSuccessDialog(context, 'Restroom added successfully!');
+
+                        // Navigator.pop(context);
+
                       }
                     },
                     color: Colors.indigo[900],
@@ -730,7 +409,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => ManageRestroom(adminEmail: widget.adminEmail)),
+                  MaterialPageRoute(builder: (context) => SuggestionStatus(adminEmail: widget.adminEmail,),),
                 );
               },
             ),
@@ -759,3 +438,4 @@ class _AddRestroomDataState extends State<AddRestroomData> {
     );
   }
 }
+

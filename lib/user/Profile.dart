@@ -1,13 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:rest_ez_app/user/MakeSuggestion.dart';
+import 'package:rest_ez_app/user/practice.dart';
 
 import '../constant/imageString.dart';
 import 'homepage.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({super.key});
+  const UserProfile({super.key, required this.name,});
+  final String name;
 
   @override
   State<UserProfile> createState() => _UserProfileState();
@@ -26,7 +32,7 @@ class _UserProfileState extends State<UserProfile> {
     try {
       // Query userEmails collection to get userId
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-          .collection('userEmails')
+          .collection('users')
           .where('email', isEqualTo: email)
           .get();
 
@@ -94,8 +100,21 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    fetchUserData();
   }
+  Future<List<DocumentSnapshot>> getNewRestroomsForAdmin(String adminEmail, String location) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('newRestroom')
+          .where('sendTo', arrayContains: '$adminEmail : $location')
+          .get();
 
+      return querySnapshot.docs;
+    } catch (error) {
+      print('Error fetching new restrooms: $error');
+      return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,27 +125,25 @@ class _UserProfileState extends State<UserProfile> {
       },
       child: Scaffold(
         appBar:AppBar(
-          backgroundColor:Colors.white,
+          backgroundColor:Colors.indigo[700],
           iconTheme: IconThemeData(
-            color: Colors.blue[900],
+            color: Colors.white,
           ),
-          title:Center(
-            child: RichText(
-              text: TextSpan(
-                  style: TextStyle(fontSize: 28,
-                      // fontFamily: 'El Messiri',
-                      fontWeight: FontWeight.bold),
-                  children: <TextSpan>[
-                    TextSpan(text: 'Rest', style: TextStyle(color: Colors.black)),
-                    TextSpan(
-                        text: 'Ez', style: TextStyle(color: Colors.blue[900]))
-                  ]
-              ),
+          title:RichText(
+            text: TextSpan(
+                style: TextStyle(fontSize: 29,
+                    // fontFamily: 'El Messiri',
+                    fontWeight: FontWeight.bold),
+                children: <TextSpan>[
+                  TextSpan(text: 'Rest', style: TextStyle(color: Colors.white)),
+                  TextSpan(
+                      text: 'Ez', style: TextStyle(color: Colors.tealAccent[100]))
+                ]
             ),
           ),
           elevation: 24.0,
           actions: <Widget>[IconButton(
-            icon: Icon(Icons.edit,size: 30,color: Colors.black,),
+            icon: Icon(Icons.edit,size: 30,color: Colors.white,),
             onPressed: () async{
               DocumentSnapshot<Map<String, dynamic>>? userDoc = await fetchUserByEmail('hari@gmail.com');
               // Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateProfile()),);
@@ -138,7 +155,8 @@ class _UserProfileState extends State<UserProfile> {
         ),
         body:SingleChildScrollView(
           child: Container(
-            color: Colors.white,
+            // color: Colors.white,
+            color: Colors.indigo[100],
             child: Column(
 
               mainAxisAlignment: MainAxisAlignment.start,
@@ -151,13 +169,23 @@ class _UserProfileState extends State<UserProfile> {
                         onTap: (){
                           // loadProfileImage();
                         },
-                        child: CircleAvatar(
-                          backgroundColor: Colors.indigo,
-                          radius: 50,
-                          child: Text(
-                            Utils.getInitials("Hari Kumar"),
-                            style: TextStyle(
-                                fontSize: 40, color: Colors.white),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white,
+                              width: 4.0, // Adjust the width as needed
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            // backgroundColor: Colors.indigo,
+                            backgroundColor: Colors.teal[200],
+                            radius: 50,
+                            child: Text(
+                              Utils.getInitials(widget.name),
+                              style: TextStyle(
+                                  fontSize: 40, color: Colors.black),
+                            ),
                           ),
                         ),
                       ),
@@ -184,10 +212,11 @@ class _UserProfileState extends State<UserProfile> {
                     margin:EdgeInsets.symmetric(horizontal: 20,vertical: 10) ,
                     padding: EdgeInsets.symmetric(horizontal: 20,vertical: 18),
                    decoration: BoxDecoration(
-                     color: Colors.indigo[100],
+                     color: Colors.white,
+                     // color: Colors.indigo[100],
                      borderRadius: BorderRadius.circular(20),
                      border: Border.all(
-                       width: 8,
+                       width: 10,
                        color: Color.fromRGBO(232, 234, 246, 1)
                      ),
                    ),
@@ -205,6 +234,8 @@ class _UserProfileState extends State<UserProfile> {
 
                             child: buildTextField("Email :",_email)),
                         SizedBox(height: 15,),
+
+
 
                         Container(
 
@@ -277,53 +308,61 @@ class _UserProfileState extends State<UserProfile> {
 
                             child: buildTextField("No. of Suggestion :",_no_sug)),
 
+                        SizedBox(height: 25,),
+                        Container(
+                          // padding: EdgeInsets.symmetric(horizontal: 10),
+                          // width: MediaQuery.of(context).size.width,
+                          child: MaterialButton(
+                            // minWidth:MediaQuery.of(context).size.width/,
+                            height: 48,
+                            onPressed:(){
+                              // Navigator.push(context,
+                              //     MaterialPageRoute(builder: (context) =>
+                              //         pPage()
+                              //       // MakeSuggestion()
+                              //     ));
+                              giveSuggestionModalSheet(context);
+
+                            },
+                            color: Colors.indigo[400],
+                            shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                  color:Color.fromRGBO(63, 81, 181, 1),
+                                ),
+                                borderRadius: BorderRadius.circular(50)
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.create,color: Colors.white,),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 18.0),
+                                  child: Text("Suggest Restroom",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+
+                        SizedBox(height: 5,),
+
                       ],
                     ),
                   ),
 
                 ),
-                SizedBox(height: 25,),
+                SizedBox(height: 10,),
                 Container(
-                  width: MediaQuery.of(context).size.width/1.4,
+                  padding: EdgeInsets.symmetric(horizontal: 40),
+                  // width: MediaQuery.of(context).size.width,
                   child: MaterialButton(
-                    // minWidth:MediaQuery.of(context).size.width/,
-                    height: 48,
-                    onPressed:(){
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => MakeSuggestion()));
-
-                    },
-                    color: Colors.indigo[400],
-                    shape: RoundedRectangleBorder(
-                        side: const BorderSide(
-                            color:Color.fromRGBO(63, 81, 181, 1),
-                        ),
-                        borderRadius: BorderRadius.circular(50)
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.create,color: Colors.white,),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 18.0),
-                          child: Text("Suggest Restroom",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-
-                SizedBox(height: 15,),
-                Container(
-                  width: MediaQuery.of(context).size.width/1.4,
-                  child: MaterialButton(
-                    minWidth:MediaQuery.of(context).size.width/3,
+                    // minWidth:MediaQuery.of(context).size.width/3,
                     height: 48,
                     onPressed:(){
                       showDialog(
@@ -358,8 +397,8 @@ class _UserProfileState extends State<UserProfile> {
                     color: Colors.white,
                     shape: RoundedRectangleBorder(
                         side: const BorderSide(
-                            color:Colors.indigo,
-                          width: 2,
+                          color:Color.fromRGBO(43, 67, 218, 1),
+                          width: 1,
                         ),
                         borderRadius: BorderRadius.circular(50)
                     ),
@@ -371,8 +410,8 @@ class _UserProfileState extends State<UserProfile> {
                           padding: const EdgeInsets.only(left: 18.0),
                           child: Text("LogOut",
                             style: TextStyle(
-                              color: Colors.indigo[700],
-                              fontSize: 20,
+                              color: Colors.indigo,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),),
                         ),
@@ -380,7 +419,9 @@ class _UserProfileState extends State<UserProfile> {
                     ),
                   ),
                 ),
-                SizedBox(height: 35,),
+                SizedBox(height: 30,),
+
+
               ],
             ),
           ),
@@ -399,7 +440,7 @@ class _UserProfileState extends State<UserProfile> {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 18,fontWeight: FontWeight.w500,color: Colors.black87),
+          style: TextStyle(fontSize: 15,fontWeight: FontWeight.w400,color: Colors.black87),
         ),
         const SizedBox(width:5),
         Flexible(
@@ -411,7 +452,7 @@ class _UserProfileState extends State<UserProfile> {
             child: TextField(
               style: TextStyle(
                 // backgroundColor: Colors.white,
-                fontSize: 18,
+                fontSize: 15,
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
@@ -439,6 +480,507 @@ class _UserProfileState extends State<UserProfile> {
         // SizedBox(height:10),
       ],
     );
+  }
+
+  String location="";
+  String address="";
+  String selectedAdmin='';
+  late bool isReq;
+
+  Future<Position> determinePosition() async{
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled =await Geolocator.isLocationServiceEnabled();
+    if(!serviceEnabled){
+      await Geolocator.openLocationSettings();
+      return Future.error("Location service are disabled");
+    }
+    permission=await Geolocator.checkPermission();
+    if(permission==LocationPermission.denied){
+      permission=await Geolocator.requestPermission();
+      if(permission==LocationPermission.denied){
+        return Future.error("Location permission are denied");
+
+      }
+    }
+    if(permission==LocationPermission.deniedForever){
+      return Future.error("Location Permission are permanently denie,we cannot request permission");
+
+    }
+    return await Geolocator.getCurrentPosition();
+
+  }
+  Future<void> GetAddressFromLatLong(Position position)async{
+    List<Placemark> placemark=await placemarkFromCoordinates(position.latitude, position.longitude);
+    print(placemark);
+    Placemark place=placemark[0];
+    String addr="";
+    if(place.thoroughfare!="" && place.subLocality!=""){
+      addr='${place.name}, ${place.subThoroughfare}, ${place.thoroughfare}, ${place.subLocality},  ${place.locality}, ${place.postalCode}'.trim();
+
+    }
+    else if(place.thoroughfare!=""){
+      addr='${place.name}, ${place.subThoroughfare}, ${place.thoroughfare}, ${place.locality}, ${place.postalCode}'.trim();
+
+    }
+    else{
+      addr='${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.postalCode}'.trim();
+
+    }
+    address=addr;
+
+  }
+
+  Future<void> setSuggestionCount(String email) async {
+     if (location.trim().isNotEmpty && address.trim().isNotEmpty && isReq){
+       try {
+         DocumentReference userRef =
+         FirebaseFirestore.instance.collection('users').doc(email);
+
+         await userRef.set({
+           'no_of_suggestion': FieldValue.increment(1),
+         }, SetOptions(merge: true)); // Use merge: true to merge the new data with existing data
+
+         print('Suggestion count set successfully.');
+       } catch (error) {
+         print('Error setting suggestion count: $error');
+       }
+     }
+     else {
+       print("Location is Empty for setting no_of suggestuion in user");
+     }
+
+  }
+
+  Future<void> storeNewRestroomData(Position position, String address, String nm,String admin) async {
+    if (location.isNotEmpty && address.isNotEmpty && selectedAdmin.isNotEmpty) {
+      GeoPoint geoPoint = GeoPoint(position.latitude, position.longitude);
+      Timestamp timestamp = Timestamp.now();
+      DocumentReference newRestroomRef = FirebaseFirestore.instance.collection('newRestroom').doc(address);
+
+      // Check if the document exists and get its data
+      DocumentSnapshot docSnapshot = await newRestroomRef.get();
+      if (docSnapshot.exists) {
+        // Document already exists
+        Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+        if (data != null) {
+          List<dynamic>? suggestedBy = data['suggestedBy'];
+          String adm=data['sendTo'];
+
+          // Check if the user is already in the suggestedBy array
+          // && selectedAdmin==adm // //REASON TO REMOVE IS THAT MANY ADMIN WILL GET SAME SUGGEST
+          if (suggestedBy != null && suggestedBy.contains(nm) ) {
+            isReq=false;
+            // User is already in the suggestedBy array, show a dialog
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Already suggested this location.'),
+                  content: Text('You cannot suggest the same location again.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+            return;
+          }
+          isReq=true;
+          // User is not in sugestedBy array, updat document
+          await newRestroomRef.set({
+            'location': geoPoint,
+            'address': address,
+            'status': 'Pending',
+            'timestamp': timestamp,
+            'no_of_suggestion': FieldValue.increment(1),
+            'suggestedBy': FieldValue.arrayUnion([nm]),
+            'sendTo':admin,
+          }, SetOptions(merge: true));
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Successfully Sent'),
+                content: Text("Successfully send suggestion about new restroom location"),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+
+          print('New restroom data stored successfully.');
+        }
+      } else {
+        isReq=true;
+        // create a new document
+        await newRestroomRef.set({
+          'location': geoPoint,
+          'address': address,
+          'status': 'Pending',
+          'timestamp': timestamp,
+          'no_of_suggestion': 1,
+          'suggestedBy': [nm],
+          'sendTo':admin,
+        });
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Successfully Sent'),
+              content: Text("Successfully send suggestion about new restroom location"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        print('New restroom data stored successfully.');
+      }
+    } else {
+      print('Location is empty.');
+    }
+  }
+
+  //DROPDOWN ADMIN
+  Future<List<String>> getAllAdminEmails() async {
+    List<String> adminEmails = [];
+
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+          .collection('admins')
+          .get();
+
+      querySnapshot.docs.forEach((doc) {
+        adminEmails.add('${doc['email']} : ${doc['location']}');
+      });
+    } catch (error) {
+      print('Error fetching admin emails: $error');
+    }
+
+    return adminEmails;
+  }
+
+  void giveSuggestionModalSheet(BuildContext context){
+    showModalBottomSheet(
+      context: context,
+      // useSafeArea: false,
+      isScrollControlled: true,
+      // enableDrag: false,
+      builder: (BuildContext context){
+        late List<String> _filterOptions;
+        String? selectedFilter;
+
+        return StatefulBuilder(builder: (BuildContext context, StateSetter setState){
+          return Container(
+            height: MediaQuery.of(context).size.height/1.38,//1.5 decrease then size increase
+            // color: Color.fromRGBO(36, 21, 50, 0.94),
+            child:Column(
+              children: [
+                SizedBox(height: 15,),
+                Expanded(
+                  child: Container(
+                    // color: Colors.blue,
+                    height: 330,
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 20,vertical: 15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(child: Text(
+                          "Give Location of New Restroom ",
+                          style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),softWrap: true,overflow: TextOverflow.visible,
+                        )
+                        ),
+                        SizedBox(height: 5,),
+                        Flexible(child: Text('Click on below \'GET LOCATION\' Botton to get your Current Location for getting Restroom location and address',
+                          style: TextStyle(fontSize: 17,color: Colors.black87),softWrap: true,overflow: TextOverflow.visible,
+
+                        )),
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          // color: Colors.blue,
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.only(top: 20),
+
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Flexible(flex:1,child: Container(
+                                      width: double.infinity/4,
+                                      child: Text("Location Position",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),))),
+                                  Flexible(flex: 0,
+                                      child: SizedBox(width: 10,)),
+
+                                  Flexible(flex:3,child: Container(
+                                    width: double.infinity/1.3,
+                                    padding: EdgeInsets.symmetric(horizontal: 17,vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.indigo[100],
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(color: Colors.black54,width: 1.0,
+
+                                        )
+                                      ),
+                                      child: Text(
+                                        // "Select button to get location djd kms nkdnknd nskndkmsk cncknd",
+                                        location,
+                                        style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                  )),
+                                ],
+                              ),),
+                              Container(
+                                padding: EdgeInsets.only(top: 20),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Flexible(flex:1,child: Container(
+                                        width: double.infinity/4,
+                                        child: Text("Address : ",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),))),
+                                    Flexible(
+                                        flex: 0,
+                                        child: SizedBox(width: 10,)),
+
+                                    Flexible(flex:3,child: Container(
+                                      width: double.infinity/1.3,
+                                      padding: EdgeInsets.symmetric(horizontal: 17,vertical: 10),
+                                      decoration: BoxDecoration(
+                                          color: Colors.indigo[100],
+                                          borderRadius: BorderRadius.circular(20),
+                                          border: Border.all(color: Colors.black54,width: 1.0,
+
+                                          )
+                                      ),
+                                      child: Text(
+                                        // "Select button to get location djd kms nkdnknd nskndkmsk cncknd uss huhud ndjnd bduhnd dhjudnu dundud dujndudn du",
+                                        address,
+                                        style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                    )),
+                                  ],
+                                ),),
+                              Container(
+                                padding: EdgeInsets.only(top: 20),
+                                child: Row(
+                                  children: [
+                                    Flexible(flex:1,child: Container(
+                                        width: double.infinity/4,
+                                        child: Text("Select Admin : ",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),))),
+                                    Flexible(flex: 0,
+                                        child: SizedBox(width: 10,)),
+                                    FutureBuilder<List<String>>(
+                                      future: getAllAdminEmails(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        } else if (snapshot.hasError) {
+                                          return Text('Error: ${snapshot.error}');
+                                        }
+                                        else {
+                                          _filterOptions = snapshot.data ?? [];
+                                          return Flexible(
+                                            flex: 3,
+                                            child: Container(
+                                              width: double.infinity/1.3,
+
+                                              child: DropdownButton<String>(
+                                                isExpanded: true,
+                                                hint: Text('Select an Option'),
+                                                underline: Container(
+                                                  height: 0,
+                                                  color: Colors.transparent,
+                                                ),
+                                                value: selectedFilter,
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    selectedFilter = newValue;
+                                                    selectedAdmin=newValue!;
+                                                  });
+                                                  print(selectedFilter);
+                                                },
+                                                items: _filterOptions.map((valueItem) {
+                                                  return DropdownMenuItem(
+                                                    value: valueItem,
+                                                    child: Text(
+                                                      valueItem,
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                  },
+                                ),
+                                  ],
+                                ),
+
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16,vertical: 15),
+                      width: MediaQuery.of(context).size.width/2.5,
+                      // height:MediaQuery.of(context).size.height/12,
+                      // height: 100,
+                      // color: Colors.greenAccent,
+                      child: MaterialButton(
+                          elevation: 0,
+                          onPressed: () async{
+                            Position pos=await determinePosition();
+                            print(pos.latitude);
+                            location="Latitude :${pos.latitude}, Longitude : ${pos.longitude}";
+
+                            GetAddressFromLatLong(pos);
+                            setState(() {
+
+
+                            });
+                          },
+                          color: Colors.indigo[800],
+                          textColor: Colors.white,
+                          padding: EdgeInsets.all(12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            side: BorderSide(
+                              color: Color(0xFFebf1fa), // Set the border color
+                              width: 1.0,         // Set the border width
+                            ),
+                          ),
+                          child:Text("GET LOCATION ",style: TextStyle(color:Colors.white,fontSize: 18,fontWeight: FontWeight.bold
+                          ),)
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16,vertical: 15),
+                      width: MediaQuery.of(context).size.width/2.5,
+                      // height:MediaQuery.of(context).size.height/12,
+                      // height: 100,
+                      // color: Colors.greenAccent,
+                      child: MaterialButton(
+                          elevation: 0,
+                          onPressed: () async{//ABOVE FROM STORE FUNCTION REMOVED CONDITION DJD
+                            // && selectedAdmin==adm // //REASON TO REMOVE IS THAT MANY ADMIN WILL GET SAME SUGGEST
+                            if (location.trim().isNotEmpty && address.trim().isNotEmpty && selectedAdmin.isNotEmpty){
+                              Position pos = await determinePosition();
+                              storeNewRestroomData(pos,address,widget.name,selectedAdmin);
+
+                              String? email = await getEmailFromName(widget.name);
+                              if (email != null) {
+                                setSuggestionCount(email);
+                                print('Email for Hari Kumar: $email');
+                              } else {
+                                print('No email found for Hari Kumar');
+                              }
+                              
+                              print("Success");
+                            }
+                            else{
+                              print("Location is Empty");
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Address is not generated'),
+                                    content: Text("Click on \'GET LOCATION\' Button to generate current location and address."),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text('OK'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+
+
+                            }
+
+
+                          },
+                          color: Colors.indigo[800],
+                          textColor: Colors.white,
+                          padding: EdgeInsets.all(12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            side: BorderSide(
+                              color: Color(0xFFebf1fa), // Set the border color
+                              width: 1.0,         // Set the border width
+                            ),
+                          ),
+                          child:Text("SEND",style: TextStyle(color:Colors.white,fontSize: 18,fontWeight: FontWeight.bold
+                          ),)
+                      ),
+                    ),
+                  ],
+                )
+
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+
+  Future<String?> getEmailFromName(String name) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+      await FirebaseFirestore.instance
+          .collection('users')
+          .where('name', isEqualTo: name)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Assuming there's only one user with the given name
+        return querySnapshot.docs.first['email'];
+      } else {
+        // No user found with the given name
+        return null;
+      }
+    } catch (error) {
+      print('Error retrieving email from name: $error');
+      return null;
+    }
   }
 }
 

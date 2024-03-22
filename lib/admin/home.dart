@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rest_ez_app/admin/restroomManage.dart';
+import 'package:rest_ez_app/admin/suggestionsList.dart';
+import 'package:rest_ez_app/user/Profile.dart';
 
 import '../constant/imageString.dart';
 import 'loginPage.dart';
@@ -222,10 +224,13 @@ class _AdminPageState extends State<AdminPage> {
                                 ],),
                             ),
                             onTap: (){
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(builder: (context) =>AppointmentPage(email: widget.email)),
-                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                    // UserProfile(name: "Hari Kumar")
+                                    SuggestionStatus( adminEmail: widget.email,)
+                              ),
+                              );
                             },
                           ),
                         ),

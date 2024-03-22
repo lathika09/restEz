@@ -80,6 +80,33 @@ class _RatingPageState extends State<RatingPage> {
       },
     );
   }
+
+  Future<void> updateNumberOfReviews(String name) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('name', isEqualTo: name)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot<Map<String, dynamic>> documentSnapshot = querySnapshot.docs.first;
+
+
+        int currentNumberOfReviews = documentSnapshot['no_of_reviews'] ?? 0;
+        int updatedNumberOfReviews = currentNumberOfReviews + 1;
+
+        await documentSnapshot.reference.set({'no_of_reviews': updatedNumberOfReviews}, SetOptions(merge: true));
+
+        print('Number of reviews updated successfully for $name');
+      } else {
+        print('No user found with the name $name');
+      }
+    } catch (error) {
+      print('Error updating number of reviews: $error');
+    }
+  }
+
+
   void postReview(String name,int rate,String com,int no) async {
     if (selectedRating == 0) {
       _showErrorDialog(context, "Give Ratings to make Post");
@@ -325,6 +352,7 @@ class _RatingPageState extends State<RatingPage> {
                           'no_of_reviews':reviewsLength ,
                         }, SetOptions(merge: true));
 
+                        updateNumberOfReviews(widget.uname);
                         print("object");
 
                         _showSuccessDialog(context, "The review was posted publicly successfully!");

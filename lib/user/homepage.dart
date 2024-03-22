@@ -6,10 +6,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rest_ez_app/user/restroomDetails.dart';
+
+import 'Profile.dart';
 // import 'package:location/location.dart';
 
 class UserPage extends StatefulWidget {
-  const UserPage({super.key});
+  const UserPage({super.key, required this.name});
+  final String name;
 
   @override
   State<UserPage> createState() => _UserPageState();
@@ -99,15 +103,17 @@ class _UserPageState extends State<UserPage> {
 
   Future<void> fetchNearbyRestrooms(Position userPosition) async {
     double radius = 5; // 5 kilometers radius
-
     // Perform the query
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('restrooms')
         .get();
-
     // Filter documents within the radius
     querySnapshot.docs.forEach((DocumentSnapshot document) {
       GeoPoint? restroomLocation = (document.data() as Map<String, dynamic>)['location'];
+      List<String>? genderArray = List<String>.from(document['gender']);
+      bool handicappedAccessible = document['handicappedAccessible'];
+      print(genderArray);
+
       if (restroomLocation != null) {
         double distance = calculateDistance(
           userPosition.latitude,
@@ -115,9 +121,26 @@ class _UserPageState extends State<UserPage> {
           restroomLocation.latitude,
           restroomLocation.longitude,
         );
+        bool shouldAddMarker = false;
+        print(selectedFilter);
+
+        // Check if the restroom meets the filter criteria
         if (distance <= radius) {
+          if (selectedFilter == null || selectedFilter!.toLowerCase() == 'all') {
+            shouldAddMarker = true;
+          } else if (selectedFilter!.toLowerCase() == 'female' && genderArray != null && genderArray.contains('female')) {
+            shouldAddMarker = true;
+          } else if (selectedFilter!.toLowerCase() == 'male' && genderArray != null && genderArray.contains('male')) {
+            shouldAddMarker = true;
+          } else if (selectedFilter!.toLowerCase() == 'handicapped' && handicappedAccessible) {
+            shouldAddMarker = true;
+            print("only handicappped $handicappedAccessible ");
+          }
+        }
+
+        if (shouldAddMarker) {
           LatLng latLng = LatLng(restroomLocation.latitude, restroomLocation.longitude);
-          addMarker(latLng);
+          addMarker(latLng,document);
         }
       }
     });
@@ -125,43 +148,58 @@ class _UserPageState extends State<UserPage> {
     print(markersSet);
   }
 
-  void addMarker(LatLng latLng) {
+  void addMarker(LatLng latLng,DocumentSnapshot document) async{
+  Position cPosition =await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  GeoPoint? restroomLocation = (document.data() as Map<String, dynamic>)['location'];
+
+  double distance = calculateDistance(
+  cPosition.latitude,
+  cPosition.longitude,
+  restroomLocation!.latitude,
+  restroomLocation.longitude,
+  );
+  double distanceInOneDecimalPoint = double.parse(distance.toStringAsFixed(1));
     setState(() {
       markersSet.add(Marker(
         markerId: MarkerId(latLng.toString()),
         position: latLng,
         icon: BitmapDescriptor.defaultMarker,
         infoWindow: InfoWindow(
-          title: 'Restroom Information',
-          snippet: 'Add your snippet here...',
+          title: '${document['name']} :\t ${distance.toStringAsFixed(1)} km ',
+          snippet: 'Ratings : ${document['ratings']}',
           onTap: () {
-            // Handle marker tap
-            // You can use the 'document' variable here to access the document data
-            // and display it in a dialog or any other way you prefer.
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('Restroom Information'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Add your information here...'),
-                      // You can display the data from the document here
-                    ],
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Close'),
-                    ),
-                  ],
-                );
-              },
-            );
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => RestroomPageUser(document: document,dist:distance.toStringAsFixed(1), pos: cPosition, restroomloc: latLng, name: 'Hari Kumar')));
+            // showDialog(
+            //   context: context,
+            //   builder: (BuildContext context) {
+            //     return AlertDialog(
+            //       title: Text('Restroom Information'),
+            //       content: Column(
+            //         mainAxisSize: MainAxisSize.min,
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           Text('Add your information here...'),
+            //           // You can display the data from the document here
+            //         ],
+            //       ),
+            //       actions: [
+            //         TextButton(
+            //           onPressed: () {
+            //             Navigator.push(
+            //                 context,
+            //                 MaterialPageRoute(
+            //                     builder: (context) => RestroomPageUser(document: document,dist:distance.toStringAsFixed(1), pos: cPosition, restroomloc: latLng, name: widget.name, id: document.id,)));
+            //
+            //           },
+            //           child: Text('Close'),
+            //         ),
+            //       ],
+            //     );
+            //   },
+            // );
           },
         ),
       ));
@@ -199,9 +237,22 @@ class _UserPageState extends State<UserPage> {
           ),
           actions: [
             IconButton(
-                onPressed: () {
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => HelpPage()));
+                onPressed: () async{
+                  Position cPosition =await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                  DocumentSnapshot<Map<String, dynamic>> restroomDoc = await FirebaseFirestore.instance.collection('restrooms').doc('ztQP5fpjvZtUNGiduAAz').get();
+                  GeoPoint? restroomLocation = (restroomDoc.data() as Map<String, dynamic>)['location'];
+
+                  double distance = calculateDistance(
+                    cPosition.latitude,
+                    cPosition.longitude,
+                    restroomLocation!.latitude,
+                    restroomLocation.longitude,
+                  );
+                  LatLng latLng = LatLng(restroomLocation.latitude, restroomLocation.longitude);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RestroomPageUser(document: restroomDoc,dist:distance.toStringAsFixed(1), pos: cPosition, restroomloc: latLng,name: widget.name,)));
                 },
                 icon: Icon(
                   Icons.help,
@@ -250,10 +301,13 @@ class _UserPageState extends State<UserPage> {
                         fontSize: 19,
                       ),
                       value:selectedFilter,
-                      onChanged: (newValue){
+                      onChanged: (newValue)async{
                         setState(() {
-                          selectedFilter=newValue as String;;
+                          selectedFilter = newValue as String;
+                          markersSet.clear();
                         });
+                        Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                        fetchNearbyRestrooms(cPosition);
                       },
 
 
@@ -340,12 +394,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
           border: Border(
               top: BorderSide(color: Color.fromARGB(255, 209, 208, 208)))),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           GestureDetector(
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => UserPage()));
+                  MaterialPageRoute(builder: (context) => UserPage(name: 'Hari Kumar',)));
             },
             child: Container(
               width: 60,
@@ -362,7 +416,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.card_giftcard,
+                    Icons.map,
                     color: index == 0 ? Colors.blue[700] : Colors.grey[500],
                     size: 26,
                   ),
@@ -378,13 +432,16 @@ class CustomBottomNavigationBar extends StatelessWidget {
               ),
             ),
           ),
+
           GestureDetector(
             onTap: () {
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => ApplicationScreen()));
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => UserProfile(name: 'Hari Kumar',)));
             },
             child: Container(
               height: 60,
+              //color: Color.fromRGBO(66, 130, 200, 1), width: 2)
+              //                         : BorderSide(width: 2, color: Colors.white),
               decoration: BoxDecoration(
                   border: Border(
                     top: index == 1
@@ -396,43 +453,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.insert_drive_file_rounded,
-                    color: index == 1 ? Colors.blue[700] : Colors.grey[500],
-                    size: 26,
-                  ),
-                  Text(
-                    "Community",
-                    style: TextStyle(
-                        color:
-                        index == 1 ? Colors.blue[700] : Colors.grey[500],
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400),
-                  )
-                ],
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              // Navigator.push(
-              //     context, MaterialPageRoute(builder: (context) => Profile()));
-            },
-            child: Container(
-              height: 60,
-              decoration: BoxDecoration(
-                  border: Border(
-                    top: index == 3
-                        ? BorderSide(
-                        color: Color.fromRGBO(66, 130, 200, 1), width: 2)
-                        : BorderSide(width: 2, color: Colors.white),
-                  )),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
                   CircleAvatar(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.blue[800],
                     radius: 12,
                     child: Text(
                       'LK',
@@ -443,8 +465,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     "Profile",
                     style: TextStyle(
                         color:
-                        index == 3 ? Colors.blue[700] : Colors.grey[500],
-                        fontSize: 12,
+                        index == 1 ? Colors.blue[700] : Colors.grey[500],
+                        fontSize: 13,
                         fontWeight: FontWeight.w400),
                   )
                 ],
