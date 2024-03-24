@@ -29,7 +29,7 @@ class WelcomePage extends StatelessWidget {
                   children: [
                     Text("Welcome !!!",
                       style: TextStyle(
-                        fontFamily: 'Headland One',
+                        // fontFamily: 'Headland One',
                         fontWeight: FontWeight.bold,
                         fontSize: 38,
                       ),

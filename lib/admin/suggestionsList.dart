@@ -130,27 +130,32 @@ print(querySnapshot.docs);
 
 
     return Scaffold(
+      appBar: AppBar(
+          backgroundColor:Colors.white,
+          iconTheme: IconThemeData(
+            color: Colors.indigo[900],
+          ),
+          elevation: 5,
+          title:Text(
+            'Suggested New RestRooms',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.indigo[900]),
+          ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(left: 20, top: 20, right: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Suggested New RestRooms',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 25,
-              ),
               Stack(
                 children: [
                   Container(
                     width: double.infinity,
                     height: 40,
+
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.indigo[50],
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -366,7 +371,7 @@ print(querySnapshot.docs);
                                       ),
                                       child: Text(
                                         'Cancel',
-                                        style: TextStyle(color: Colors.white),
+                                        style: TextStyle(color: Colors.white,fontSize: 16),
                                       ),
                                     ),
                                   ),
@@ -390,6 +395,7 @@ print(querySnapshot.docs);
                                                   },
                                                   child: Text('Cancel'),
                                                 ),
+
                                                 TextButton(
                                                   onPressed: () async {
 
@@ -417,7 +423,7 @@ print(querySnapshot.docs);
                                         backgroundColor: Colors.green,),
                                       child: Text(
                                         'Verified',
-                                        style: TextStyle(color: Colors.white),
+                                        style: TextStyle(color: Colors.white,fontSize: 16),
                                       ),
                                     ),
                                   ),

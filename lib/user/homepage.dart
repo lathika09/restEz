@@ -457,7 +457,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     backgroundColor: Colors.blue[800],
                     radius: 12,
                     child: Text(
-                      'LK',
+                      'HK',
                       style: TextStyle(fontSize: 10, color: Colors.white),
                     ),
                   ),

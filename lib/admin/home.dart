@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:rest_ez_app/admin/issueList.dart';
 import 'package:rest_ez_app/admin/restroomManage.dart';
 import 'package:rest_ez_app/admin/suggestionsList.dart';
 import 'package:rest_ez_app/user/Profile.dart';
@@ -24,6 +25,7 @@ class _AdminPageState extends State<AdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:AppBar(
+        elevation: 10,
         backgroundColor:Colors.white,
         iconTheme: const IconThemeData(
           color: Colors.white,
@@ -274,12 +276,10 @@ class _AdminPageState extends State<AdminPage> {
                                 ],),
                             ),
                             onTap: (){
-                              // if (widget.email != null) {
-                              //   Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(builder: (context) => MainChatScreenDoc(email: widget.email)),
-                              //   );
-                              // }
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>ReportedIssueList(adminEmail: widget.email)),
+                                    );
                             },
                           ),
                         ),

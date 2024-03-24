@@ -539,7 +539,7 @@ class _UserProfileState extends State<UserProfile> {
 
          await userRef.set({
            'no_of_suggestion': FieldValue.increment(1),
-         }, SetOptions(merge: true)); // Use merge: true to merge the new data with existing data
+         }, SetOptions(merge: true));
 
          print('Suggestion count set successfully.');
        } catch (error) {
