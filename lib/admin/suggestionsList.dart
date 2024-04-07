@@ -197,7 +197,7 @@ print(querySnapshot.docs);
                       width: 110,
                       height: 40,
                       decoration: BoxDecoration(
-                          color: Colors.blueAccent.shade700,
+                          color: Colors.indigo.shade700,
                           borderRadius: BorderRadius.circular(20)),
                       child: Center(
                         child: Text(

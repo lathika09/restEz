@@ -190,15 +190,43 @@ class _RatingPageState extends State<RatingPage> {
       return [];
     }
   }
+
+  String? _profileImageUrl;
+  Future<String?> getProfileImageUrl(String userEmail) async {
+    try {
+      final Reference storageReference =
+      FirebaseStorage.instance.ref().child('prof_images/$userEmail.jpg');
+
+      final String downloadURL = await storageReference.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print('Error getting profile image URL: $e');
+      return null;
+    }
+  }
+
+  Future<void> loadProfileImage(String email) async {
+    final imageUrl = await getProfileImageUrl(email);
+    if (imageUrl != null) {
+      setState(() {
+        _profileImageUrl = imageUrl;
+      });
+    }
+    print("PROFILE");
+  }
+
   @override
   void initState() {
     super.initState();
     // fetchRestroomById(widget.id);
     update_no_of_review(widget.id);
+    loadProfileImage(widget.uemail);
   }
   @override
   void didChangeDependencies() {
     // fetchRestroomById(widget.id);
+    loadProfileImage(widget.uemail);
+
   }
 
   @override
@@ -227,15 +255,57 @@ class _RatingPageState extends State<RatingPage> {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.blue[800],
-                          radius: 25,
-                          child: Text(
-                            Utils.getInitials("${widget.uname}"),
+                        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                          future: FirebaseFirestore.instance.collection('users').doc(widget.uemail).get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return  CircleAvatar(
+                                  backgroundColor: Colors.blue[800],
+                                  radius: 23,
+                                  child: Text(
+                                    Utils.getInitials("${widget.uname}"),
+                                    style: TextStyle(
+                                        fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
+                                  ),);
+                            } else if (snapshot.hasError) {
+                              return  CircleAvatar(
+                                  backgroundColor: Colors.blue[800],
+                                  radius: 23,
+                                  child: Text(
+                                  Utils.getInitials("${widget.uname}"),
                             style: TextStyle(
-                                fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
-                          ),
+                            fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
+                            ),);
+                            } else {
+                              Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
+                              String? profileImageUrl = userData['prof_img']; // Assuming 'prof_img' is the field containing the profile image URL
+                              return userData['prof_img'] != ""
+                                  ?
+                              CircleAvatar(
+                                radius: 23,
+                                backgroundImage: NetworkImage(userData['prof_img']),
+                              ):
+                              CircleAvatar(
+                                backgroundColor: Colors.blue[800],
+                                radius: 23,
+                                child: Text(
+                                  Utils.getInitials("${widget.uname}"),
+                                  style: TextStyle(
+                                      fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
+                                ),);
+
+                            }
+                          },
                         ),
+                        // CircleAvatar(
+                        //   backgroundColor: Colors.blue[800],
+                        //   radius: 25,
+                        //   child: Text(
+                        //     Utils.getInitials("${widget.uname}"),
+                        //     style: TextStyle(
+                        //         fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
+                        //   ),
+                        // ),
                         Padding(
                           padding: const EdgeInsets.only(left:14.0,right: 14),
                           child: Column(

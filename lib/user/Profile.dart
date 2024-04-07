@@ -1,16 +1,17 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:rest_ez_app/user/MakeSuggestion.dart';
-import 'package:rest_ez_app/user/practice.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rest_ez_app/user/shared.dart';
-
-import '../constant/imageString.dart';
 import 'homepage.dart';
+
+
 
 class UserProfile extends StatefulWidget {
   const UserProfile({super.key, required this.uemail, required this.uname});
@@ -29,7 +30,25 @@ class _UserProfileState extends State<UserProfile> {
   final TextEditingController _no_rep= TextEditingController();
   DocumentSnapshot<Map<String, dynamic>>? userDoc;
 
+  // bool isEditing = false;
   bool isEditing = false;
+
+  Future<void> editUserData(String uemail,String newName) async {
+    try {
+      // Get the updated name from the text controller
+      // String newName = _name.text;
+
+      // Update the Firestore document with the new name
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(uemail)
+          .set({"name": newName}, SetOptions(merge: true));
+      print("edkted sucess");
+    } catch (e) {
+      // Handle errors
+      print("Error saving user data: $e");
+    }
+  }
   Future<DocumentSnapshot<Map<String, dynamic>>?> fetchUserByEmail(String email) async {
     try {
       // Query userEmails collection to get userId
@@ -73,7 +92,7 @@ class _UserProfileState extends State<UserProfile> {
           Map<String, dynamic> userData = snapshot.docs.first.data();
 
           // Update text controllers with user data
-          _name.text = userData["name"] ?? "";
+          // _name.text = userData["name"] ?? "";
           _email.text = userData["email"] ?? "";
           _no_rev.text=(userData['no_of_reviews'] ?? 0).toString();
           _no_rep.text=(userData['no_of_reports'] ?? 0).toString();
@@ -90,11 +109,13 @@ class _UserProfileState extends State<UserProfile> {
       print("Error fetching user data: $e");
     }
   }
-
+  String? _profileImageUrl;
   @override
   void initState() {
     super.initState();
     fetchUserData(widget.uemail);
+    loadProfileImage(widget.uemail);
+    print(_profileImageUrl);
 
   }
 
@@ -102,6 +123,9 @@ class _UserProfileState extends State<UserProfile> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     fetchUserData(widget.uemail);
+    loadProfileImage(widget.uemail);
+    print(_profileImageUrl);
+
   }
   Future<List<DocumentSnapshot>> getNewRestroomsForAdmin(String adminEmail, String location) async {
     try {
@@ -146,12 +170,24 @@ class _UserProfileState extends State<UserProfile> {
           actions: <Widget>[IconButton(
             icon: Icon(Icons.edit,size: 30,color: Colors.white,),
             onPressed: () async{
-              DocumentSnapshot<Map<String, dynamic>>? userDoc = await fetchUserByEmail(widget.uemail);
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateProfile()),);
-              // loadProfileImage();
-              print(userDoc);
+              setState(() {
+                isEditing = !isEditing;
+              });
             },
           ),
+            if (isEditing)
+              IconButton(
+                icon: Icon(Icons.save),
+                onPressed: () {
+                  setState(() {
+                    isEditing = false;
+                  });
+                  if(_name.text.isNotEmpty){
+                    editUserData(widget.uemail,_name.text);
+                  }
+                },
+              ),
+
           ],
         ),
         body:SingleChildScrollView(
@@ -168,7 +204,7 @@ class _UserProfileState extends State<UserProfile> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          // loadProfileImage();
+                          loadProfileImage(widget.uemail);
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -182,11 +218,16 @@ class _UserProfileState extends State<UserProfile> {
                             // backgroundColor: Colors.indigo,
                             backgroundColor: Colors.teal[200],
                             radius: 50,
-                            child: Text(
+
+                            backgroundImage: _profileImageUrl != null
+                                ? NetworkImage(_profileImageUrl!)
+                                : null,
+                            child: _profileImageUrl == null
+                                ? Text(
                               Utils.getInitials(widget.uname),
-                              style: TextStyle(
-                                  fontSize: 40, color: Colors.black),
-                            ),
+                              style: TextStyle(fontSize: 40, color: Colors.black),
+                            )
+                                : null,
                           ),
                         ),
                       ),
@@ -194,8 +235,8 @@ class _UserProfileState extends State<UserProfile> {
                         child: IconButton(
                           onPressed:() async{
                             print("pressed");
-                            // _onImagePickerButtonPressed();
-                            // loadProfileImage();
+                            _onImagePickerButtonPressed(widget.uemail);
+                            loadProfileImage(widget.uemail);
                           },
                           icon: Icon(Icons.add_a_photo),
                           iconSize: 30,
@@ -223,11 +264,89 @@ class _UserProfileState extends State<UserProfile> {
                    ),
                     child: Column(
                       children: [
-
                         Container(
 
-                            // padding: EdgeInsets.only(left: 15),
-                            child: buildTextField("Name :",_name)),
+                          // padding: EdgeInsets.only(left: 15),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Name :",
+                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
+                                  ),
+                                  const SizedBox(width: 5),
+
+                                  StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(widget.uemail)
+                                          .snapshots(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                          return Text(
+                                            _name.text,
+                                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+                                          );
+                                        } else if (snapshot.hasError) {
+                                          return Text('Error: ${snapshot.error}');
+                                        } else if (!snapshot.hasData || !snapshot.data!.exists) {
+                                          return Text('Document not found');
+                                        } else {
+                                          var userData = snapshot.data!.data()!;
+                                          return Flexible(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: isEditing
+                                                  ? TextFormField(
+                                                    controller:_name,
+                                                validator: (value) {
+                                                  if (value == null || value.isEmpty) {
+                                                    return 'Please enter valid name';
+                                                  }
+                                                  return null;
+                                                },
+                                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+                                                    // initialValue:userData['name'],
+                                                    maxLines: null,
+                                                    keyboardType: TextInputType.multiline,
+                                                    decoration: const InputDecoration(
+                                                  contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Color(0xFFBDBDBD)),
+                                                  ),
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(color: Color(0xFFBDBDBD)),
+                                                  ),
+                                                    ),
+                                                                                                  // onEditingComplete: () {
+                                                                                                  //   // Update the text controller with the new value
+                                                                                                  //   String newValue = _name.text;
+                                                                                                  //   editUserData(widget.uemail, newValue);
+                                                                                                  //
+                                                                                                  //   // Clear focus when editing is complete
+                                                                                                  //   FocusScope.of(context).unfocus();
+                                                                                                  // },
+                                                    onSaved: (newValue) {
+                                                      _name.text = newValue!;
+                                                      editUserData(widget.uemail, newValue);
+
+
+                                                      },
+
+                                                  )
+                                                  : Text(
+                                                userData['name'],
+                                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+                                              ),
+                                            ),
+                                          );
+                                        }})
+                                ])
+                          // buildTextField("Name :",_name)
+                        ),
                         SizedBox(height: 15,),
                         //spec
                         Container(
@@ -912,7 +1031,6 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
-
   Future<String?> getEmailFromName(String name) async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
@@ -931,6 +1049,72 @@ class _UserProfileState extends State<UserProfile> {
     } catch (error) {
       print('Error retrieving email from name: $error');
       return null;
+    }
+  }
+
+
+  Future<void> _onImagePickerButtonPressed(String email) async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final imageFile = File(pickedFile.path);
+      if (email != null) {
+        uploadImageToFirebaseStorage(imageFile, email);
+      }
+
+    }
+  }
+  Future<String?> getProfileImageUrl(String userEmail) async {
+    try {
+      final Reference storageReference =
+      FirebaseStorage.instance.ref().child('prof_images/$userEmail.jpg');
+
+      final String downloadURL = await storageReference.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print('Error getting profile image URL: $e');
+      return null;
+    }
+  }
+
+  Future<void> loadProfileImage(String email) async {
+    final imageUrl = await getProfileImageUrl(email);
+    if (imageUrl != null) {
+      setState(() {
+        _profileImageUrl = imageUrl;
+      });
+    }
+    print("PROFILE");
+  }
+  Future<void> uploadImageToFirebaseStorage(File imageFile, String Email) async {
+    try {
+      final Reference storageReference =
+      FirebaseStorage.instance.ref().child('prof_images/$Email.jpg');
+
+      final UploadTask uploadTask = storageReference.putFile(imageFile);
+
+      await uploadTask.whenComplete(() async {
+        loadProfileImage(Email);
+        final imageUrl = await storageReference.getDownloadURL();
+
+        print('Image uploaded to Firebase Storage: $imageUrl');
+        final querySnap =await FirebaseFirestore.instance.collection('users').where("email", isEqualTo: Email).get();
+
+        if (querySnap.docs.isNotEmpty) {
+          final doctorDocument = querySnap.docs.first;
+          await doctorDocument.reference.update({
+            'prof_img': imageUrl,
+          });
+
+        }
+        else {
+          print("No document found with email: $Email");
+        }
+
+        print('Image URL saved in Firestore.');
+      });
+    } catch (e) {
+      print('Error uploading image to Firebase Storage: $e');
     }
   }
 }

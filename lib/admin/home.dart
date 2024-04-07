@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:rest_ez_app/admin/AdminProfile.dart';
 import 'package:rest_ez_app/admin/issueList.dart';
 import 'package:rest_ez_app/admin/restroomManage.dart';
 import 'package:rest_ez_app/admin/suggestionsList.dart';
@@ -76,7 +77,7 @@ class _AdminPageState extends State<AdminPage> {
                 children: <TextSpan>[
                   const TextSpan(text: 'Rest', style: TextStyle(color: Colors.black)),
                   TextSpan(
-                      text: 'Ez', style: TextStyle(color: Colors.blueAccent[700]))
+                      text: 'Ez', style: TextStyle(color: Colors.indigo[800]))
                 ]
             ),
           ),
@@ -99,7 +100,7 @@ class _AdminPageState extends State<AdminPage> {
                     width: MediaQuery.of(context).size.width,
                     padding:const EdgeInsets.symmetric(vertical: 30.0, horizontal: 50.0),
                     decoration: BoxDecoration(
-                      color:Colors.blue[900],
+                      color:Colors.indigo[700],
                       borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(30.0),    // Bottom-left corner
                         bottomRight: Radius.circular(30.0), ),
                       boxShadow: [
@@ -156,15 +157,15 @@ class _AdminPageState extends State<AdminPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.blue.shade200.withOpacity(0.3),
-                                spreadRadius: 3,
-                                blurRadius: 5,
-                                offset: const Offset(0, 20),
+                                color: Colors.indigo.shade200.withOpacity(0.3),
+                                spreadRadius: 20,
+                                blurRadius: 10,
+                                offset: const Offset(0, 0),
                               ),
                             ],),
                           child:GestureDetector(
                             child: Card(
-                              color:Colors.blue[200],
+                              color:Colors.indigo[200],
                               elevation: 2,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -202,15 +203,15 @@ class _AdminPageState extends State<AdminPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color:Colors.blue.shade200.withOpacity(0.3),
-                                spreadRadius: 3,
-                                blurRadius: 5,
-                                offset: const Offset(0, 20),
+                                color: Colors.indigo.shade200.withOpacity(0.3),
+                                spreadRadius: 20,
+                                blurRadius: 10,
+                                offset: const Offset(0, 0),
                               ),
                             ],),
                           child:GestureDetector(
                             child: Card(
-                              color:Colors.blue[200],
+                              color:Colors.indigo[200],
                               elevation: 2,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -252,15 +253,15 @@ class _AdminPageState extends State<AdminPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.blue.shade200.withOpacity(0.3),
-                                spreadRadius: 3,
-                                blurRadius: 5,
-                                offset: const Offset(0, 20),
+                                color: Colors.indigo.shade200.withOpacity(0.3),
+                                spreadRadius: 20,
+                                blurRadius: 10,
+                                offset: const Offset(0, 0),
                               ),
                             ],),
                           child:GestureDetector(
                             child: Card(
-                              color:Colors.blue[200],
+                              color:Colors.indigo[200],
                               elevation: 2,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -297,15 +298,15 @@ class _AdminPageState extends State<AdminPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.blue.shade200.withOpacity(0.3),
-                                spreadRadius: 3,
-                                blurRadius: 5,
-                                offset: const Offset(0, 20),
+                                color: Colors.indigo.shade200.withOpacity(0.3),
+                                spreadRadius: 20,
+                                blurRadius: 10,
+                                offset: const Offset(0, 0),
                               ),
                             ],),
                           child:GestureDetector(
                             child: Card(
-                              color:Colors.blue[200],
+                              color:Colors.indigo[200],
                               elevation: 2,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -321,6 +322,10 @@ class _AdminPageState extends State<AdminPage> {
                                 ],),
                             ),
                             onTap: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>AdminProfile(admin_email: widget.email,)),
+                              );
                               // Navigator.pushNamed(
                               //   context,
                               //   'update_prof',

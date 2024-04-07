@@ -210,22 +210,22 @@ class LoginPage extends StatelessWidget {
                       ),
 
                     ),),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-
-                      const Text("Don't have an account? ",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 15),),
-                      //Text("Sign up",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),),
-                      TextButton(
-                        onPressed: (){
-                          Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>SignupPage()));//SIGNUP PAGE NAVIGATE
-
-                        },
-                        child: const Text("Sign up",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),
-                        ),
-                      )
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //
+                  //     const Text("Don't have an account? ",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 15),),
+                  //     //Text("Sign up",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),),
+                  //     TextButton(
+                  //       onPressed: (){
+                  //         Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>SignupPage()));//SIGNUP PAGE NAVIGATE
+                  //
+                  //       },
+                  //       child: const Text("Sign up",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18),
+                  //       ),
+                  //     )
+                  //   ],
+                  // ),
                   Container(
                     padding: EdgeInsets.only(top: 80),
                     height: 200,

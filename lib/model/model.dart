@@ -1,18 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+class User {
+  // final String id;
+  final String email;
+  final String name;
+  final int numberOfReports;
+  final int numberOfReviews;
+  final int numberOfSuggestions;
+  final String password;
+  final String profileImageUrl;
+
+  User({
+    // required this.id,
+    required this.email,
+    required this.name,
+    required this.numberOfReports,
+    required this.numberOfReviews,
+    required this.numberOfSuggestions,
+    required this.password,
+    required this.profileImageUrl,
+  });
+
+  factory User.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return User(
+      // id: doc.id,
+      email: data['email'],
+      name: data['name'],
+      numberOfReports: data['no_of_reports'] ?? 0,
+      numberOfReviews: data['no_of_reviews'] ?? 0,
+      numberOfSuggestions: data['no_of_suggestion'] ?? 0,
+      password: data['password'],
+      profileImageUrl: data['prof_img'] ?? '',
+    );
+  }
+}
+
+
 class Review {
   final String id;
   final String comment;
   final String name;
+  final String email;
+
   final int rating;
   final int likeCounts;
   final List<dynamic> likedBy;
   final Timestamp timestamp;
 
-  Review({
+  Review( {
     required this.id,
     required this.comment,
     required this.name,
+    required this.email,
     required this.rating,
     required this.likeCounts,
     required this.likedBy,
@@ -25,6 +65,7 @@ class Review {
       id: doc.id,
       comment: data['comment'],
       name: data['name'],
+      email: data['email'],
       rating: data['rating'],
       timestamp: data['timestamp'],
       likeCounts: data['likeCounts'],

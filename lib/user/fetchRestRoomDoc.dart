@@ -167,6 +167,16 @@ class _FetchRestroomState extends State<FetchRestroom> {
       throw Exception('Failed to fetch restroom data: $e');
     }
   }
+  Stream<DocumentSnapshot<Map<String, dynamic>>> fetchRestroomStream(String docId) {
+    try {
+      return FirebaseFirestore.instance
+          .collection('restrooms')
+          .doc(docId)
+          .snapshots();
+    } catch (e) {
+      throw Exception('Failed to fetch restroom stream: $e');
+    }
+  }
   //
   @override
   void initState() {
@@ -203,8 +213,10 @@ class _FetchRestroomState extends State<FetchRestroom> {
             ),
           ),
       ),
-      body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        future: fetchRestroom(widget.rest_id),
+      body:StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+        stream: fetchRestroomStream(widget.rest_id),
+      // FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      //   future: fetchRestroom(widget.rest_id),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -731,31 +743,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                 );
                                               },
                                             ),
-                                            // ListView.builder(
-                                            //   itemCount: restroomData['images'].length,
-                                            //   physics: ScrollPhysics(),
-                                            //   itemBuilder: (context, index) {
-                                            //     return InkWell(
-                                            //       onTap: (){
-                                            //         print(restroomData['images']);
-                                            //         showPhotos(context, "${restroomData['images'][index]}");
-                                            //       },
-                                            //       child: Container(
-                                            //         height: 200,
-                                            //         margin: EdgeInsets.only(top: 10,left:12,right:12),
-                                            //         child: Row(
-                                            //           children: [
-                                            //
-                                            //             Image.network(
-                                            //               "${restroomData['images'][index]}",
-                                            //               fit: BoxFit.cover, // Adjust the fit as needed
-                                            //             ),
-                                            //           ],
-                                            //         ),
-                                            //       ),
-                                            //     );
-                                            //   },
-                                            // ),
+
                                           ),
 
                                           // SizedBox(height: 10,),
@@ -864,6 +852,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                 res_hours: restroomData['availabilityHours'],
                                 rest_gender:widget.gen,
                                 isHandicap: restroomData['handicappedAccessible'],
+                                    images: restroomData['images'],
                               ),
                               ),
                             );

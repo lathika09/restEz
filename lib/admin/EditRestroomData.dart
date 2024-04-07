@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
@@ -6,7 +7,7 @@ import 'package:rest_ez_app/admin/restroomManage.dart';
 
 class EditRestroomData extends StatefulWidget {
   EditRestroomData({super.key, required this.adminEmail, required this.rest_id,
-    required this.rest_name, required this.address, required this.res_hours,required this.rest_gender, required this.isHandicap});
+    required this.rest_name, required this.address, required this.res_hours,required this.rest_gender, required this.isHandicap, required this.images});
   final String adminEmail;
   final String rest_id;
   final String rest_name;
@@ -14,7 +15,7 @@ class EditRestroomData extends StatefulWidget {
   final String res_hours;
   List<String> rest_gender;
   final bool isHandicap;
-
+final List<dynamic> images;
   @override
   State<EditRestroomData> createState() => _EditRestroomDataState();
 }
@@ -272,7 +273,143 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 8.0),
+                                      const SizedBox(height: 16.0),
+                                      const Text(
+                                        'Photos ',
+                                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
+                                      ),
+                                      // Container(
+                                      //   margin: EdgeInsets.symmetric(vertical: 5.0),
+                                      //   padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 0),
+                                      //   decoration: BoxDecoration(
+                                      //     borderRadius: BorderRadius.circular(6.0),
+                                      //     color: Colors.indigo[50],
+                                      //     border: Border.all(color: Colors.indigo.shade100,
+                                      //     ),
+                                      //   ),
+                                      //   child: SizedBox(
+                                      //     height: 40,
+                                      //     child: TextField(
+                                      //       controller: nameController,
+                                      //       decoration: const InputDecoration(
+                                      //           labelStyle:TextStyle(fontSize: 16),
+                                      //           // hintText: 'ABC ',
+                                      //           border: InputBorder.none, //
+                                      //           contentPadding: EdgeInsets.symmetric(vertical: 10.0),
+                                      //           hintStyle: TextStyle(color: Colors.black54,fontWeight: FontWeight.w500)
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      // ),
+
+
+                                     StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                       stream: FirebaseFirestore.instance
+                                           .collection('restrooms')
+                                           .doc(widget.rest_id)
+                                           .snapshots(),
+                                       builder: (context, snapshot) {
+                                         if (snapshot.connectionState == ConnectionState.waiting) {
+                                           return Center(
+                                             child: CircularProgressIndicator(),
+                                           );
+                                         }
+                                         if (snapshot.hasError) {
+                                           return Center(
+                                             child: Text('Error: ${snapshot.error}'),
+                                           );
+                                         }
+                                         if (!snapshot.hasData || snapshot.data!.data() == null) {
+                                           return Center(
+                                             child: Text('No data available'),
+                                           );
+                                         }
+
+                                         Map<String, dynamic> data = snapshot.data!.data()!;
+                                         List<String> imageUrls = List<String>.from(data['images'] ?? []);
+
+                                         // Now you can use imageUrls to display images
+                                         return widget.images.length!=0?
+                                         Container(
+                                           margin: EdgeInsets.only(top: 5,bottom: 10),
+                                           padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                           decoration: BoxDecoration(
+
+                                             borderRadius: BorderRadius.circular(10),
+                                             color: Colors.indigo[50],
+                                             // border: Border.all(color: Colors.indigo.shade100,
+                                           ),
+                                           width: double.infinity,
+                                           child: Column(
+                                             children: [
+                                               // int rowCount = (imageUrls.length / crossAxisCount).ceil();
+                                               // double totalHeight = MediaQuery.of(context).size.width / crossAxisCount * childAspectRatio * rowCount;
+
+                                               SizedBox(
+                                                 // height: MediaQuery.of(context).size.width / 2 * 0.5*( (restroomData['images'].length/2).ceil()),
+                                                 height:MediaQuery.of(context).size.height/4.5,//2.3
+                                                 child: Column(
+                                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                                   children: [
+
+                                                     Expanded(
+                                                       child:
+                                                       GridView.builder(
+                                                         shrinkWrap: true,
+                                                         physics: ScrollPhysics(),
+                                                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                           crossAxisCount: 2, // You can adjust the number of columns here
+                                                           crossAxisSpacing: 0,
+                                                           mainAxisSpacing: 0,
+                                                         ),
+                                                         itemCount: imageUrls.length,
+                                                         itemBuilder: (context, index) {
+                                                           return InkWell(
+                                                             onTap: () {
+                                                               print(imageUrls );
+                                                               showPhotos(context, "${imageUrls[index]}",widget.rest_id);
+                                                             },
+                                                             child: Container(
+                                                               margin: EdgeInsets.all(5),
+                                                               child: Image.network(
+                                                                 "${imageUrls [index]}",
+                                                                 fit: BoxFit.cover,
+                                                               ),
+                                                             ),
+                                                           );
+                                                         },
+                                                       ),
+                                                     ),
+
+                                                     // SizedBox(height: 10,),
+
+
+                                                   ],
+                                                 ),
+                                               )
+
+
+                                             ],
+                                           ),
+                                         )
+                                             :
+                                         Container(
+                                             margin: EdgeInsets.only(top: 5,bottom: 10),
+                                             padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                             decoration: BoxDecoration(
+                                               color: Colors.white,
+                                               borderRadius: BorderRadius.circular(10),
+                                             ),
+                                             width: double.infinity,
+                                             child: Text('No Photos added ',style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500),));
+                                       },
+                                     ),
+
+
+
+
+
+                                      const SizedBox(height: 16.0),
 
                                     ],
                                   ),
@@ -356,6 +493,140 @@ class _EditRestroomDataState extends State<EditRestroomData> {
         )
     );
   }
+  void showPhotos(BuildContext context,String url,String rest_id){
+    showModalBottomSheet(
+        context: context,
+        // useSafeArea: false,
+        isScrollControlled: true,
+        // enableDrag: false,
+        builder: (BuildContext context){
+
+          return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height,
+              // / 1.38, //1.5 decrease then size increase
+              color: Colors.transparent,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  Container(
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.cover, // Adjust the fit as needed
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                          onPressed: (){
+                            Navigator.pop(context);
+                          },
+                          icon: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.blue[50],
+                              child: Icon(Icons.close_fullscreen,size: 35,color: Colors.blue[900],))),
+                      IconButton(
+                          onPressed: (){
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Confirm Deletion"),
+                                  content: Text("Are you sure you want to delete this photo?"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("No"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        // Delete photo if user confirms
+                                        deletePhoto(url,rest_id);
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("Yes"),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            // Navigator.pop(context);
+                          }, icon: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.blue[50],
+                          child: Icon(Icons.delete,size: 35,color: Colors.blue[900],))),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          });
+        });
+  }
+  Future<void> deletePhoto(String strurl,String doc_id) async {
+    try {
+      await FirebaseStorage.instance.refFromURL(strurl).delete();
+
+
+
+      // Remove photo URL from Firestore document
+      await FirebaseFirestore.instance
+          .collection('restrooms')
+          .doc(doc_id)
+          .update({
+        'images': FieldValue.arrayRemove([strurl])
+      });
+
+      // Show success message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Success"),
+            content: Text("Photo deleted successfully"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      // Show error message if deletion fails
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text("Failed to delete photo"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  print(e.toString());
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+
   Future<void> updateRestroomData(String docId, String name, String address, List gender, bool handicapped, String hours, String admin) async {
     CollectionReference restroom = FirebaseFirestore.instance.collection('restrooms');
 

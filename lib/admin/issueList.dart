@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class ReportedIssueList extends StatefulWidget {
   const ReportedIssueList({super.key, required this.adminEmail});
@@ -43,6 +44,24 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
+            if (snapshot.data == null || snapshot.data!.isEmpty) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: 40,),
+                  Container(
+                    width: MediaQuery.of(context).size.width/1.5,
+                    height: MediaQuery.of(context).size.width/1.5,
+                    child: Lottie.network(
+                      "https://lottie.host/9faa3517-2a55-454a-9793-4f3aa2133aff/OQgxrD20wa.json",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
+                  Center(child: Text('No reports available.',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),)),
+                ],
+              );
+            }
             List<DocumentSnapshot<Map<String, dynamic>>> reports = snapshot.data ?? [];
 
             // Build your UI using the reports list
