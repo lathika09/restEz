@@ -20,7 +20,9 @@ class _AddVerifiedRestroomState extends State<AddVerifiedRestroom> {
   List<String> selectedGender = [];
   List<MultiSelectItem<String>> genderItems = [
     MultiSelectItem<String>('Female', 'Female'),
-    MultiSelectItem<String>('Male', 'Male'),];
+    MultiSelectItem<String>('Male', 'Male'),
+    MultiSelectItem<String>('Others', 'Others'),
+  ];
 
   String? selectedHours;
   List<String> availableItems = ['Open for 24 Hours', 'Closed'];
@@ -376,22 +378,67 @@ class _AddVerifiedRestroomState extends State<AddVerifiedRestroom> {
     CollectionReference restroom= FirebaseFirestore.instance.collection('restrooms');
     Map<String, dynamic> coordinates = await convertAddressToCoordinates(address);
     GeoPoint location = GeoPoint(coordinates['latitude'], coordinates['longitude']);
+    QuerySnapshot querySnapshot = await restroom.where('address', isEqualTo: address)
+        .where('address', isEqualTo: address)
+        .get();
 
-    DocumentReference docRef =await restroom.add({
-      'name': name,
-      'address': address,
-      'location': location,
-      'gender': gender,
-      'handicappedAccessible': handicapped,
-      'availabilityHours': hours,
-      'handledBy':admin,
-      'no_of_ratings':0,
-      'no_of_reports':0,
-      'ratings':0.0,
-      'savedBy':[],
+    if (querySnapshot.docs.isNotEmpty) {
+      querySnapshot = await restroom.where('location', isEqualTo: location)
+          .get();
+      print(querySnapshot);
 
-    });
-    print('Document added with ID: ${docRef.id}');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Location Already Exists'),
+            content: Text('A restroom at this location already exists.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // No document with the same location and address exists, so add the new document
+      DocumentReference docRef = await restroom.add({
+        'name': name,
+        'address': address,
+        'location': location,
+        'gender': gender,
+        'handicappedAccessible': handicapped,
+        'availabilityHours': hours,
+        'handledBy': admin,
+        'no_of_ratings': 0,
+        'no_of_reports': 0,
+        'ratings': 0.0,
+        'savedBy': [],
+        'images':[],
+      });
+
+      print('Document added with ID: ${docRef.id}');
+    }
+
+    // DocumentReference docRef =await restroom.add({
+    //   'name': name,
+    //   'address': address,
+    //   'location': location,
+    //   'gender': gender,
+    //   'handicappedAccessible': handicapped,
+    //   'availabilityHours': hours,
+    //   'handledBy':admin,
+    //   'no_of_ratings':0,
+    //   'no_of_reports':0,
+    //   'ratings':0.0,
+    //   'savedBy':[],
+    //
+    // });
+    // print('Document added with ID: ${docRef.id}');
 
 
   }

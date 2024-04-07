@@ -327,7 +327,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                             widget.adminEmail,
                           );
                         }
-                        _showSuccessDialog(context, 'Restroom updated successfully!');
+
                       }
                     },
                     color: Colors.indigo[900],
@@ -361,21 +361,40 @@ class _EditRestroomDataState extends State<EditRestroomData> {
 
     Map<String, dynamic> coordinates = await convertAddressToCoordinates(address);
     GeoPoint location = GeoPoint(coordinates['latitude'], coordinates['longitude']);
+    QuerySnapshot querySnapshot = await restroom.where('location', isEqualTo: location)
+        .get();
 
-    DocumentReference docRef = restroom.doc(docId);
+    if (querySnapshot.docs.isNotEmpty) {
+      _showErrorDialog(context, 'Cannot update. Another restroom with the same location already exists.');
+    } else {
+      DocumentReference docRef = restroom.doc(docId);
 
-    //
-    await docRef.update({
-      'name': name,
-      'address': address,
-      'location': location,
-      'gender': gender,
-      'handicappedAccessible': handicapped,
-      'availabilityHours': hours,
-      'handledBy': admin,
-    });
+      await docRef.update({
+        'name': name,
+        'address': address,
+        'location': location,
+        'gender': gender,
+        'handicappedAccessible': handicapped,
+        'availabilityHours': hours,
+        'handledBy': admin,
+      });
+      _showSuccessDialog(context, 'Restroom updated successfully!');
 
-    print('Document updated with ID: $docId');
+      print('Document updated with ID: $docId');
+    }
+    // DocumentReference docRef = restroom.doc(docId);
+    // await docRef.update({
+    //   'name': name,
+    //   'address': address,
+    //   'location': location,
+    //   'gender': gender,
+    //   'handicappedAccessible': handicapped,
+    //   'availabilityHours': hours,
+    //   'handledBy': admin,
+    // });
+    // _showSuccessDialog(context, 'Restroom updated successfully!');
+
+    // print('Document updated with ID: $docId');
   }
 
   void _showSuccessDialog(BuildContext context, String message) {

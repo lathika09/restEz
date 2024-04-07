@@ -14,7 +14,8 @@ Future<void> main() async {
         apiKey: "AIzaSyBnT_PrYdayJZeWeCn1CXtn49CF01bDQGY",
         appId: "1:861406143290:android:dc0be6c4d60ae7f0416603",
         messagingSenderId: "861406143290",
-        projectId: "restez-82af7"
+        projectId: "restez-82af7",
+        storageBucket:"restez-82af7.appspot.com",
     )
   );
   runApp(const MyApp());

@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -327,29 +328,19 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                         child:
 
                                         Text(
-                                          (() {
-                                            if (restroomData['handicappedAccessible'] == true &&
-                                                restroomData['gender'].contains("Female") &&
-                                                restroomData['gender'].contains("Male")) {
-                                              return 'Female, Male, Handicap';
-                                            } else if (!restroomData['handicappedAccessible'] &&
-                                                restroomData['gender'].contains("Female") &&
-                                                restroomData['gender'].contains("Male"))
-                                            {
-                                              return 'Female, Male';
-                                            } else if (restroomData['handicappedAccessible'] &&
-                                                restroomData['gender'].contains("Female")){
-                                              return 'Female, Handicap';
-                                            }
-                                            else if (restroomData['handicappedAccessible'] &&
-                                                restroomData['gender'].contains("Male")){
-                                              return 'Male, Handicap';
-                                            }
-                                            else
-                                            {
-                                              return 'Handicap';
-                                            }
-                                          })(),
+                                            (() {
+                                              String accessibility = '';
+                                              String genders = restroomData['gender'].join(', ');
+
+                                              if (restroomData['handicappedAccessible']) {
+                                                accessibility += 'Handicap, ';
+                                              }
+                                              if (genders.isNotEmpty) {
+                                                accessibility += genders;
+                                              }
+
+                                              return accessibility.isNotEmpty ? accessibility : 'Not specified';
+                                            })(),
 
                                           style: TextStyle(fontSize: 15),
                                           softWrap: true,
@@ -686,6 +677,109 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                   ],
                                 ),
                               ),
+                              SizedBox(height: 5,),
+                              Text(
+                                'Photos added ',
+                                style: TextStyle(fontWeight: FontWeight.bold,fontSize:16),
+                              ),
+
+                              restroomData['images'].length!=0?
+                              Container(
+                                margin: EdgeInsets.only(top: 5,bottom: 10),
+                                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                width: double.infinity,
+                                child: Column(
+                                  children: [
+                                // int rowCount = (imageUrls.length / crossAxisCount).ceil();
+                                    // double totalHeight = MediaQuery.of(context).size.width / crossAxisCount * childAspectRatio * rowCount;
+
+                                    SizedBox(
+                                      // height: MediaQuery.of(context).size.width / 2 * 0.5*( (restroomData['images'].length/2).ceil()),
+                                      height:MediaQuery.of(context).size.height/4.5,//2.3
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+
+                                          Expanded(
+                                            child:
+                                            GridView.builder(
+                                              shrinkWrap: true,
+                                              physics: ScrollPhysics(),
+                                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2, // You can adjust the number of columns here
+                                                crossAxisSpacing: 0,
+                                                mainAxisSpacing: 0,
+                                              ),
+                                              itemCount: restroomData['images'].length,
+                                              itemBuilder: (context, index) {
+                                                return InkWell(
+                                                  onTap: () {
+                                                    print(restroomData['images']);
+                                                    showPhotos(context, "${restroomData['images'][index]}",widget.rest_id);
+                                                  },
+                                                  child: Container(
+                                                    margin: EdgeInsets.all(5),
+                                                    child: Image.network(
+                                                      "${restroomData['images'][index]}",
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            // ListView.builder(
+                                            //   itemCount: restroomData['images'].length,
+                                            //   physics: ScrollPhysics(),
+                                            //   itemBuilder: (context, index) {
+                                            //     return InkWell(
+                                            //       onTap: (){
+                                            //         print(restroomData['images']);
+                                            //         showPhotos(context, "${restroomData['images'][index]}");
+                                            //       },
+                                            //       child: Container(
+                                            //         height: 200,
+                                            //         margin: EdgeInsets.only(top: 10,left:12,right:12),
+                                            //         child: Row(
+                                            //           children: [
+                                            //
+                                            //             Image.network(
+                                            //               "${restroomData['images'][index]}",
+                                            //               fit: BoxFit.cover, // Adjust the fit as needed
+                                            //             ),
+                                            //           ],
+                                            //         ),
+                                            //       ),
+                                            //     );
+                                            //   },
+                                            // ),
+                                          ),
+
+                                          // SizedBox(height: 10,),
+
+
+                                        ],
+                                      ),
+                                    )
+
+
+                                  ],
+                                ),
+                              )
+                                  :
+                              Container(
+                                  margin: EdgeInsets.only(top: 5,bottom: 10),
+                                  padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  width: double.infinity,
+                                  child: Text('No Photos added ',style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500),)),
+
 
                             ],
                           ),
@@ -797,7 +891,145 @@ class _FetchRestroomState extends State<FetchRestroom> {
         },
       ),
     );
+
   }
+
+
+  void showPhotos(BuildContext context,String url,String rest_id){
+    showModalBottomSheet(
+        context: context,
+        // useSafeArea: false,
+        isScrollControlled: true,
+        // enableDrag: false,
+        builder: (BuildContext context){
+
+          return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height,
+              // / 1.38, //1.5 decrease then size increase
+              color: Colors.transparent,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  Container(
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.cover, // Adjust the fit as needed
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                          onPressed: (){
+                        Navigator.pop(context);
+                      },
+                          icon: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.blue[50],
+                          child: Icon(Icons.close_fullscreen,size: 35,color: Colors.blue[900],))),
+                      IconButton(
+                          onPressed: (){
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Confirm Deletion"),
+                              content: Text("Are you sure you want to delete this photo?"),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("No"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // Delete photo if user confirms
+                                    deletePhoto(url,rest_id);
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Yes"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        // Navigator.pop(context);
+                      }, icon: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.blue[50],
+                          child: Icon(Icons.delete,size: 35,color: Colors.blue[900],))),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          });
+        });
+  }
+  Future<void> deletePhoto(String strurl,String doc_id) async {
+    try {
+      await FirebaseStorage.instance.refFromURL(strurl).delete();
+
+
+
+      // Remove photo URL from Firestore document
+      await FirebaseFirestore.instance
+          .collection('restrooms')
+          .doc(doc_id)
+          .update({
+        'images': FieldValue.arrayRemove([strurl])
+      });
+
+      // Show success message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Success"),
+            content: Text("Photo deleted successfully"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      // Show error message if deletion fails
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text("Failed to delete photo"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  print(e.toString());
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+
+
   String getTimeAgo(Timestamp timestamp) {
     final now = DateTime.now();
     final createdAt = timestamp.toDate();

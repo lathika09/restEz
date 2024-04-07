@@ -68,7 +68,7 @@ class Restroom {
   final String handledBy;
   final GeoPoint location;
   final String name;
-  final String? profImg;
+  final List<String> images;
   final double ratings;
   final List<Review> reviews;
   final List<Report> reports;
@@ -85,7 +85,7 @@ class Restroom {
     required this.handledBy,
     required this.location,
     required this.name,
-    required this.profImg,
+    required this.images,
     required this.ratings,
     required this.reviews,
     required this.reports,
@@ -118,7 +118,7 @@ class Restroom {
         handledBy: data['handledBy'],
         location: data['location'],
         name: data['name'],
-        profImg: data['prof_img'],
+        images:List<String>.from(data['images']),
         ratings: ratingsInt,
         reviews: reviews,
         reports: reports,

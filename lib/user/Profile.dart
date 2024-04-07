@@ -7,13 +7,15 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rest_ez_app/user/MakeSuggestion.dart';
 import 'package:rest_ez_app/user/practice.dart';
+import 'package:rest_ez_app/user/shared.dart';
 
 import '../constant/imageString.dart';
 import 'homepage.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({super.key, required this.name,});
-  final String name;
+  const UserProfile({super.key, required this.uemail, required this.uname});
+  final String uemail;
+  final String uname;
 
   @override
   State<UserProfile> createState() => _UserProfileState();
@@ -57,10 +59,8 @@ class _UserProfileState extends State<UserProfile> {
       return null;
     }
   }
-  Future<void> fetchUserData() async {
-    // Get the user's email from route arguments or wherever it's stored
-    final String userEmail = "hari@gmail.com"; // Replace with actual user email or fetch it from arguments
-
+  Future<void> fetchUserData(String userEmail) async {
+    // final String userEmail = "hari@gmail.com";
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection("users")
@@ -94,13 +94,14 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    fetchUserData();
+    fetchUserData(widget.uemail);
+
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    fetchUserData();
+    fetchUserData(widget.uemail);
   }
   Future<List<DocumentSnapshot>> getNewRestroomsForAdmin(String adminEmail, String location) async {
     try {
@@ -145,7 +146,7 @@ class _UserProfileState extends State<UserProfile> {
           actions: <Widget>[IconButton(
             icon: Icon(Icons.edit,size: 30,color: Colors.white,),
             onPressed: () async{
-              DocumentSnapshot<Map<String, dynamic>>? userDoc = await fetchUserByEmail('hari@gmail.com');
+              DocumentSnapshot<Map<String, dynamic>>? userDoc = await fetchUserByEmail(widget.uemail);
               // Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateProfile()),);
               // loadProfileImage();
               print(userDoc);
@@ -182,7 +183,7 @@ class _UserProfileState extends State<UserProfile> {
                             backgroundColor: Colors.teal[200],
                             radius: 50,
                             child: Text(
-                              Utils.getInitials(widget.name),
+                              Utils.getInitials(widget.uname),
                               style: TextStyle(
                                   fontSize: 40, color: Colors.black),
                             ),
@@ -241,62 +242,7 @@ class _UserProfileState extends State<UserProfile> {
 
                             // padding: EdgeInsets.only(left: 15),
                             child: buildTextField("No. of Reviews :",_no_rev)),
-                        // SizedBox(height: 15,),
 
-                        // buttons = isEditing ? Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        //   children: [
-                        //     //SAVE BUUTTON
-                        //     MaterialButton(
-                        //       minWidth: MediaQuery.of(context).size.width/3,
-                        //       height: 50,
-                        //       onPressed:(){
-                        //         // onSaveButtonClick();
-                        //       },
-                        //       color: Colors.blue[600],
-                        //       shape: RoundedRectangleBorder(
-                        //           side: const BorderSide(
-                        //               color:Colors.black
-                        //           ),
-                        //           borderRadius: BorderRadius.circular(50)
-                        //       ),
-                        //       child: const Text("Save",
-                        //         style: TextStyle(
-                        //           color: Colors.white,
-                        //           fontSize: 25,
-                        //           fontWeight: FontWeight.bold,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // )
-                        //     :
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        //   children: [
-                        //     // Edit button
-                        //     MaterialButton(
-                        //       minWidth:MediaQuery.of(context).size.width/3,
-                        //       height: 50,
-                        //       onPressed:(){
-                        //         // onEditButtonClick();
-                        //       },
-                        //       color: Colors.blue[800],
-                        //       shape: RoundedRectangleBorder(
-                        //           side: const BorderSide(
-                        //               color:Colors.black
-                        //           ),
-                        //           borderRadius: BorderRadius.circular(50)
-                        //       ),
-                        //       child: const Text("Edit",
-                        //         style: TextStyle(
-                        //           color: Colors.white,
-                        //           fontSize: 25,
-                        //           fontWeight: FontWeight.bold,
-                        //         ),),
-                        //     ),
-                        //   ],
-                        // ),
                         SizedBox(height: 15,),
                         Container(
                             // padding: EdgeInsets.only(left: 15),
@@ -375,10 +321,13 @@ class _UserProfileState extends State<UserProfile> {
                               TextButton(
                                 onPressed: () async {
                                   Navigator.of(context).pop();
-                                  Navigator.pushReplacement( context,
-                                    MaterialPageRoute(builder: (context) => UserPage(name: 'Hari Kumar',)),
-                                  );
                                   await FirebaseAuth.instance.signOut();
+                                  SharedPreference.saveUserLoggedInStatus(false);
+
+                                  Navigator.pushReplacement( context,
+                                    MaterialPageRoute(builder: (context) => UserPage()),
+                                  );
+
                                 },
                                 child: Text("Yes"),
                               ),
@@ -898,15 +847,17 @@ class _UserProfileState extends State<UserProfile> {
                             // && selectedAdmin==adm // //REASON TO REMOVE IS THAT MANY ADMIN WILL GET SAME SUGGEST
                             if (location.trim().isNotEmpty && address.trim().isNotEmpty && selectedAdmin.isNotEmpty){
                               Position pos = await determinePosition();
-                              storeNewRestroomData(pos,address,widget.name,selectedAdmin);
+                              storeNewRestroomData(pos,address,widget.uname,selectedAdmin);
 
-                              String? email = await getEmailFromName(widget.name);
-                              if (email != null) {
-                                setSuggestionCount(email);
-                                print('Email for Hari Kumar: $email');
-                              } else {
-                                print('No email found for Hari Kumar');
-                              }
+                              // String? email = await getEmailFromName(widget.uname);
+                              // if (email != null) {
+                              //   setSuggestionCount(email);
+                              //   print('Email for Hari Kumar: $email');
+                              // } else {
+                              //   print('No email found for Hari Kumar');
+                              // }
+                              setSuggestionCount("${widget.uemail}");
+                              print('Email for Hari Kumar: ${widget.uemail}');
                               
                               print("Success");
                             }

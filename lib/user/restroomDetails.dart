@@ -1,4 +1,9 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,10 +12,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:rest_ez_app/user/LoginUser.dart';
 import 'package:rest_ez_app/user/RatingsPage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rest_ez_app/user/editPost.dart';
 import 'package:rest_ez_app/user/reportIssue.dart';
+import 'package:rest_ez_app/user/shared.dart';
+import 'package:rest_ez_app/user/signupUser.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../model/model.dart';
@@ -19,15 +28,14 @@ import 'Profile.dart';
 
 class RestroomPageUser extends StatefulWidget {
   const RestroomPageUser({Key? key,
-    required this.document,required this.dist,required this.pos,required this.restroomloc,required this.name,
+    required this.document,required this.dist,required this.pos,required this.restroomloc,
   });
 
   final DocumentSnapshot document;
   final String dist;
   final Position pos;
   final LatLng restroomloc;
-  final String name;
-  // final String id;
+
 
   @override
   State<RestroomPageUser> createState() => _RestroomPageUserState();
@@ -38,6 +46,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
   bool expanded = false;
   bool isSaved=false;
   Map<String, dynamic> restRoomData = {};
+
   Future<void> fetchRestroomById(String id) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance.collection('restrooms').doc(id).get();
@@ -72,6 +81,25 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
       'savedBy': savedBy,
     });
   }
+  Future<String?> getNameByEmail(String email) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first['name'];
+      } else {
+        print('No user found with email: $email');
+        return null;
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+      return null;
+    }
+  }
+
   Future<double> calculateAverageRating() async {
     CollectionReference reviewsRef = FirebaseFirestore.instance
         .collection('restrooms')
@@ -200,6 +228,47 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
     int reviewsLength = querySnapshot.docs.length.toInt();
     return reviewsLength;
   }
+
+
+  bool _isSignedIn = false;
+  String email="";
+  getUserLoggedInStatus() async {
+    await SharedPreference.getUserLoggedInStatus().then((value) {
+      if (value != null) {
+        setState(() {
+          _isSignedIn = value;
+        });
+      }
+    });
+  }
+
+  getUserLoggedInEmail() async {
+    await SharedPreference.getUserEmailFromSF().then((value) {
+      if (value != null) {
+        setState(() {
+          email = value;
+        });
+      }
+    });
+  }
+  void getNameByEmailFunc(String email, Function(String?) callback) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get()
+        .then((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        callback(querySnapshot.docs.first['name']);
+      } else {
+        print('No user found with email: $email');
+        callback(null);
+      }
+    }).catchError((error) {
+      print('Error fetching user data: $error');
+      callback(null);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -208,6 +277,8 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
     print("${widget.document['no_of_reviews']}");
     setAverageRating(widget.document.id);
     print("priny : $restRoomData");
+    getUserLoggedInStatus();
+    getUserLoggedInEmail();
   }
 
   @override
@@ -306,44 +377,46 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                     MaterialButton(
                         elevation: 0,
                         onPressed: ()async {
-                          print("In onPResed");
-                          print("object : $restRoomData");
-                          List<dynamic> savedBy =restRoomData['savedBy']??[];
-                          print("hish");
-                          print(savedBy);
-                          print("before bookmark");
-                          Bookmark(savedBy);
-                          print("after bookmark");
-                          bool isFav = savedBy.contains(widget.name)??false;
-                          if (isFav) {
-                            //savedBy.remove(widget.name);
-                            isSaved=isFav;
-                            print("is saved true");
+                          if(_isSignedIn){
+                            print("In onPResed");
+                            print("object : $restRoomData");
+                            List<dynamic> savedBy =restRoomData['savedBy']??[];
+                            print("hish");
+                            print(savedBy);
+                            print("before bookmark");
+                            Bookmark(savedBy);
+                            print("after bookmark");
+                            bool isFav = savedBy.contains(email)??false;
+                            if (isFav) {
+                              //savedBy.remove(widget.name);
+                              isSaved=isFav;
+                              print("is saved true");
+                            }
+                            print("is saved false");
+                            await FirebaseFirestore.instance
+                                .collection('restrooms')
+                                .doc(widget.document.id)
+                                .update({'savedBy': savedBy});
+
+                            print("after update");
+
+                            setState(() {
+                              print("in set");
+                              isSaved=!isSaved;
+                              print("is saved  changed :$isSaved");
+                              if(!isSaved){
+                                print("is saved false REMOVED");
+                                savedBy.remove(email);
+                              }
+                              else{
+                                print("is saved true ADDED");
+                                savedBy.add(email);
+                              }
+                              print("SET END");
+                              print(email);
+
+                            });
                           }
-                          print("is saved false");
-                          await FirebaseFirestore.instance
-                              .collection('restrooms')
-                              .doc(widget.document.id)
-                              .update({'savedBy': savedBy});
-
-                          print("after update");
-
-                          setState(() {
-                            print("in set");
-                            isSaved=!isSaved;
-                            print("is saved  changed :$isSaved");
-                            if(!isSaved){
-                              print("is saved false REMOVED");
-                              savedBy.remove(widget.name);
-                            }
-                            else{
-                              print("is saved true ADDED");
-                              savedBy.add(widget.name);
-                            }
-                            print("SET END");
-                            print(widget.name);
-
-                          });
 
                         },
                         color: Colors.white,
@@ -363,31 +436,101 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                               // restRoomData['savedBy'].contains("Hari Kumar")==true
                               //     ?Icon(Icons.bookmark,color: Colors.indigo,)
                               //     :Icon(Icons.bookmark_border,color: Colors.blue[700],),
+                              _isSignedIn & email.isNotEmpty
+                              ?
                               FutureBuilder<List<dynamic>>(
                                 future: getSavedBy(),
-                                builder: (context, snapshot) {
+                                builder: (context, snapshot)  {
                                   if (snapshot.connectionState == ConnectionState.waiting) {
                                     return CircularProgressIndicator();
                                   } else if (snapshot.hasError) {
                                     return Text('Error: ${snapshot.error}');
                                   } else {
-
-                                    bool isSaved = snapshot.data?.contains(widget.name) ?? false;
-
+                                    bool isSaved = snapshot.data?.contains(email) ?? false;
                                     return isSaved
-                                        ? Icon(Icons.bookmark, color: Colors.indigo)
-                                        : Icon(Icons.bookmark_border, color: Colors.blue[700]);
+                                        ?Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.bookmark, color: Colors.indigo),
+                                        SizedBox(width: 5,),
+                                        Text(
+                                          "Save",
+                                          style: TextStyle(
+                                              color: Colors.blue[700],
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    )
+                                        :Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.bookmark_border, color: Colors.blue[700]),
+                                        SizedBox(width: 5,),
+                                        Text(
+                                          "Save",
+                                          style: TextStyle(
+                                              color: Colors.blue[700],
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    );
+
+
+
+
+
                                   }
                                 },
-                              ),
+                              )
+                              :
+                              GestureDetector(
+                                onTap: (){
+                                  showDialog(context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text("You need to Login first"),
+                                        content: Text(
+                                            "Click on login button if you want to save"),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text("Leave"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          UserLoginPage()
+                                                    //         SignupPageUser
+                                                  ));
+                                            },
+                                            child: Text("Login"),
+                                          ),
+                                        ],
+                                      );
+                                    },);
+                                },
 
-
-                              Text(
-                                "Save",
-                                style: TextStyle(
-                                    color: Colors.blue[700],
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.bookmark_border, color: Colors.blue[700]),
+                                    SizedBox(width: 5,),
+                                    Text(
+                                      "Save",
+                                      style: TextStyle(
+                                          color: Colors.blue[700],
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -521,22 +664,23 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                     child: Container(
                                       width: MediaQuery.of(context).size.width/1.5,
                                       padding: const EdgeInsets.only(left: 20.0,right:10),
-                                      child: Row(
-                                        children: [
-                                          widget.document['handicappedAccessible']
-                                              ?Text(
-                                            'Female , Male, Handicapped',
-                                            style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,)
-                                            ,overflow: TextOverflow.visible,softWrap: true,
-                                          )
-                                          :
-                                          Text(
-                                            'Female , Male',
-                                            style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,)
-                                            ,overflow: TextOverflow.visible,softWrap: true,
-                                          ),
+                                      child: Text(
+                                        (() {
+                                          String accessibility = '';
+                                          String genders = widget.document['gender'].join(', ');
 
-                                        ],
+                                          if (widget.document['handicappedAccessible']) {
+                                            accessibility += 'Handicap, ';
+                                          }
+                                          if (genders.isNotEmpty) {
+                                            accessibility += genders;
+                                          }
+
+                                          return accessibility.isNotEmpty ? accessibility : 'Not specified';
+                                        })(),
+
+                                        style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,)
+                                        ,overflow: TextOverflow.visible,softWrap: true,
                                       ),
                                     ),
                                   ),
@@ -572,15 +716,53 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                             ),
                             Divider(),
                             InkWell(
-                              onTap: (){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder:
-                                        (context) => ReportIssues(uname: widget.name, rest_id:widget.document.id, adminEmail: widget.document['handledBy'], restAddress:widget.document['address'], restName: widget.document['name'],),
-                                    ),
-                                );
+                              onTap: ()async{
+                                if(_isSignedIn && email!=""){
+                                  String? name = await getNameByEmail(email);
+
+                                  if (name != null){
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder:
+                                          (context) => ReportIssues( rest_id:widget.document.id, adminEmail: widget.document['handledBy'], restAddress:widget.document['address'], restName: widget.document['name'], uemail:email,),
+                                      ),
+                                    );
+
+                                  }
+                                  else{
+                                    print("name not found for report issue");
+
+                                  }
+                                }
+                                else{
+                                  showDialog(context: context, builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("You need to SignUp first"),
+                                      content: Text("Click on login button if you want to give review"),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("Leave"),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => UserLoginPage()
+                                                  //         SignupPageUser
+                                                ));
 
 
+                                          },
+                                          child: Text("SignUp"),
+                                        ),
+                                      ],
+                                    );
+                                  },);
+                                }
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
@@ -726,40 +908,105 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                   Text("Share your experience to help others",style: TextStyle(fontSize: 14,color: Colors.black54),),
                                   SizedBox(height: 8,),
                                   InkWell(
-                                    onTap: (){
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => RatingPage(uname: widget.name, document: widget.document, id: widget.document.id,)));
+                                    onTap: ()async{
+                                      if(_isSignedIn){
+                                        String? name = await getNameByEmail(email);
+
+
+                                        if (name != null) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => RatingPage(uname: name, document: widget.document, id: widget.document.id, uemail: email,)));
+
+                                          print('Name associated with $email is: $name');
+                                        }
+                                        else {
+                                          print('No name found for email: $email');
+                                        }
+                                      }
+                                      else{
+                                        showDialog(context: context, builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text("You need to SignUp first"),
+                                            content: Text("Click on login button if you want to give review"),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text("Leave"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) => UserLoginPage()
+                                                      //         SignupPageUser
+                                                      ));
+
+
+                                                },
+                                                child: Text("SignUp"),
+                                              ),
+                                            ],
+                                          );
+                                        },);
+                                      }
 
                                     },
-                                    child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundColor: Colors.red[900],
-                                          radius: 26,
-                                          child: Text(
-                                            Utils.getInitials(widget.name),
-                                            style: TextStyle(
-                                                fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        SizedBox(width: 20,),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children:
-                                          List.generate(5, (index) {
-                                            int starIndex = index + 1;
-                                            return Icon(
-                                              Icons.star_border_outlined,
-                                              size: 40,
-                                              color:Colors.black54,
-                                            );
-                                          }),
+                                    child:FutureBuilder<String?>(
+                                      future: getNameByEmail(email),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                          return CircularProgressIndicator(); // Placeholder while loading
+                                        } else if (snapshot.hasError) {
+                                          return Text('Error: ${snapshot.error}');
+                                        } else {
+                                          if (snapshot.data != null) {
+                                            // Data retrieved successfully
+                                            return Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  backgroundColor: Colors.red[900],
+                                                  radius: 26,
+                                                  child:_isSignedIn?
 
-                                        ),
-                                      ],
-                                    ),
+                                                  Text(
+                                                    Utils.getInitials("${snapshot.data}"),
+                                                    style: TextStyle(
+                                                        fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
+                                                  )
+                                                      :
+                                                  Icon(Icons.person,size:28,color: Colors.white,),
+
+
+                                                ),
+                                                SizedBox(width: 20,),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                  children:
+                                                  List.generate(5, (index) {
+                                                    int starIndex = index + 1;
+                                                    return Icon(
+                                                      Icons.star_border_outlined,
+                                                      size: 40,
+                                                      color:Colors.black54,
+                                                    );
+                                                  }),
+
+                                                ),
+                                              ],
+                                            );
+                                          } else {
+                                            // No user found
+                                            return Text('User not found.');
+                                          }
+                                        }
+                                      },
+                                    )
+
                                   ),
                                   Center(
                                     child: Container(
@@ -768,11 +1015,49 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                       child: MaterialButton(
                                           elevation: 0,
                                           onPressed: () async{
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => RatingPage(uname: widget.name, document: widget.document, id: widget.document.id,)));
+                                            if(_isSignedIn){
+                                              String? name = await getNameByEmail(email);
 
+                                              if (name != null) {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => RatingPage(uname: name, document: widget.document, id: widget.document.id, uemail: email,)));
+
+                                                print('Name associated with $email is: $name');
+                                              } else {
+                                                print('No name found for email: $email');
+                                              }
+                                            }
+                                            else{
+                                              showDialog(context: context, builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text("You need to SignUp first"),
+                                                  content: Text("Click on SignUp button if you want to give review"),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text("Leave"),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () async {
+                                                        Navigator.pushReplacement(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) => UserLoginPage()
+                                                            //         SignupPageUser
+                                                            ));
+
+
+                                                      },
+                                                      child: Text("SignUp"),
+                                                    ),
+                                                  ],
+                                                );
+                                              },);
+                                            }
                                           },
                                           color: Colors.white,
                                           textColor: Colors.black,
@@ -873,119 +1158,236 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                       ),
                                                     ),
                                                     Spacer(),
-                                                    PopupMenuButton<int>(
-                                                      icon: Icon(FontAwesomeIcons.ellipsisVertical),
-                                                      onSelected: (int value) {
-                                                        // Handle menu option selection
-                                                        switch (value) {
-                                                          case 1:
-                                                            print("object");
-                                                            print(reviewDoc['rating'].runtimeType);
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (context) => EditRatingPage(
-                                                                    uname: widget.name,
-                                                                    document: widget.document,
-                                                                    post: reviewDoc['comment'], rate:  reviewDoc['rating'].toInt(), reviewDocument: reviewDoc,)
-                                                              ),
-                                                            );
-                                                            break;
-                                                          case 2:
-                                                            showDialog(
-                                                              context: context,
-                                                              builder: (BuildContext context) {
-                                                                return AlertDialog(
-                                                                  title: Text("Delete Review"),
-                                                                  content: Text("Are you sure you want to delete this review?"),
-                                                                  actions: <Widget>[
-                                                                    TextButton(
-                                                                      onPressed: () {
-                                                                        Navigator.of(context).pop();
-                                                                      },
-                                                                      child: Text("No"),
+                                                    (_isSignedIn && email!="")
+                                                      ?PopupMenuButton<int>(
+                                                        icon: Icon(FontAwesomeIcons.ellipsisVertical),
+                                                        onSelected: (int value) async {
+                                                          // Handle menu option selection
+                                                          switch (value) {
+                                                            case 1:
+                                                              if(_isSignedIn && email!=""){
+                                                                String? name = await getNameByEmail(email);
+
+                                                                if (name != null) {
+                                                                  print("object");
+                                                                  print(reviewDoc['rating'].runtimeType);
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (context) => EditRatingPage(
+                                                                          uname:name,
+                                                                          document: widget.document,
+                                                                          post: reviewDoc['comment'], rate:  reviewDoc['rating'].toInt(), reviewDocument: reviewDoc,
+                                                                          uemail: email,)
                                                                     ),
-                                                                    TextButton(
-                                                                      onPressed: () async {
-                                                                        // Delete review
-                                                                        await FirebaseFirestore.instance
-                                                                            .collection('restrooms')
-                                                                            .doc(widget.document.id)
-                                                                            .collection('reviews')
-                                                                            .doc(reviewDoc.id)
-                                                                            .delete();
+                                                                  );
 
-                                                                        //update NO. OF REVIEWS
-                                                                        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-                                                                            .collection('restrooms')
-                                                                            .doc(widget.document.id)
-                                                                            .collection('reviews')
-                                                                            .get();
+                                                                  print('Name associated with $email is: $name');
+                                                                } else {
+                                                                  print('No name found for email: $email');
+                                                                }
+                                                              }
+                                                              else{
+                                                                showDialog(context: context, builder: (BuildContext context) {
+                                                                  return AlertDialog(
+                                                                    title: Text("You need to SignUp first"),
+                                                                    content: Text("Click on SignUp button if you want to edit review"),
+                                                                    actions: <Widget>[
+                                                                      TextButton(
+                                                                        onPressed: () {
+                                                                          Navigator.of(context).pop();
+                                                                        },
+                                                                        child: Text("Leave"),
+                                                                      ),
+                                                                      TextButton(
+                                                                        onPressed: () async {
+                                                                          Navigator.pushReplacement(
+                                                                              context,
+                                                                              MaterialPageRoute(
+                                                                                  builder: (context) => UserLoginPage()
+                                                                              //         SignupPageUser
+                                                                              ));
 
-                                                                        int reviewsLength = querySnapshot.docs.length;
-                                                                        print('Number of reviews: $reviewsLength');
-                                                                        FirebaseFirestore.instance
-                                                                            .collection('restrooms')
-                                                                            .doc(widget.document.id).set({
-                                                                          'no_of_reviews':reviewsLength ,
-                                                                        }, SetOptions(merge: true));
-                                                                        // get_review(widget.id);
-                                                                        Navigator.of(context).pop();
-                                                                      },
-                                                                      child: Text("Yes"),
-                                                                    ),
-                                                                  ],
-                                                                );
-                                                              },
-                                                            );
 
-                                                            break;
-                                                          case 3:
-                                                          // Option 2 selected
-                                                            break;
-                                                        }
+                                                                        },
+                                                                        child: Text("SignUp"),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },);
+                                                              }
+
+                                                              break;
+                                                            case 2:
+                                                              if(_isSignedIn && email!=""){
+                                                                String? name = await getNameByEmail(email);
+
+                                                                if (name != null) {
+                                                                  showDialog(
+                                                                    context: context,
+                                                                    builder: (BuildContext context) {
+                                                                      return AlertDialog(
+                                                                        title: Text("Delete Review"),
+                                                                        content: Text("Are you sure you want to delete this review?"),
+                                                                        actions: <Widget>[
+                                                                          TextButton(
+                                                                            onPressed: () {
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                            child: Text("No"),
+                                                                          ),
+                                                                          TextButton(
+                                                                            onPressed: () async {
+                                                                              // Delete review
+                                                                              await FirebaseFirestore.instance
+                                                                                  .collection('restrooms')
+                                                                                  .doc(widget.document.id)
+                                                                                  .collection('reviews')
+                                                                                  .doc(reviewDoc.id)
+                                                                                  .delete();
+
+                                                                              //update NO. OF REVIEWS
+                                                                              QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+                                                                                  .collection('restrooms')
+                                                                                  .doc(widget.document.id)
+                                                                                  .collection('reviews')
+                                                                                  .get();
+
+                                                                              int reviewsLength = querySnapshot.docs.length;
+                                                                              print('Number of reviews: $reviewsLength');
+                                                                              FirebaseFirestore.instance
+                                                                                  .collection('restrooms')
+                                                                                  .doc(widget.document.id).set({
+                                                                                'no_of_reviews':reviewsLength ,
+                                                                              }, SetOptions(merge: true));
+                                                                              // get_review(widget.id);
+                                                                              Navigator.of(context).pop();
+                                                                            },
+                                                                            child: Text("Yes"),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                } else {
+                                                                  print('No name found for email: $email');
+                                                                }
+
+
+                                                              }
+                                                              else{
+                                                                showDialog(context: context, builder: (BuildContext context) {
+                                                                  return AlertDialog(
+                                                                    title: Text("You need to Signup first"),
+                                                                    content: Text("Click on login button if you want to edit review"),
+                                                                    actions: <Widget>[
+                                                                      TextButton(
+                                                                        onPressed: () {
+                                                                          Navigator.of(context).pop();
+                                                                        },
+                                                                        child: Text("Leave"),
+                                                                      ),
+                                                                      TextButton(
+                                                                        onPressed: () async {
+                                                                          Navigator.pushReplacement(
+                                                                              context,
+                                                                              MaterialPageRoute(
+                                                                                  builder: (context) => UserLoginPage()
+                                                                              //         SignupPageUser
+                                                                              ));
+
+
+                                                                        },
+                                                                        child: Text("SignUp"),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },);
+                                                              }
+
+
+                                                              break;
+                                                            // case 3:
+                                                            // // Report
+                                                            //   break;
+                                                          }
+                                                        },
+                                                        itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+
+
+                                                          PopupMenuItem<int>(
+                                                            value: 1,
+                                                            height: 40,
+                                                            enabled: reviewDoc['email'] == email,
+                                                            child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                              children: [
+                                                                Icon(Icons.edit,color: Colors.indigo,size: 24,),
+                                                                SizedBox(width: 8,),
+                                                                Flexible(child: Text('Edit',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color: reviewDoc['email'] == email ? Colors.indigo[900] : Colors.grey),)),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          PopupMenuItem<int>(
+                                                            value: 2,
+                                                            height: 40,
+                                                            enabled: reviewDoc['email'] == email,
+                                                            child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                              children: [
+                                                                Icon(Icons.delete_forever,color: Colors.indigo,size: 24,),
+                                                                SizedBox(width: 8,),
+                                                                Flexible(child: Text('Delete',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color: reviewDoc['email'] == email ? Colors.indigo[900] : Colors.grey),)),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          // PopupMenuItem<int>(
+                                                          //   value: 3,
+                                                          //   height: 40,
+                                                          //   child: Row(
+                                                          //     mainAxisAlignment: MainAxisAlignment.start,
+                                                          //     children: [
+                                                          //       Icon(Icons.report,color: Colors.indigo,size: 24,),
+                                                          //       SizedBox(width: 8,),
+                                                          //       Flexible(child: Text('Report',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color:Colors.indigo[900]),)),
+                                                          //     ],
+                                                          //   ),
+                                                          // ),
+                                                        ],
+                                                      ):
+                                          IconButton(
+                                              icon:Icon(FontAwesomeIcons.ellipsisVertical),
+                                            onPressed: () {
+                                              showDialog(context: context, builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text("You need to Login first"),
+                                                  content: Text("Click on login button if you want to edit review"),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
                                                       },
-                                                      itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-                                                        PopupMenuItem<int>(
-                                                          value: 1,
-                                                          height: 40,
-                                                          enabled: reviewDoc['name'] == widget.name,
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            children: [
-                                                              Icon(Icons.edit,color: Colors.indigo,size: 24,),
-                                                              SizedBox(width: 8,),
-                                                              Flexible(child: Text('Edit',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color: reviewDoc['name'] == widget.name ? Colors.indigo[900] : Colors.grey),)),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        PopupMenuItem<int>(
-                                                          value: 2,
-                                                          height: 40,
-                                                          enabled: reviewDoc['name'] == widget.name,
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            children: [
-                                                              Icon(Icons.delete_forever,color: Colors.indigo,size: 24,),
-                                                              SizedBox(width: 8,),
-                                                              Flexible(child: Text('Delete',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color: reviewDoc['name'] == widget.name ? Colors.indigo[900] : Colors.grey),)),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        PopupMenuItem<int>(
-                                                          value: 3,
-                                                          height: 40,
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            children: [
-                                                              Icon(Icons.report,color: Colors.indigo,size: 24,),
-                                                              SizedBox(width: 8,),
-                                                              Flexible(child: Text('Report',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color:Colors.indigo[900]),)),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
+                                                      child: Text("Leave"),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () async {
+                                                        Navigator.pushReplacement(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) => UserLoginPage()
+                                                            //         SignupPageUser
+                                                            ));
+
+
+                                                      },
+                                                      child: Text("SignUp"),
+                                                    ),
+                                                  ],
+                                                );
+                                              });
+
+                                            },
+                                          )
 
                                                   ],
                                                 ),
@@ -1038,33 +1440,66 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
 
                                                     children: [
                                                       IconButton(
-                                                        onPressed: (){
-                                                          setState(() {
-                                                            isLiked=!isLiked;
-                                                            if(isLiked & !reviewDoc['likedBy'].contains(widget.name)){
-                                                              likedBy.add(widget.name);
-                                                              likesCount += 1;
-                                                            }
-                                                            else{
-                                                              likedBy.remove(widget.name);
-                                                              if( likesCount == 0){
-                                                                likesCount = 0;
+                                                        onPressed: ()async{
+                                                          if(_isSignedIn && email!=""){
+                                                            setState(() {
+                                                              isLiked=!isLiked;
+                                                              if(isLiked & !reviewDoc['likedBy'].contains(email)){
+                                                                likedBy.add(email);
+                                                                likesCount += 1;
                                                               }
                                                               else{
-                                                                likesCount -= 1;
+                                                                likedBy.remove(email);
+                                                                if( likesCount == 0){
+                                                                  likesCount = 0;
+                                                                }
+                                                                else{
+                                                                  likesCount -= 1;
+                                                                }
                                                               }
                                                             }
-                                                          });
-                                                          FirebaseFirestore.instance
-                                                              .collection('restrooms')
-                                                              .doc(widget.document.id)
-                                                              .collection('reviews')
-                                                              .doc(reviewDoc.id) // Assuming reviewDoc.id is the document ID of the review
-                                                              .update({
-                                                            'likedBy': likedBy,
-                                                            'likeCounts': likesCount});
+
+                                                            );
+                                                            FirebaseFirestore.instance
+                                                                .collection('restrooms')
+                                                                .doc(widget.document.id)
+                                                                .collection('reviews')
+                                                                .doc(reviewDoc.id) // Assuming reviewDoc.id is the document ID of the review
+                                                                .update({
+                                                              'likedBy': likedBy,
+                                                              'likeCounts': likesCount});
+                                                          }
+                                                          else{
+                                                            showDialog(context: context,
+                                                              builder: (BuildContext context) {
+                                                                return AlertDialog(
+                                                                  title: Text("You need to Sign-Up first"),
+                                                                  content: Text(
+                                                                      "Click on Sign-Up button if you want to like review"),
+                                                                  actions: <Widget>[
+                                                                    TextButton(
+                                                                      onPressed: () {
+                                                                        Navigator.of(context).pop();
+                                                                      },
+                                                                      child: Text("Leave"),
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed: () async {
+                                                                        Navigator.pushReplacement(
+                                                                            context,
+                                                                            MaterialPageRoute(
+                                                                                builder: (context) =>UserLoginPage()
+                                                                                    // SignupPageUser()
+                                                                            ));
+                                                                      },
+                                                                      child: Text("SignUp"),
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              },);
+                                                          }
                                                         },
-                                                        icon:reviewDoc['likedBy'].contains(widget.name)
+                                                        icon:_isSignedIn & reviewDoc['likedBy'].contains(email)
                                                             ?Icon(Icons.thumb_up,color: Colors.blue[800],)
                                                         :
                                                         Icon(Icons.thumb_up_alt_outlined,color: Colors.black54,)
@@ -1093,14 +1528,171 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                           ],
                         ),
                       ),
+
+
+
+
                       // Photos Tab Content
                       SingleChildScrollView(
                         child: Column(
                           children: [
-                            Text('Photos Tab Content'),
-                            // Add more widgets as needed
+                            SizedBox(
+                              height:MediaQuery.of(context).size.height,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height:MediaQuery.of(context).size.width/7,
+                                      margin: EdgeInsets.only(left: 16,top: 18,right: 16,bottom: 10),
+                                      width: MediaQuery.of(context).size.width/2.6,
+                                      child: MaterialButton(
+                                          elevation: 0,
+                                          onPressed: () async{
+                                            if(_isSignedIn && email!=""){
+                                              String? name = await getNameByEmail(email);
+
+                                              if (name != null){
+                                                print(" data : ${widget.document['images']}");
+                                                final ImagePicker picker = ImagePicker();
+
+                                                // Pick image
+                                                final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
+                                                if (image != null) {
+                                                  print(" data : ${widget.document['images']}");
+                                                  log('Image Path: ${image.path}');
+                                                  await sendImage(widget.document.id, widget.document['images'], File(image.path));
+                                                }
+
+                                              }
+                                              else{
+                                                print("name not found for report issue");
+
+                                              }
+                                            }
+                                            else{
+                                              showDialog(context: context, builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: Text("You need to SignUp first"),
+                                                  content: Text("Click on login button if you want to give review"),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text("Leave"),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () async {
+                                                        Navigator.pushReplacement(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) => UserLoginPage()
+                                                              //         SignupPageUser
+                                                            ));
+
+
+                                                      },
+                                                      child: Text("SignUp"),
+                                                    ),
+                                                  ],
+                                                );
+                                              },);
+                                            }
+
+
+
+                                          },
+                                          color: Colors.white,
+                                          textColor: Colors.black,
+                                          padding: EdgeInsets.all(12),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(30),
+                                            side: BorderSide(
+                                              color: Color(0xFF979393FF),
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                          child:Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Icon(Icons.add_a_photo,color: Colors.blue[800],),
+                                              Text("Add Photos",style: TextStyle(color:Colors.blue[800],fontSize: 15,),),
+                                            ],)
+                                      ),
+                                    ),
+                                  ),
+                                  //
+                                  Divider(),
+                                  FutureBuilder<List<String>>(
+                                    future: getImageUrls(widget.document.id),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      }
+                                      if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      }
+                                      List<String> imageUrls = snapshot.data ?? [];
+                                      if (imageUrls.isEmpty) {
+                                        return Text('No images found.');
+                                      }
+                                      return Expanded(
+                                        // height: 500,
+                                        child:
+                                        GridView.builder(
+                                          shrinkWrap: true,
+                                          physics: ScrollPhysics(),
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2, // You can adjust the number of columns here
+                                            crossAxisSpacing: 0,
+                                            mainAxisSpacing: 0,
+                                          ),
+                                          itemCount: imageUrls.length,
+                                          itemBuilder: (context, index) {
+                                            return InkWell(
+                                              onTap: () {
+                                                showPhotos(context, imageUrls[index]);
+                                              },
+                                              child: Container(
+                                                margin: EdgeInsets.all(5),
+                                                child: Image.network(
+                                                  imageUrls[index],
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        // ListView.builder(
+                                        //   itemCount: imageUrls.length,
+                                        //   physics:ScrollPhysics(),
+                                        //   itemBuilder: (context, index) {
+                                        //     return InkWell(
+                                        //       onTap: (){
+                                        //         showPhotos(context, imageUrls[index]);
+                                        //       },
+                                        //       child: Container(
+                                        //         height: 250,
+                                        //         margin: EdgeInsets.only(top: 10,left:12,right:12),
+                                        //         child: Image.network(
+                                        //           imageUrls[index],
+                                        //           fit: BoxFit.cover, // Adjust the fit as needed
+                                        //         ),
+                                        //       ),
+                                        //     );
+                                        //   },
+                                        // ),
+                                      );
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
                           ],
-                        ),
+                        )
+
                       ),
 
                     ],
@@ -1117,6 +1709,106 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
         ),
     );
   }
+
+  void showPhotos(BuildContext context,String url){
+    showModalBottomSheet(
+        context: context,
+        // useSafeArea: false,
+        isScrollControlled: true,
+        // enableDrag: false,
+        builder: (BuildContext context){
+
+      return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+        return Container(
+            height: MediaQuery
+                .of(context)
+                .size
+                .height,
+                // / 1.38, //1.5 decrease then size increase
+            color: Colors.transparent,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+
+                Container(
+                  child: Image.network(
+                    url,
+                    fit: BoxFit.cover, // Adjust the fit as needed
+                  ),
+                ),
+                IconButton(onPressed: (){
+                  Navigator.pop(context);
+                }, icon: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.blue[50],
+                    child: Icon(Icons.close_fullscreen,size: 35,color: Colors.blue[900],))),
+              ],
+            ),
+        );
+      });
+      });
+        }
+
+  Future<List<String>> getImageUrls(String documentId) async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('restrooms')
+          .doc(documentId)
+          .get();
+
+      if (snapshot.exists) {
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        List<String> imageUrls =
+        List<String>.from(data['images'] ?? []);
+        return imageUrls;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching image URLs: $e');
+      return [];
+    }
+  }
+
+
+  Future<void> sendImage(String restId, List<dynamic> urlsList, File file) async {
+    final ext = file.path.split('.').last;
+    try{
+      final Reference ref = FirebaseStorage.instance.ref().child(
+          'images/$restId/${DateTime.now().millisecondsSinceEpoch}.$ext');
+      // await ref
+      //     .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+      //     .then((p0) {
+      //   log('Data Transferred: ${p0.bytesTransferred / 1000} kb');
+      // });
+      // final imageUrl = await ref.getDownloadURL();
+      final UploadTask uploadTask = ref.putFile(file);
+
+      await uploadTask.whenComplete(() async {
+        final imageUrl = await ref.getDownloadURL();
+        print('Image uploaded to Firebase Storage: $imageUrl');
+        List<dynamic> imagesList =urlsList??[];
+        imagesList.add(imageUrl);
+
+        await FirebaseFirestore.instance
+            .collection('restrooms')
+            .doc(widget.document.id)
+            .update({'images': imagesList});
+        _showSuccessDialog(context, "Photo is successfully added");
+        print('Image URL saved in Firestore.');
+      });
+    }
+    catch (e, stackTrace) {
+    print('Error uploading image: $e');
+    print('Stack trace: $stackTrace');
+    _showErrorDialog(context, 'Error uploading image: $e');
+    }
+  }
+
+
+
+
+
   String getTimeAgo(Timestamp timestamp) {
     final now = DateTime.now();
     final createdAt = timestamp.toDate(); // Convert Firestore Timestamp to DateTime
@@ -1138,4 +1830,44 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
       return 'just now';
     }
   }
+  void _showErrorDialog(BuildContext context, String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Can\'t add photos' ),
+          content: Text(errorMessage),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _showSuccessDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Successfully Added Photo'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }

@@ -427,6 +427,59 @@ print(querySnapshot.docs);
                                       ),
                                     ),
                                   ),
+                                //
+                                if (suggestStatus == FilterStatus.Verified)
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: ()  {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Cancel Suggestion'),
+                                              content: Text('Are you sure you want to cancel this location suggestion?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    // Close the dialog
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('No'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+
+                                                    String sendTo=_suggest['sendTo'];
+                                                    List<String> parts = sendTo.split(':');
+
+                                                    String email = parts[0].trim();
+                                                    // g adminEmail,String restroomId,, String newStatus,String sendTo,
+                                                    await updateNewRestroomStatus(
+                                                      widget.adminEmail,
+                                                      _suggest['address'],
+                                                      "Cancel",
+
+                                                    );
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('Yes'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      style: OutlinedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                      ),
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(color: Colors.white,fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
+                                if (suggestStatus == FilterStatus.Verified)
+                                  SizedBox(width: 20),
                                 if (suggestStatus == FilterStatus.Verified)
                                   Expanded(
                                     child: OutlinedButton(

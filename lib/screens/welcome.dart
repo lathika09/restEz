@@ -70,7 +70,7 @@ class WelcomePage extends StatelessWidget {
                         height: 50,
                         onPressed:(){
                           // Replacement
-                          Navigator.push(context,MaterialPageRoute(builder: (context)=>UserPage(name: 'Hari Kumar',)));//FOR USER
+                          Navigator.push(context,MaterialPageRoute(builder: (context)=>UserPage()));//FOR USER
                         },
                         color: Colors.blue[100],
                         shape: RoundedRectangleBorder(

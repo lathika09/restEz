@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../widgets/widget.dart';
 
 class ReportIssues extends StatefulWidget {
-  const ReportIssues({super.key, required this.rest_id, required this.uname, required this.adminEmail, required this.restAddress, required this.restName,});
-  final String uname;
+  const ReportIssues({super.key, required this.rest_id, required this.uemail, required this.adminEmail, required this.restAddress, required this.restName,});
+  final String uemail;
   final String rest_id;
   final String adminEmail;
   final String restAddress;
@@ -222,18 +222,18 @@ class _ReportIssuesState extends State<ReportIssues> {
 
                     else{
 
-                        // (String user emailname,String admin email,String com)
-                        String? email = await getEmailFromName(widget.uname);
-                        if (email != null) {
-
-                          postReport(email, widget.adminEmail, reportController.text,widget.restAddress,widget.restName);
-                          updateNumberOfReports(email);
-
-                          print('Email for Hari Kumar: $email');
-                        } else {
-                          _showErrorDialog(context, "Report is not sent");
-                          print('No email found for Hari Kumar');
-                        }
+                        // String? email = await getEmailFromName(widget.uname);
+                        // if (email != null) {
+                        //
+                        //
+                        //
+                        //   print('Email for Hari Kumar: $email');
+                        // } else {
+                        //   _showErrorDialog(context, "Report is not sent");
+                        //   print('No email found for Hari Kumar');
+                        // }
+                      postReport(widget.uemail, widget.adminEmail, reportController.text,widget.restAddress,widget.restName);
+                      updateNumberOfReports(widget.uemail);
                         QuerySnapshot querySnapshot = await FirebaseFirestore.instance
                             .collection('restrooms')
                             .doc(widget.rest_id)

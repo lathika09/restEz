@@ -376,7 +376,10 @@ class _AddRestroomDataState extends State<AddRestroomData> {
   List<String> selectedGender = [];
   List<MultiSelectItem<String>> genderItems = [
     MultiSelectItem<String>('Female', 'Female'),
-    MultiSelectItem<String>('Male', 'Male'),];
+    MultiSelectItem<String>('Male', 'Male'),
+    MultiSelectItem<String>('Others', 'Others'),
+
+  ];
 
   String? selectedHours;
   List<String> availableItems = ['Open 24 Hours', 'Closed'];
@@ -632,15 +635,15 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                       }
                       else if(addressController.text.isEmpty)
                       {
-                        _showErrorDialog(context, 'Please select Gender who can access.');
+                        _showErrorDialog(context, 'Please fill Address field.');
                       }
                       else if(selectedGender.isEmpty){
                         _showErrorDialog(context, 'Select option for whether it is accessible for handicap.');
                       }
-                      else if(selectedFilter == null){
+                      else if(selectedFilter == ""){
                         _showErrorDialog(context, 'Please fill address fields.');
                       }
-                      else if(selectedHours == null){
+                      else if(selectedHours == ""){
                         _showErrorDialog(context, 'Select option for availability hours.');
                       }
                       else {
@@ -664,7 +667,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                             widget.adminEmail,
                           );
                         }
-                        _showSuccessDialog(context, 'Restroom added successfully!');
+
                       }
                     },
                     color: Colors.indigo[900],
@@ -694,25 +697,55 @@ class _AddRestroomDataState extends State<AddRestroomData> {
   }
 
   Future<void> addRestroomToFirestore(String name, String address, List gender,bool handicapped,String hours,String admin) async {
-    CollectionReference restroom= FirebaseFirestore.instance.collection('restrooms');
+    CollectionReference restroom = FirebaseFirestore.instance.collection('restrooms');
     Map<String, dynamic> coordinates = await convertAddressToCoordinates(address);
     GeoPoint location = GeoPoint(coordinates['latitude'], coordinates['longitude']);
 
-    DocumentReference docRef =await restroom.add({
-      'name': name,
-      'address': address,
-      'location': location,
-      'gender': gender,
-      'handicappedAccessible': handicapped,
-      'availabilityHours': hours,
-      'handledBy':admin,
-      'no_of_ratings':0,
-      'no_of_reports':0,
-      'ratings':0.0,
-      'savedBy':[],
+    QuerySnapshot querySnapshot = await restroom.where('address', isEqualTo: address)
+        .get();
 
-    });
-    print('Document added with ID: ${docRef.id}');
+    if (querySnapshot.docs.isNotEmpty) {
+      querySnapshot = await restroom.where('location', isEqualTo: location)
+          .get();
+      print(querySnapshot);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Location Already Exists'),
+            content: Text('A restroom at this location already exists.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      DocumentReference docRef = await restroom.add({
+        'name': name,
+        'address': address,
+        'location': location,
+        'gender': gender,
+        'handicappedAccessible': handicapped,
+        'availabilityHours': hours,
+        'handledBy': admin,
+        'no_of_ratings': 0,
+        'no_of_reports': 0,
+        'ratings': 0.0,
+        'savedBy': [],
+        'images':[],
+      });
+      _showSuccessDialog(context, 'Restroom added successfully!');
+
+      print('Document added with ID: ${docRef.id}');
+    }
+
 
 
   }

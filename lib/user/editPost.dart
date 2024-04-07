@@ -10,8 +10,9 @@ import 'package:uuid/uuid.dart';
 import 'Profile.dart';
 
 class EditRatingPage extends StatefulWidget {
-  const EditRatingPage({super.key,required this.uname,required this.document, required this.post, required this.rate, required this.reviewDocument});
+  const EditRatingPage({super.key,required this.uname,required this.document, required this.post, required this.rate, required this.reviewDocument, required this.uemail});
   final String uname;
+  final String uemail;
   final DocumentSnapshot document;
   final DocumentSnapshot reviewDocument;
 
