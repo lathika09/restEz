@@ -148,9 +148,9 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                         absorbing: false,//used to eanable editing
                                         child: MultiSelectDialogField(
                                           items: genderItems,
-                                          itemsTextStyle:TextStyle(fontSize: 16),
+                                          itemsTextStyle:const TextStyle(fontSize: 16),
                                           selectedColor: Colors.indigo[500],
-                                          selectedItemsTextStyle: TextStyle(color: Colors.black,fontSize: 16),
+                                          selectedItemsTextStyle: const TextStyle(color: Colors.black,fontSize: 16),
                                           initialValue:selectedGender,
                                           listType: MultiSelectListType.CHIP,
                                           onConfirm: (values) {
@@ -171,7 +171,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                       SizedBox(
                                         height: 40,
                                         child:Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
                                           decoration: BoxDecoration(
                                             borderRadius: BorderRadius.circular(6.0),
                                             color: Colors.indigo[50],
@@ -214,8 +214,8 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                         style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
                                       ),
                                       Container(
-                                        margin: EdgeInsets.symmetric(vertical: 5.0),
-                                        padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 0),
+                                        margin: const EdgeInsets.symmetric(vertical: 5.0),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 0),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(6.0),
                                           color: Colors.indigo[50],
@@ -302,7 +302,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                                 },
                                                 color: Colors.indigo[100],//800
                                                 textColor: Colors.white,
-                                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius: BorderRadius.circular(30),
                                                   side: BorderSide(
@@ -310,7 +310,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                                     width: 1.0,
                                                   ),
                                                 ),
-                                                child:Text("Add Photos ",style: TextStyle(color:Colors.black,fontSize: 15,fontWeight: FontWeight.bold
+                                                child:const Text("Add Photos ",style: TextStyle(color:Colors.black,fontSize: 15,fontWeight: FontWeight.bold
                                                 ),)
                                             ),
                                           ),
@@ -324,7 +324,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                            .snapshots(),
                                        builder: (context, snapshot) {
                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                           return Center(
+                                           return const Center(
                                              child: CircularProgressIndicator(),
                                            );
                                          }
@@ -334,7 +334,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                            );
                                          }
                                          if (!snapshot.hasData || snapshot.data!.data() == null) {
-                                           return Center(
+                                           return const Center(
                                              child: Text('No data available'),
                                            );
                                          }
@@ -343,8 +343,8 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                          List<String> imageUrls = List<String>.from(data['images'] ?? []);
                                          return widget.images.length!=0?
                                          Container(
-                                           margin: EdgeInsets.only(top: 5,bottom: 10),
-                                           padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                           margin: const EdgeInsets.only(top: 5,bottom: 10),
+                                           padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 12),
                                            decoration: BoxDecoration(
 
                                              borderRadius: BorderRadius.circular(10),
@@ -406,8 +406,8 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                          )
                                              :
                                          Container(
-                                             margin: EdgeInsets.only(top: 5,bottom: 10),
-                                             padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                             margin: const EdgeInsets.only(top: 5,bottom: 10),
+                                             padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 12),
                                              decoration: BoxDecoration(
                                                color: Colors.white,
                                                borderRadius: BorderRadius.circular(10),
@@ -527,11 +527,11 @@ class _EditRestroomDataState extends State<EditRestroomData> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Updated'),
-              content: Text("Photo is successfully added"),
+              title: const Text('Updated'),
+              content: const Text("Photo is successfully added"),
               actions: <Widget>[
                 TextButton(
-                  child: Text('OK'),
+                  child: const Text('OK'),
                   onPressed: () {
                     Navigator.of(context).pop();
 

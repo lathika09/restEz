@@ -20,7 +20,7 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
 
       return querySnapshot.docs;
     } catch (error) {
-      print('Error fetching reports: $error');
+      // print('Error fetching reports: $error');
       return [];
     }
   }
@@ -40,7 +40,7 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
         future: getReportsByAdminEmail(widget.adminEmail),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
@@ -48,8 +48,8 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(height: 40,),
-                  Container(
+                  const SizedBox(height: 40,),
+                  SizedBox(
                     width: MediaQuery.of(context).size.width/1.5,
                     height: MediaQuery.of(context).size.width/1.5,
                     child: Lottie.network(
@@ -58,7 +58,7 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
                     ),
                   ),
 
-                  Center(child: Text('No reports available.',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),)),
+                  const Center(child: Text('No reports available.',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),)),
                 ],
               );
             }
@@ -69,13 +69,13 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
                 return Card(
                   color: Colors.blue[50],
                   elevation: 8,
-                  margin: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
+                  margin: const EdgeInsets.symmetric(vertical: 10,horizontal: 15),
                   shape: RoundedRectangleBorder(
                     // side: BorderSide(color: Colors.indigoAccent, width: 0.5),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
 
                     width: double.infinity,
                     child: Column(
@@ -86,7 +86,7 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
                           children: [
                             const Text("Restroom  :  ",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                             Flexible(
-                                child: Text('${reports[index]['restroomName']}',style: TextStyle(fontSize: 16,),)),
+                                child: Text('${reports[index]['restroomName']}',style: const TextStyle(fontSize: 16,),)),
 
                           ],
                         ),
@@ -96,7 +96,7 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
                           children: [
                             const Text("Address  :  ",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                             Flexible(
-                                child: Text('${reports[index]['address']}',style: TextStyle(fontSize: 15,),)),
+                                child: Text('${reports[index]['address']}',style: const TextStyle(fontSize: 15,),)),
 
                           ],
                         ),
@@ -106,15 +106,15 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
                           children: [
                             const Text("Reported By  :  ",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                             Flexible(
-                                child: Text('${reports[index]['reportedBy']}',style: TextStyle(fontSize: 15,),)),
+                                child: Text('${reports[index]['reportedBy']}',style: const TextStyle(fontSize: 15,),)),
 
                           ],
                         ),
                         const SizedBox(height: 5,),
                         const Text("Report  :  ",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                         Container(
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          padding: EdgeInsets.all(15),
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          padding: const EdgeInsets.all(15),
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -123,14 +123,14 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("${reports[index]['description']}",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                              Text("${reports[index]['description']}",style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                               const SizedBox(height: 6,),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text("Status :  ",style: TextStyle(fontSize: 15,color: Colors.indigo,fontWeight: FontWeight.bold),),
                                   Flexible(
-                                      child: Text('${reports[index]['status']}',style: TextStyle(fontSize: 15,color: Colors.indigo,),)),
+                                      child: Text('${reports[index]['status']}',style: const TextStyle(fontSize: 15,color: Colors.indigo,),)),
 
                                 ],
                               ),
@@ -204,7 +204,7 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
           .collection('reports')
           .doc(reportId)
           .update({'status': status});
-      print('Report status updated successfully.');
+      // print('Report status updated successfully.');
 
       QuerySnapshot reportsSnapshot = await FirebaseFirestore.instance
           .collection('restrooms')
@@ -222,7 +222,7 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
       }
     }
     catch (error) {
-      print('Error updating report status: $error');
+      // print('Error updating report status: $error');
     }
   }
 }

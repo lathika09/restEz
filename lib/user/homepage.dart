@@ -266,22 +266,22 @@ class _UserPageState extends State<UserPage> {
                     restroomLocation.longitude,
                   );
                   LatLng latLng = LatLng(restroomLocation.latitude, restroomLocation.longitude);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => RestroomPageUser(
-                            document: restroomDoc,
-                            dist:distance.toStringAsFixed(1),
-                            pos: cPosition, restroomloc: latLng,
-
-                          )
-                      ));
-
                   // Navigator.push(
                   //     context,
                   //     MaterialPageRoute(
-                  //         builder: (context) => const HelpPage(),
+                  //         builder: (context) => RestroomPageUser(
+                  //           document: restroomDoc,
+                  //           dist:distance.toStringAsFixed(1),
+                  //           pos: cPosition, restroomloc: latLng,
+                  //
+                  //         )
                   //     ));
+
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HelpPage(),
+                      ));
                 },
                 icon: const Icon(
                   Icons.help,
