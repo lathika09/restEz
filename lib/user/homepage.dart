@@ -6,7 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rest_ez_app/user/helpPage.dart';
 import 'package:rest_ez_app/user/restroomDetails.dart';
+import 'package:rest_ez_app/user/notification.dart';
 import 'package:rest_ez_app/user/shared.dart';
 
 import 'LoginUser.dart';
@@ -264,15 +266,21 @@ class _UserPageState extends State<UserPage> {
                     restroomLocation.longitude,
                   );
                   LatLng latLng = LatLng(restroomLocation.latitude, restroomLocation.longitude);
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => RestroomPageUser(
+                  //           document: restroomDoc,
+                  //           dist:distance.toStringAsFixed(1),
+                  //           pos: cPosition, restroomloc: latLng,
+                  //
+                  //         )
+                  //     ));
+
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RestroomPageUser(
-                            document: restroomDoc,
-                            dist:distance.toStringAsFixed(1),
-                            pos: cPosition, restroomloc: latLng,
-
-                          )
+                          builder: (context) => HelpPage(),
                       ));
                 },
                 icon: Icon(
@@ -283,10 +291,11 @@ class _UserPageState extends State<UserPage> {
 
             IconButton(
                 onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => NotificationScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NotificationScreen(),
+                      ));
                 },
                 icon: Icon(
                   Icons.notifications,

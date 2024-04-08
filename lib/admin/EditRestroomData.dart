@@ -1,7 +1,11 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:rest_ez_app/admin/restroomManage.dart';
 
@@ -274,36 +278,48 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                         ),
                                       ),
                                       const SizedBox(height: 16.0),
-                                      const Text(
-                                        'Photos ',
-                                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'Photos ',
+                                            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
+                                          ),
+                                          // const SizedBox(height: 10.0),
+                                          Container(
+                                            // margin: EdgeInsets.symmetric(horizontal: 16,vertical: 5),
+                                            width: MediaQuery.of(context).size.width/2.9,
+                                            child: MaterialButton(
+                                                elevation: 0,
+                                                onPressed: () async{
+                                                  final ImagePicker picker = ImagePicker();
+
+                                                  // Pick image
+                                                  final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
+                                                  if (image != null) {
+                                                    print(" data : ${widget.images}");
+                                                    log('Image Path: ${image.path}');
+                                                    await sendImage(widget.rest_id, widget.images, File(image.path));
+                                                  }
+                                                },
+                                                color: Colors.indigo[100],//800
+                                                textColor: Colors.white,
+                                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(30),
+                                                  side: BorderSide(
+                                                    color:  Colors.indigo.shade100,
+                                                    width: 1.0,
+                                                  ),
+                                                ),
+                                                child:Text("Add Photos ",style: TextStyle(color:Colors.black,fontSize: 15,fontWeight: FontWeight.bold
+                                                ),)
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      // Container(
-                                      //   margin: EdgeInsets.symmetric(vertical: 5.0),
-                                      //   padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 0),
-                                      //   decoration: BoxDecoration(
-                                      //     borderRadius: BorderRadius.circular(6.0),
-                                      //     color: Colors.indigo[50],
-                                      //     border: Border.all(color: Colors.indigo.shade100,
-                                      //     ),
-                                      //   ),
-                                      //   child: SizedBox(
-                                      //     height: 40,
-                                      //     child: TextField(
-                                      //       controller: nameController,
-                                      //       decoration: const InputDecoration(
-                                      //           labelStyle:TextStyle(fontSize: 16),
-                                      //           // hintText: 'ABC ',
-                                      //           border: InputBorder.none, //
-                                      //           contentPadding: EdgeInsets.symmetric(vertical: 10.0),
-                                      //           hintStyle: TextStyle(color: Colors.black54,fontWeight: FontWeight.w500)
-                                      //       ),
-                                      //     ),
-                                      //   ),
-                                      // ),
 
-
-                                     StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                                        stream: FirebaseFirestore.instance
                                            .collection('restrooms')
                                            .doc(widget.rest_id)
@@ -493,6 +509,53 @@ class _EditRestroomDataState extends State<EditRestroomData> {
         )
     );
   }
+  Future<void> sendImage(String restId, List<dynamic> urlsList, File file) async {
+    final ext = file.path.split('.').last;
+    try{
+      final Reference ref = FirebaseStorage.instance.ref().child(
+          'images/$restId/${DateTime.now().millisecondsSinceEpoch}.$ext');
+
+      final UploadTask uploadTask = ref.putFile(file);
+
+      await uploadTask.whenComplete(() async {
+        final imageUrl = await ref.getDownloadURL();
+        print('Image uploaded to Firebase Storage: $imageUrl');
+        List<dynamic> imagesList =urlsList??[];
+        imagesList.add(imageUrl);
+
+        await FirebaseFirestore.instance
+            .collection('restrooms')
+            .doc(widget.rest_id)
+            .update({'images': imagesList});
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Updated'),
+              content: Text("Photo is successfully added"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+
+                  },
+                ),
+              ],
+            );
+          },
+        );
+
+        print('Image URL saved in Firestore.');
+      });
+    }
+    catch (e, stackTrace) {
+      print('Error uploading image: $e');
+      print('Stack trace: $stackTrace');
+      _showErrorDialog(context, 'Error uploading image: $e');
+    }
+  }
+
   void showPhotos(BuildContext context,String url,String rest_id){
     showModalBottomSheet(
         context: context,
@@ -632,40 +695,40 @@ class _EditRestroomDataState extends State<EditRestroomData> {
 
     Map<String, dynamic> coordinates = await convertAddressToCoordinates(address);
     GeoPoint location = GeoPoint(coordinates['latitude'], coordinates['longitude']);
-    QuerySnapshot querySnapshot = await restroom.where('location', isEqualTo: location)
-        .get();
+    // QuerySnapshot querySnapshot = await restroom.where('location', isEqualTo: location)
+    //     .get();
+    //
+    // if (querySnapshot.docs.isNotEmpty) {
+    //   _showErrorDialog(context, 'Cannot update. Another restroom with the same location already exists.');
+    // } else {
+    //   DocumentReference docRef = restroom.doc(docId);
+    //
+    //   await docRef.update({
+    //     'name': name,
+    //     'address': address,
+    //     'location': location,
+    //     'gender': gender,
+    //     'handicappedAccessible': handicapped,
+    //     'availabilityHours': hours,
+    //     'handledBy': admin,
+    //   });
+    //   _showSuccessDialog(context, 'Restroom updated successfully!');
+    //
+    //   print('Document updated with ID: $docId');
+    // }
+    DocumentReference docRef = restroom.doc(docId);
+    await docRef.update({
+      'name': name,
+      'address': address,
+      'location': location,
+      'gender': gender,
+      'handicappedAccessible': handicapped,
+      'availabilityHours': hours,
+      'handledBy': admin,
+    });
+    _showSuccessDialog(context, 'Restroom updated successfully!');
 
-    if (querySnapshot.docs.isNotEmpty) {
-      _showErrorDialog(context, 'Cannot update. Another restroom with the same location already exists.');
-    } else {
-      DocumentReference docRef = restroom.doc(docId);
-
-      await docRef.update({
-        'name': name,
-        'address': address,
-        'location': location,
-        'gender': gender,
-        'handicappedAccessible': handicapped,
-        'availabilityHours': hours,
-        'handledBy': admin,
-      });
-      _showSuccessDialog(context, 'Restroom updated successfully!');
-
-      print('Document updated with ID: $docId');
-    }
-    // DocumentReference docRef = restroom.doc(docId);
-    // await docRef.update({
-    //   'name': name,
-    //   'address': address,
-    //   'location': location,
-    //   'gender': gender,
-    //   'handicappedAccessible': handicapped,
-    //   'availabilityHours': hours,
-    //   'handledBy': admin,
-    // });
-    // _showSuccessDialog(context, 'Restroom updated successfully!');
-
-    // print('Document updated with ID: $docId');
+    print('Document updated with ID: $docId');
   }
 
   void _showSuccessDialog(BuildContext context, String message) {

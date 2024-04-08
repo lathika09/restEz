@@ -128,7 +128,17 @@ class _ReportIssuesState extends State<ReportIssues> {
                         stream: FirebaseFirestore.instance.collection('admins').doc(restRoomData['handledBy']).snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator()); // Placeholder while loading
+                            return Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: Colors.indigo[900],
+                                  child: Icon(Icons.person, color: Colors.white),
+                                ),
+                                SizedBox(width: 15),
+                                Text('${restRoomData['handledBy']}'),
+                              ],
+                            ); // Placeholder while loading
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
                           } else if (!snapshot.hasData || !snapshot.data!.exists) {
@@ -139,6 +149,7 @@ class _ReportIssuesState extends State<ReportIssues> {
                                   backgroundColor: Colors.indigo[900],
                                   child: Icon(Icons.person, color: Colors.white),
                                 ),
+                                SizedBox(width: 15),
                                 Text('${restRoomData['handledBy']}'),
                               ],
                             );

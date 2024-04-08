@@ -381,7 +381,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (!snapshot.hasData || !snapshot.data!.exists) {
@@ -407,11 +407,11 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                       itemBuilder: (context, _) =>  Icon(
                         Icons.star,
                         color: Colors.amber,
-                        // size: 10, // Adjust the size of the stars as needed
+                        // size: 10,
                       ),
                       onRatingUpdate: (rating) {
                         print(rating);
-                        // You can update the rating here if needed
+
                       },
                     ),
                   ],
@@ -928,7 +928,10 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                   .snapshots(),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
+                                  return Text(
+                                    "3.0",
+                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                  );
                                 } else if (snapshot.hasError) {
                                   return Text('Error: ${snapshot.error}');
                                 } else {
@@ -966,7 +969,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                         itemBuilder: (context, _) =>  Icon(
                                           Icons.star,
                                           color: Colors.amber,
-                                          // size: 10, // Adjust the size of the stars as needed
+                                          // size: 10,
                                         ),
                                         onRatingUpdate: (rating) {
                                           print(rating);
@@ -997,7 +1000,10 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                           .snapshots(),
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState == ConnectionState.waiting) {
-                                          return CircularProgressIndicator();
+                                          return  Container(
+                                              height: 10,
+                                              width:10,
+                                              child: CircularProgressIndicator());
                                         } else if (snapshot.hasError) {
                                           return Text('Error: ${snapshot.error}');
                                         } else {
@@ -1018,16 +1024,10 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                             future: convertRatingToValue(rate),
                                             builder: (context, snapshot) {
                                               if (snapshot.connectionState == ConnectionState.waiting) {
-                                                // While waiting for the future to complete, show a loading indicator or placeholder.
-                                                return Container(
-                                                    height: 20,
-                                                    width: 20,
-                                                    child: CircularProgressIndicator()); // Or any other loading widget
+                                                return RatingProgress(text: rate.toString(), value: 0.0);
                                               } else if (snapshot.hasError) {
-                                                // If the future throws an error, show an error message.
                                                 return Text('Error: ${snapshot.error}');
                                               } else {
-                                                // If the future completes successfully, use the data to build the UI.
                                                 return RatingProgress(text: rate.toString(), value: (snapshot.data ?? 0.0));
                                               }
                                             },
@@ -1040,7 +1040,6 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                           //     } else if (snapshot.hasError) {
                                           //       return Text('Error: ${snapshot.error}');
                                           //     } else {
-                                          //       // If the stream emits a value, use it to build the UI.
                                           //       return RatingProgress(text: rate.toString(), value: (snapshot.data ?? 0.0));
                                           //     }
                                           //   },
@@ -1131,7 +1130,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                       future: getNameByEmail(email),
                                       builder: (context, snaps) {
                                         if (snaps.connectionState == ConnectionState.waiting) {
-                                          return CircularProgressIndicator(); // Placeholder while loading
+                                          return CircularProgressIndicator();
                                         } else if (snaps.hasError) {
                                           return Text('Error: ${snaps.error}');
                                         } else {
@@ -1278,7 +1277,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
 
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
-                                        return Center(child: CircularProgressIndicator());
+                                        return ReviewSkeleton();//Center(child: CircularProgressIndicator());
                                       }
                                       if (snapshot.hasError) {
                                         return Text('Error: ${snapshot.error}');
@@ -1287,7 +1286,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                           snapshot.data!.docs.isEmpty) {
                                         return Center(child: Text('No reviews available.'));
                                       }
-                                      // Display the reviews
+                                      // Display reviews
                                       List<Review> reviewlist = snapshot.data!.docs.map((doc) => Review.fromFirestore(doc)).toList();
 
                                       return Container(
@@ -1393,7 +1392,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                         .collection('restrooms')
                                                                         .doc(widget.document.id)
                                                                         .collection('reviews')
-                                                                        .doc(reviewlist[index].id) // Assuming review has an id property representing the document id
+                                                                        .doc(reviewlist[index].id)
                                                                         .get();
 
                                                                     Navigator.push(
@@ -2139,4 +2138,91 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
     );
   }
 
+}
+
+
+class ReviewSkeleton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey, // Choose your border color
+            width: 1.0, // Adjust the border width as needed
+          ),
+        ),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 46.0,
+                  height: 46.0,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Container(
+                  width: 100.0,
+                  height: 15.0,
+                  color: Colors.grey[300],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 12.0),
+                  child: Container(
+                    width: 80.0,
+                    height: 12.0,
+                    color: Colors.grey[300],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 5),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 80.0,
+              color: Colors.grey[300],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Row(
+                children: [
+                  Container(
+                    width: 30.0,
+                    height: 30.0,
+                    color: Colors.grey[300],
+                  ),
+                  SizedBox(width: 8),
+                  Container(
+                    width: 30.0,
+                    height: 30.0,
+                    color: Colors.grey[300],
+                  ),
+                  SizedBox(width: 8),
+                  Container(
+                    width: 60.0,
+                    height: 12.0,
+                    color: Colors.grey[300],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

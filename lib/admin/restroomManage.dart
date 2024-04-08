@@ -1,4 +1,7 @@
 
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -734,38 +737,6 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                           ),
                                         ),
                                       ),
-                                      // const SizedBox(height: 10.0),
-                                      // Container(
-                                      //   margin: EdgeInsets.symmetric(horizontal: 16,vertical: 5),
-                                      //   width: MediaQuery.of(context).size.width/2.9,
-                                      //   child: MaterialButton(
-                                      //       elevation: 0,
-                                      //       onPressed: () async{
-                                      //         Position pos=await determinePosition();
-                                      //         // print(pos.latitude);
-                                      //         // location="Latitude :${pos.latitude}, Longitude : ${pos.longitude}";
-                                      //
-                                      //         GetAddressFromLatLong(pos);
-                                      //
-                                      //         setState(() {
-                                      //           isClicked=true;
-                                      //
-                                      //         });
-                                      //       },
-                                      //       color: Colors.indigo[100],//800
-                                      //       textColor: Colors.white,
-                                      //       padding: EdgeInsets.symmetric(horizontal: 10),
-                                      //       shape: RoundedRectangleBorder(
-                                      //         borderRadius: BorderRadius.circular(30),
-                                      //         side: BorderSide(
-                                      //           color:  Colors.indigo.shade100,
-                                      //           width: 1.0,
-                                      //         ),
-                                      //       ),
-                                      //       child:Text("GET LOCATION ",style: TextStyle(color:Colors.black,fontSize: 15,fontWeight: FontWeight.bold
-                                      //       ),)
-                                      //   ),
-                                      // ),
 
                                     ],
                                   ),
@@ -847,6 +818,8 @@ class _AddRestroomDataState extends State<AddRestroomData> {
         )
     );
   }
+
+
 
   Future<void> addRestroomToFirestore(String name, String address, List gender,bool handicapped,String hours,String admin) async {
     CollectionReference restroom = FirebaseFirestore.instance.collection('restrooms');
