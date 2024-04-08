@@ -3,8 +3,7 @@ import 'package:rest_ez_app/screens/welcome.dart';
 import 'package:rest_ez_app/splashScreens/splash_screen.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'dart:developer';
-import 'package:flutter/services.dart';
+
 
 
 Future<void> main() async {

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:rest_ez_app/admin/addVerified.dart';
+
 
 class SuggestionStatus extends StatefulWidget {
   const SuggestionStatus({super.key, required this.adminEmail});
@@ -144,7 +144,7 @@ print(querySnapshot.docs);
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.only(left: 20, top: 20, right: 20),
+          padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -202,7 +202,7 @@ print(querySnapshot.docs);
                       child: Center(
                         child: Text(
                           status.name,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
@@ -213,7 +213,7 @@ print(querySnapshot.docs);
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               Expanded(
@@ -224,11 +224,10 @@ print(querySnapshot.docs);
                     var _suggest = filteredSuggestions[index];
                     bool isLastElement = filteredSuggestions.length + 1 == index;
 
-                    // Get the appointment status
                     FilterStatus suggestStatus = _suggest['status'];
                     return Card(
                       shape: RoundedRectangleBorder(
-                        side: BorderSide(
+                        side: const BorderSide(
                           color: Colors.grey,
                         ),
                         borderRadius: BorderRadius.circular(20),
@@ -249,13 +248,13 @@ print(querySnapshot.docs);
                                   child: Icon(Icons.add_location_alt_sharp,size: 28,color: Colors.white,),
                                   // backgroundImage:NetworkImage("https://static.thenounproject.com/png/5034901-200.png"),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 15,
                                 ),
                                 Flexible(
                                   child: Text(
                                     '${_suggest['address']}',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 18
@@ -265,7 +264,7 @@ print(querySnapshot.docs);
 
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 15,
                             ),
                             Container(
@@ -287,31 +286,31 @@ print(querySnapshot.docs);
                                 children: [
                                   Row(
                                     children: [
-                                      Text("No. of Suggestions :  ",style: TextStyle(fontSize: 15,),),
-                                      Text("${_suggest['no_of_suggestion']}",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
+                                      const Text("No. of Suggestions :  ",style: TextStyle(fontSize: 15,),),
+                                      Text("${_suggest['no_of_suggestion']}",style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
                                     ],
                                   ),
-                                  SizedBox(height: 15,),
+                                  const SizedBox(height: 15,),
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text("Suggested By :  ",style: TextStyle(fontSize: 15,),),
-                                      Text("${_suggest['suggestedBy']}",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
+                                      const Text("Suggested By :  ",style: TextStyle(fontSize: 15,),),
+                                      Text("${_suggest['suggestedBy']}",style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
                                     ],
                                   ),
-                                  SizedBox(height: 15,),
+                                  const SizedBox(height: 15,),
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text("Status :  ",style: TextStyle(fontSize: 15,),),
+                                      const Text("Status :  ",style: TextStyle(fontSize: 15,),),
 
                                       _suggest['status']==FilterStatus.Pending
                                           ?
-                                      Text("Pending",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
+                                      const Text("Pending",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
                                       :_suggest['status'] == FilterStatus.Verified
-                                      ?Text("Verified",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
+                                      ?const Text("Verified",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
                                           :
-                                      Text("Cancel",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
+                                      const Text("Cancel",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),)
                                     ],
                                   ),
 
@@ -319,7 +318,7 @@ print(querySnapshot.docs);
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 15,
                             ),
                             Row(
@@ -333,15 +332,15 @@ print(querySnapshot.docs);
                                           context: context,
                                           builder: (context) {
                                             return AlertDialog(
-                                              title: Text('Cancel Suggestion'),
-                                              content: Text('Are you sure you want to cancel this location suggestion?'),
+                                              title: const Text('Cancel Suggestion'),
+                                              content: const Text('Are you sure you want to cancel this location suggestion?'),
                                               actions: [
                                                 TextButton(
                                                   onPressed: () {
                                                     // Close the dialog
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: Text('No'),
+                                                  child: const Text('No'),
                                                 ),
                                                 TextButton(
                                                   onPressed: () async {
@@ -390,7 +389,6 @@ print(querySnapshot.docs);
                                               actions: [
                                                 TextButton(
                                                   onPressed: () {
-                                                    // Close the dialog
                                                     Navigator.of(context).pop();
                                                   },
                                                   child: Text('Cancel'),
@@ -436,15 +434,14 @@ print(querySnapshot.docs);
                                           context: context,
                                           builder: (context) {
                                             return AlertDialog(
-                                              title: Text('Cancel Suggestion'),
-                                              content: Text('Are you sure you want to cancel this location suggestion?'),
+                                              title: const Text('Cancel Suggestion'),
+                                              content: const Text('Are you sure you want to cancel this location suggestion?'),
                                               actions: [
                                                 TextButton(
                                                   onPressed: () {
-                                                    // Close the dialog
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: Text('No'),
+                                                  child: const Text('No'),
                                                 ),
                                                 TextButton(
                                                   onPressed: () async {
@@ -462,7 +459,7 @@ print(querySnapshot.docs);
                                                     );
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: Text('Yes'),
+                                                  child:const Text('Yes'),
                                                 ),
                                               ],
                                             );
@@ -472,14 +469,14 @@ print(querySnapshot.docs);
                                       style: OutlinedButton.styleFrom(
                                         backgroundColor: Colors.red,
                                       ),
-                                      child: Text(
+                                      child: const Text(
                                         'Cancel',
                                         style: TextStyle(color: Colors.white,fontSize: 16),
                                       ),
                                     ),
                                   ),
                                 if (suggestStatus == FilterStatus.Verified)
-                                  SizedBox(width: 20),
+                                  const SizedBox(width: 20),
                                 if (suggestStatus == FilterStatus.Verified)
                                   Expanded(
                                     child: OutlinedButton(
@@ -488,15 +485,14 @@ print(querySnapshot.docs);
                                           context: context,
                                           builder: (context) {
                                             return AlertDialog(
-                                              title: Text('Add Restroom'),
-                                              content: Text('Are you sure you want to add this restroom?'),
+                                              title: const Text('Add Restroom'),
+                                              content: const Text('Are you sure you want to add this restroom?'),
                                               actions: [
                                                 TextButton(
                                                   onPressed: () {
-                                                    // Close the dialog
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: Text('Cancel'),
+                                                  child: const Text('Cancel'),
                                                 ),
                                                 TextButton(
                                                   onPressed: () async {
@@ -513,7 +509,7 @@ print(querySnapshot.docs);
                                                           MaterialPageRoute(builder: (context) => AddVerifiedRestroom(adminEmail: widget.adminEmail,address: _suggest['address'],)),
                                                         );
                                                   },
-                                                  child: Text('Add'),
+                                                  child: const Text('Add'),
                                                 ),
                                               ],
                                             );
@@ -523,7 +519,7 @@ print(querySnapshot.docs);
                                       style: OutlinedButton.styleFrom(
                                         elevation: 10,
                                         backgroundColor: Colors.green,),
-                                      child: Text(
+                                      child: const Text(
                                         'Add Restroom',
                                         style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 17),
                                       ),
@@ -538,14 +534,14 @@ print(querySnapshot.docs);
                                           context: context,
                                           builder: (context) {
                                             return AlertDialog(
-                                              title: Text('Delete Suggestion'),
-                                              content: Text('Are you sure you want to delete this suggestion?'),
+                                              title: const Text('Delete Suggestion'),
+                                              content: const Text('Are you sure you want to delete this suggestion?'),
                                               actions: [
                                                 TextButton(
                                                   onPressed: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: Text('Cancel'),
+                                                  child: const Text('Cancel'),
                                                 ),
                                                 TextButton(
                                                   onPressed: () async {
@@ -553,7 +549,7 @@ print(querySnapshot.docs);
                                                     deleteNewRestroomByAddress(widget.adminEmail,_suggest['address']);
 
                                                   },
-                                                  child: Text('Delete'),
+                                                  child: const Text('Delete'),
                                                 ),
                                               ],
                                             );
@@ -563,7 +559,7 @@ print(querySnapshot.docs);
                                       style: OutlinedButton.styleFrom(
                                         elevation: 10,
                                         backgroundColor: Colors.green,),
-                                      child: Text(
+                                      child: const Text(
                                         'Delete Data',
                                         style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 17),
                                       ),
@@ -578,7 +574,6 @@ print(querySnapshot.docs);
                   }),
                 ),
               ),
-
             ],
           ),
         ),

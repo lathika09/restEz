@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../constant/imageString.dart';
 
 
@@ -12,7 +11,7 @@ class NotificationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
+        title: const Center(
           child: Text("Notification"),
         ),
       ),
@@ -21,7 +20,7 @@ class NotificationPage extends StatelessWidget {
               child: Column(
                 children: [
                   // Center(child: Text("noxtification")),
-                  SizedBox(height: 50,),
+                  const SizedBox(height: 50,),
                   Center(
                     child: Container(
                       //margin: const EdgeInsets.symmetric(vertical: 40),
@@ -33,7 +32,7 @@ class NotificationPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Text("No Notification",
+                  const Text("No Notification",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 20,
@@ -42,7 +41,9 @@ class NotificationPage extends StatelessWidget {
 
 
                 ],
-              ))),
+              )
+          )
+      ),
     );
   }
 }

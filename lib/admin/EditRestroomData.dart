@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +71,6 @@ class _EditRestroomDataState extends State<EditRestroomData> {
     super.initState();
     nameController.text=widget.rest_name;
     addressController.text = widget.address;
-
     selectedGender = widget.rest_gender;
     selectedHours = widget.res_hours;
     selectedFilter = widget.isHandicap ? 'true' : 'false';
@@ -107,8 +105,8 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(6.0),
                                   ),
-                                  margin: EdgeInsets.symmetric(vertical: 10,horizontal:3),
-                                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 20),
+                                  margin: const EdgeInsets.symmetric(vertical: 10,horizontal:3),
+                                  padding:const EdgeInsets.symmetric(vertical: 15,horizontal: 20),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,8 +116,8 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                         style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
                                       ),
                                       Container(
-                                        margin: EdgeInsets.symmetric(vertical: 5.0),
-                                        padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 0),
+                                        margin: const EdgeInsets.symmetric(vertical: 5.0),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 0),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(6.0),
                                           color: Colors.indigo[50],
@@ -201,7 +199,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                             items: _filterOptions.map((valueItem){
                                               return DropdownMenuItem(
                                                 value:valueItem,
-                                                child:Text(valueItem,style:TextStyle(
+                                                child:Text(valueItem,style:const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 16,),
                                                 ),
@@ -281,7 +279,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
+                                          const Text(
                                             'Photos ',
                                             style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
                                           ),
@@ -343,8 +341,6 @@ class _EditRestroomDataState extends State<EditRestroomData> {
 
                                          Map<String, dynamic> data = snapshot.data!.data()!;
                                          List<String> imageUrls = List<String>.from(data['images'] ?? []);
-
-                                         // Now you can use imageUrls to display images
                                          return widget.images.length!=0?
                                          Container(
                                            margin: EdgeInsets.only(top: 5,bottom: 10),
@@ -373,7 +369,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                                        GridView.builder(
                                                          shrinkWrap: true,
                                                          physics: ScrollPhysics(),
-                                                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                                            crossAxisCount: 2, // You can adjust the number of columns here
                                                            crossAxisSpacing: 0,
                                                            mainAxisSpacing: 0,
@@ -386,7 +382,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                                                showPhotos(context, "${imageUrls[index]}",widget.rest_id);
                                                              },
                                                              child: Container(
-                                                               margin: EdgeInsets.all(5),
+                                                               margin: const EdgeInsets.all(5),
                                                                child: Image.network(
                                                                  "${imageUrls [index]}",
                                                                  fit: BoxFit.cover,
@@ -417,13 +413,13 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                                borderRadius: BorderRadius.circular(10),
                                              ),
                                              width: double.infinity,
-                                             child: Text('No Photos added ',style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500),));
+                                             child: const Text(
+                                               'No Photos added ',
+                                               style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500),
+                                             )
+                                         );
                                        },
                                      ),
-
-
-
-
 
                                       const SizedBox(height: 16.0),
 
@@ -435,7 +431,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                   )
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 16,vertical: 8),
+                margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
                 width: MediaQuery.of(context).size.width/2,
                 child: MaterialButton(
                     elevation: 0,
@@ -488,12 +484,12 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                     padding: EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
-                      side: BorderSide(
-                        color: Color(0xFFebf1fa), // Set the border color
-                        width: 1.0,         // Set the border width
+                      side: const BorderSide(
+                        color: Color(0xFFebf1fa),
+                        width: 1.0,
                       ),
                     ),
-                    child:Row(
+                    child:const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.home_work_sharp,size: 25,),
@@ -579,7 +575,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                   Container(
                     child: Image.network(
                       url,
-                      fit: BoxFit.cover, // Adjust the fit as needed
+                      fit: BoxFit.cover,
                     ),
                   ),
                   Row(
@@ -599,14 +595,14 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text("Confirm Deletion"),
-                                  content: Text("Are you sure you want to delete this photo?"),
+                                  title: const Text("Confirm Deletion"),
+                                  content: const Text("Are you sure you want to delete this photo?"),
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text("No"),
+                                      child: const Text("No"),
                                     ),
                                     TextButton(
                                       onPressed: () {
@@ -615,7 +611,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                         Navigator.of(context).pop();
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text("Yes"),
+                                      child: const Text("Yes"),
                                     ),
                                   ],
                                 );
@@ -638,9 +634,6 @@ class _EditRestroomDataState extends State<EditRestroomData> {
     try {
       await FirebaseStorage.instance.refFromURL(strurl).delete();
 
-
-
-      // Remove photo URL from Firestore document
       await FirebaseFirestore.instance
           .collection('restrooms')
           .doc(doc_id)
@@ -653,34 +646,33 @@ class _EditRestroomDataState extends State<EditRestroomData> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Success"),
-            content: Text("Photo deleted successfully"),
+            title: const Text("Success"),
+            content: const Text("Photo deleted successfully"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text("OK"),
+                child: const Text("OK"),
               ),
             ],
           );
         },
       );
     } catch (e) {
-      // Show error message if deletion fails
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Error"),
-            content: Text("Failed to delete photo"),
+            title: const Text("Error"),
+            content: const Text("Failed to delete photo"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   print(e.toString());
                   Navigator.of(context).pop();
                 },
-                child: Text("OK"),
+                child: const Text("OK"),
               ),
             ],
           );
@@ -736,11 +728,11 @@ class _EditRestroomDataState extends State<EditRestroomData> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Updated'),
+          title: const Text('Updated'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -759,13 +751,13 @@ class _EditRestroomDataState extends State<EditRestroomData> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
           ],

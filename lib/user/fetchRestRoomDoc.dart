@@ -1,11 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:rest_ez_app/user/restroomDetails.dart';
-
 import '../admin/EditRestroomData.dart';
 import '../widgets/widget.dart';
 import 'Profile.dart';
@@ -48,16 +44,14 @@ class _FetchRestroomState extends State<FetchRestroom> {
   Future<double> calculateAverageRating() async {
     CollectionReference reviewsRef = FirebaseFirestore.instance
         .collection('restrooms')
-        .doc(widget.rest_id) // Assuming widget.id is the ID of the restroom document
+        .doc(widget.rest_id)
         .collection('reviews');
 
     QuerySnapshot querySnapshot = await reviewsRef.get();
 
-    // Initialize variables to hold the sum of ratings and total number of reviews
     int totalRatings = 0;
     int totalReviews = querySnapshot.size;
 
-    // Iterate through each document to sum up the ratings
     querySnapshot.docs.forEach((reviewDoc) {
       dynamic ratingValue = reviewDoc['rating'];
       if (ratingValue is int) {
@@ -69,7 +63,6 @@ class _FetchRestroomState extends State<FetchRestroom> {
       }
     });
 
-    // Calculate the average rating
     double averageRating = totalReviews > 0 ? totalRatings / totalReviews : 0;
 
     return averageRating;
@@ -99,7 +92,6 @@ class _FetchRestroomState extends State<FetchRestroom> {
         }
       });
 
-      // Calculate the average rating
       double averageRating = totalReviews > 0 ? totalRatings / totalReviews : 0;
       double avgRating=double.parse(averageRating.toStringAsFixed(1));
 
@@ -135,7 +127,6 @@ class _FetchRestroomState extends State<FetchRestroom> {
 
 
     double value = rateDocuments / totalDocuments;
-    // Round the value to one decimal point
     double roundedValue = double.parse(value.toStringAsFixed(1));
 
     return roundedValue;
@@ -196,7 +187,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor:Colors.indigo[700],
-          iconTheme: IconThemeData(
+          iconTheme: const IconThemeData(
             color: Colors.white,
           ),
           elevation: 3,
@@ -219,7 +210,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
       //   future: fetchRestroom(widget.rest_id),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -229,7 +220,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
             );
           }
           if (!snapshot.hasData || snapshot.data!.data() == null) {
-            return Center(
+            return const Center(
               child: Text('No data available'),
             );
           }
@@ -247,17 +238,17 @@ class _FetchRestroomState extends State<FetchRestroom> {
                       children: [
                         Container(
                           color: Colors.indigo[50],
-                          padding: EdgeInsets.symmetric(vertical: 15,horizontal: 20),
+                          padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'Restroom Details ',
                                 style: TextStyle(fontWeight: FontWeight.bold,fontSize:16),
                               ),
                               Container(
-                                margin: EdgeInsets.only(top: 5,bottom: 10),
-                                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                margin: const EdgeInsets.only(top: 5,bottom: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 12),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
@@ -266,10 +257,10 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Restroom Name ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const Text('Restroom Name ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                                     Container(
-                                      margin: EdgeInsets.only(top: 2),
-                                      padding: EdgeInsets.only(top: 5,left: 10,bottom: 5),
+                                      margin: const EdgeInsets.only(top: 2),
+                                      padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                           border: Border.all(
@@ -279,16 +270,16 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                           borderRadius: BorderRadius.circular(10)
                                         ),
                                         child: Text('${restroomData['name']}',
-                                          style: TextStyle(fontSize: 15),
+                                          style: const TextStyle(fontSize: 15),
                                           softWrap: true,
                                           overflow: TextOverflow.visible,
                                         )
                                     ),
-                                      SizedBox(height: 10,),
-                                    Text('Location ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const SizedBox(height: 10,),
+                                    const Text('Location ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                                     Container(
-                                        margin: EdgeInsets.only(top: 2),
-                                        padding: EdgeInsets.only(top: 5,left: 10,bottom: 5),
+                                        margin: const EdgeInsets.only(top: 2),
+                                        padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                             border: Border.all(
@@ -298,17 +289,17 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                             borderRadius: BorderRadius.circular(10)
                                         ),
                                         child: Text('${restroomData['address']}',
-                                          style: TextStyle(fontSize: 15),
+                                          style: const TextStyle(fontSize: 15),
                                           softWrap: true,
                                           overflow: TextOverflow.visible,
                                         )
                                     ),
-                                    SizedBox(height: 10,),
+                                    const SizedBox(height: 10,),
 
-                                    Text('Availability ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const  Text('Availability ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                                     Container(
-                                        margin: EdgeInsets.only(top: 2),
-                                        padding: EdgeInsets.only(top: 5,left: 10,bottom: 5),
+                                        margin: const EdgeInsets.only(top: 2),
+                                        padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                             border: Border.all(
@@ -318,17 +309,17 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                             borderRadius: BorderRadius.circular(10)
                                         ),
                                         child: Text('${restroomData['availabilityHours']}',
-                                          style: TextStyle(fontSize: 15),
+                                          style: const TextStyle(fontSize: 15),
                                           softWrap: true,
                                           overflow: TextOverflow.visible,
                                         )
                                     ),
-                                    SizedBox(height: 10,),
+                                    const SizedBox(height: 10,),
 
-                                    Text('Accessible For ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const Text('Accessible For ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                                     Container(
-                                        margin: EdgeInsets.only(top: 2),
-                                        padding: EdgeInsets.only(top: 5,left: 10,bottom: 5),
+                                        margin: const EdgeInsets.only(top: 2),
+                                        padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                             border: Border.all(
@@ -354,25 +345,25 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                               return accessibility.isNotEmpty ? accessibility : 'Not specified';
                                             })(),
 
-                                          style: TextStyle(fontSize: 15),
+                                          style: const TextStyle(fontSize: 15),
                                           softWrap: true,
                                           overflow: TextOverflow.visible,
                                         )
                                     ),
-                                    SizedBox(height: 10,),
+                                    const SizedBox(height: 10,),
 
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 5,),
-                              Text(
+                              const SizedBox(height: 5,),
+                              const Text(
                                 'Rating and Reviews ',
                                 style: TextStyle(fontWeight: FontWeight.bold,fontSize:16),
                               ),
 
                               Container(
-                                margin: EdgeInsets.only(top: 5,bottom: 10),
-                                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                margin: const EdgeInsets.only(top: 5,bottom: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 12),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
@@ -384,7 +375,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
 
                                     //RATING ANALYSIS
                                     Container(
-                                      padding: EdgeInsets.only(left: 10,right: 10,bottom: 10,top:10),
+                                      padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10,top:10),
                                       child: Row(
                                         children: [
                                           Column(
@@ -393,7 +384,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                 future: calculateAverageRating(),
                                                 builder: (context, snapshot) {
                                                   if (snapshot.connectionState == ConnectionState.waiting) {
-                                                    return CircularProgressIndicator();
+                                                    return const CircularProgressIndicator();
                                                   } else if (snapshot.hasError) {
 
                                                     return Text('Error: ${snapshot.error}');
@@ -403,7 +394,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                     avgRating = double.parse((snapshot.data ?? 0).toStringAsFixed(1));
                                                     String formattedAverageRating = averageRating.toStringAsFixed(1);
                                                     // setAverageRating(widget.document.id,avgRating);
-                                                    return Text(formattedAverageRating,style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),);
+                                                    return Text(formattedAverageRating,style: const TextStyle(fontSize: 25,fontWeight: FontWeight.bold),);
                                                   }
                                                 },
                                               ),
@@ -423,26 +414,20 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                   // size: 10, // Adjust the size of the stars as needed
                                                 ),
                                                 onRatingUpdate: (rating) {
-                                                  print(rating);
-
-
-                                                  // You can update the rating here if needed
+                                                  // print(rating);
                                                 },
                                               ),
                                               FutureBuilder<int>(
                                                 future: get_review(widget.rest_id),
                                                 builder: (context, snapshot) {
                                                   if (snapshot.connectionState == ConnectionState.waiting) {
-                                                    // Display a loading indicator while the future is being fetched
-                                                    return CircularProgressIndicator();
+                                                    return const CircularProgressIndicator();
                                                   } else if (snapshot.hasError) {
-                                                    // Display an error message if the future encounters an error
                                                     return Text('Error: ${snapshot.error}');
                                                   } else {
-                                                    // Render the widget with the calculated average rating
                                                     int reviews = snapshot.data ?? 0;
                                                     String reviewString = reviews.toString();
-                                                    return Text('(${reviewString})',style: TextStyle());
+                                                    return Text('($reviewString)',style: TextStyle());
                                                   }
                                                 },
                                               ),
@@ -461,7 +446,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                         return Container(
                                                             height: 20,
                                                             width: 20,
-                                                            child: CircularProgressIndicator()); // Or any other loading widget
+                                                            child: const CircularProgressIndicator()); // Or any other loading widget
                                                       } else if (snapshot.hasError) {
                                                         // If the future throws an error, show an error message.
                                                         return Text('Error: ${snapshot.error}');
@@ -481,12 +466,12 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                       ),
 
                                     ),
-                                    SizedBox(height: 10,),
+                                    const SizedBox(height: 10,),
 
                                     //REVIEW LIST
-                                    Text('Reviews ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const Text('Reviews ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
 
-                                    SizedBox(height: 10,),
+                                    const SizedBox(height: 10,),
                                     Container(
                                       decoration: BoxDecoration(
                                         border: Border.all(
@@ -509,16 +494,15 @@ class _FetchRestroomState extends State<FetchRestroom> {
 
                                               if (snapshot.connectionState ==
                                                   ConnectionState.waiting) {
-                                                return Center(child: CircularProgressIndicator());
+                                                return const Center(child: CircularProgressIndicator());
                                               }
                                               if (snapshot.hasError) {
                                                 return Text('Error: ${snapshot.error}');
                                               }
                                               if (!snapshot.hasData ||
                                                   snapshot.data!.docs.isEmpty) {
-                                                return Center(child: Text('No reviews available.'));
+                                                return const Center(child: Text('No reviews available.'));
                                               }
-                                              // Display the reviews
 
                                               return Column(
                                                 children: snapshot.data!.docs.map((reviewDoc) {
@@ -527,11 +511,11 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                   print(reviewDoc['name']);
                                                   return Container(
                                                     padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 15),
-                                                    decoration: BoxDecoration(
+                                                    decoration: const BoxDecoration(
                                                       border: Border(
                                                         bottom: BorderSide(
-                                                          color: Colors.grey, // Choose your border color
-                                                          width: 1.0, // Adjust the border width as needed
+                                                          color: Colors.grey,
+                                                          width: 1.0,
                                                         ),
                                                       ),
                                                     ),
@@ -552,7 +536,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                               // ),
                                                               Text(
                                                                 Utils.getInitials(reviewDoc['name']),
-                                                                style: TextStyle(
+                                                                style: const TextStyle(
                                                                     fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
                                                               ),
                                                             ),
@@ -561,8 +545,8 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                               child: Column(
                                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                                 children: [
-                                                                  Text("${reviewDoc['name']}",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
-                                                                  Text("",style: TextStyle(color: Colors.black54,fontSize: 14)),
+                                                                  Text("${reviewDoc['name']}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
+                                                                  const  Text("",style: TextStyle(color: Colors.black54,fontSize: 14)),
                                                                 ],
                                                               ),
                                                             ),
@@ -571,7 +555,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
 
                                                           ],
                                                         ),
-                                                        SizedBox(height: 10,),
+                                                        const SizedBox(height: 10,),
                                                         Row(
                                                           children: [
                                                             RatingBar.builder(
@@ -585,24 +569,20 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                               itemBuilder: (context, _) =>  Icon(
                                                                 Icons.star,
                                                                 color: Colors.amber,
-                                                                // size: 10, // Adjust the size of the stars as needed
+                                                                // size: 10,
                                                               ),
                                                               ignoreGestures: true,
                                                               onRatingUpdate: (rating) {
-                                                                // rating=rrating;
-                                                                // rrating=rating;
-                                                                print(rating);
-                                                                // You can update the rating here if needed
                                                               },
                                                             ),
                                                             Padding(
                                                               padding: const EdgeInsets.only(left: 12.0),
-                                                              child: Text(getTimeAgo(reviewDoc['timestamp']),style: TextStyle(color: Colors.black54,fontSize: 12),),
+                                                              child: Text(getTimeAgo(reviewDoc['timestamp']),style: const TextStyle(color: Colors.black54,fontSize: 12),),
                                                             ),
 
                                                           ],
                                                         ),
-                                                        SizedBox(height: 5,),
+                                                        const SizedBox(height: 5,),
 
                                                         Container(
                                                           width: MediaQuery.of(context).size.width,
@@ -610,7 +590,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                           child:
                                                           EllipsisText(
                                                             text: "${reviewDoc['comment']}",
-                                                            style: TextStyle(fontSize: 15),
+                                                            style: const TextStyle(fontSize: 15),
                                                           ),
 
                                                         ),
@@ -619,11 +599,11 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                           child: Row(
 
                                                             children: [
-                                                              Icon(Icons.thumb_up_alt_outlined,color: Colors.black54,),
+                                                              const Icon(Icons.thumb_up_alt_outlined,color: Colors.black54,),
                                                               // SizedBox(width: 5,),
                                                               Text('${reviewDoc['likeCounts']}'),
-                                                              SizedBox(width: 8,),
-                                                              Text("Like",style: TextStyle(fontWeight: FontWeight.bold),)
+                                                              const SizedBox(width: 8,),
+                                                              const Text("Like",style: TextStyle(fontWeight: FontWeight.bold),)
                                                             ],
                                                           ),
                                                         )
@@ -647,16 +627,16 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                 ),
                               ),
 
-                              SizedBox(height: 5,),
-                              Text(
+                              const SizedBox(height: 5,),
+                              const Text(
                                 'Issues Reported ',
                                 style: TextStyle(fontWeight: FontWeight.bold,fontSize:16),
                               ),
 
 
                               Container(
-                                margin: EdgeInsets.only(top: 5,bottom: 10),
-                                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                margin: const EdgeInsets.only(top: 5,bottom: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 12),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
@@ -665,10 +645,10 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('No. of Reports ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const Text('No. of Reports ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                                     Container(
-                                        margin: EdgeInsets.only(top: 2),
-                                        padding: EdgeInsets.only(top: 5,left: 10,bottom: 5),
+                                        margin: const EdgeInsets.only(top: 2),
+                                        padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                             border: Border.all(
@@ -689,16 +669,16 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 5,),
-                              Text(
+                              const SizedBox(height: 5,),
+                              const Text(
                                 'Photos added ',
                                 style: TextStyle(fontWeight: FontWeight.bold,fontSize:16),
                               ),
 
                               restroomData['images'].length!=0?
                               Container(
-                                margin: EdgeInsets.only(top: 5,bottom: 10),
-                                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                margin: const EdgeInsets.only(top: 5,bottom: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 12),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
@@ -720,9 +700,9 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                             child:
                                             GridView.builder(
                                               shrinkWrap: true,
-                                              physics: ScrollPhysics(),
-                                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2, // You can adjust the number of columns here
+                                              physics: const ScrollPhysics(),
+                                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2, // NO. of columns
                                                 crossAxisSpacing: 0,
                                                 mainAxisSpacing: 0,
                                               ),
@@ -743,12 +723,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                                 );
                                               },
                                             ),
-
                                           ),
-
-                                          // SizedBox(height: 10,),
-
-
                                         ],
                                       ),
                                     )
@@ -759,14 +734,14 @@ class _FetchRestroomState extends State<FetchRestroom> {
                               )
                                   :
                               Container(
-                                  margin: EdgeInsets.only(top: 5,bottom: 10),
-                                  padding: EdgeInsets.symmetric(horizontal: 15,vertical: 12),
+                                  margin:const  EdgeInsets.only(top: 5,bottom: 10),
+                                  padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 12),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   width: double.infinity,
-                                  child: Text('No Photos added ',style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500),)),
+                                  child: const Text('No Photos added ',style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500),)),
 
 
                             ],
@@ -783,7 +758,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16,vertical: 18),
+                      margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 18),
                       width: MediaQuery.of(context).size.width/3,
                       child: MaterialButton(
                           elevation: 0,
@@ -792,14 +767,14 @@ class _FetchRestroomState extends State<FetchRestroom> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('Delete Restroom Data'),
-                                  content: Text("Are you sure you want to delete this data"),
+                                  title: const Text('Delete Restroom Data'),
+                                  content: const Text("Are you sure you want to delete this data"),
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text('Cancel'),
+                                      child: const Text('Cancel'),
                                     ),
                                     TextButton(
                                       onPressed: () async {
@@ -812,7 +787,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
 
 
                                       },
-                                      child: Text('Delete'),
+                                      child: const Text('Delete'),
                                     ),
                                   ],
                                 );
@@ -821,20 +796,20 @@ class _FetchRestroomState extends State<FetchRestroom> {
                           },
                           color: Colors.indigo[900],
                           textColor: Colors.white,
-                          padding: EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
-                            side: BorderSide(
+                            side: const BorderSide(
                               color: Color(0xFFebf1fa),
                               width: 1.0,
                             ),
                           ),
-                          child:Text("Delete ",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
+                          child:const Text("Delete ",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
                           ),)
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16,vertical: 18),
+                      margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 18),
                       width: MediaQuery.of(context).size.width/3,
                       child: MaterialButton(
                           elevation: 0,
@@ -859,15 +834,15 @@ class _FetchRestroomState extends State<FetchRestroom> {
                           },
                           color: Colors.indigo[900],
                           textColor: Colors.white,
-                          padding: EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
-                            side: BorderSide(
+                            side: const BorderSide(
                               color: Color(0xFFebf1fa),
                               width: 1.0,
                             ),
                           ),
-                          child:Text("Edit ",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
+                          child:const Text("Edit ",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
                           ),)
                       ),
                     ),
@@ -907,7 +882,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                   Container(
                     child: Image.network(
                       url,
-                      fit: BoxFit.cover, // Adjust the fit as needed
+                      fit: BoxFit.cover,
                     ),
                   ),
                   Row(
@@ -927,14 +902,14 @@ class _FetchRestroomState extends State<FetchRestroom> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text("Confirm Deletion"),
-                              content: Text("Are you sure you want to delete this photo?"),
+                              title: const Text("Confirm Deletion"),
+                              content:const  Text("Are you sure you want to delete this photo?"),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                  child: Text("No"),
+                                  child: const Text("No"),
                                 ),
                                 TextButton(
                                   onPressed: () {
@@ -943,7 +918,7 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                     Navigator.of(context).pop();
                                     Navigator.of(context).pop();
                                   },
-                                  child: Text("Yes"),
+                                  child: const Text("Yes"),
                                 ),
                               ],
                             );
@@ -965,10 +940,6 @@ class _FetchRestroomState extends State<FetchRestroom> {
   Future<void> deletePhoto(String strurl,String doc_id) async {
     try {
       await FirebaseStorage.instance.refFromURL(strurl).delete();
-
-
-
-      // Remove photo URL from Firestore document
       await FirebaseFirestore.instance
           .collection('restrooms')
           .doc(doc_id)
@@ -976,39 +947,37 @@ class _FetchRestroomState extends State<FetchRestroom> {
         'images': FieldValue.arrayRemove([strurl])
       });
 
-      // Show success message
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Success"),
-            content: Text("Photo deleted successfully"),
+            title: const Text("Success"),
+            content: const Text("Photo deleted successfully"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text("OK"),
+                child: const Text("OK"),
               ),
             ],
           );
         },
       );
     } catch (e) {
-      // Show error message if deletion fails
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Error"),
-            content: Text("Failed to delete photo"),
+            title: const Text("Error"),
+            content: const Text("Failed to delete photo"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   print(e.toString());
                   Navigator.of(context).pop();
                 },
-                child: Text("OK"),
+                child: const Text("OK"),
               ),
             ],
           );

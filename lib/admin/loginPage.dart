@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rest_ez_app/admin/signup.dart';
-
+// import 'package:rest_ez_app/admin/signup.dart';
 import '../constant/imageString.dart';
 import 'home.dart';
 
@@ -59,7 +58,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Padding(padding:EdgeInsets.symmetric(horizontal: 40,vertical: 10),
+                  Padding(padding:const EdgeInsets.symmetric(horizontal: 40,vertical: 10),
                     child: Column(
                       children: [
                         const SizedBox(height:8,),
@@ -89,7 +88,7 @@ class LoginPage extends StatelessWidget {
                                 ),
                                 prefixIcon: Icon(
                                   Icons.email,
-                                  color: Color(0xFFBDBDBD), // Adjust the color as needed
+                                  color: Color(0xFFBDBDBD),
                                 ),
                               ),
                             ),
@@ -124,9 +123,9 @@ class LoginPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 40,vertical: 5),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 5),
                     child: Container(
-                      padding: EdgeInsets.only(left: 3),
+                      padding: const EdgeInsets.only(left: 3),
 
                       child: MaterialButton(
                         minWidth:MediaQuery.of(context).size.width/2,
@@ -174,12 +173,14 @@ class LoginPage extends StatelessWidget {
                                   case 'weak-password':
                                     errorMessage = 'Weak password. Please use a stronger password.';
                                     break;
+                                  case 'network-request-failed':
+                                    errorMessage = 'Poor Internet connection.Try using better connection.';
+                                    break;
                                   default:
                                     errorMessage = 'An error occurred during sign-in.';
                                     break;
                                 }
 
-                                // Check for the "user-not-found" error specifically
                                 if (error.code == 'user-not-found') {
                                   errorMessage = 'User not found. Please check your email and try again.';
                                 }
@@ -187,7 +188,6 @@ class LoginPage extends StatelessWidget {
 
                                 _showErrorDialog(context, errorMessage);
                               } else {
-                                // Handle other non-Firebase exceptions, if any
                                 print('Non-Firebase Exception: $error');
                                 _showErrorDialog(context, 'An unexpected error occurred.');
                               }
@@ -248,15 +248,15 @@ class LoginPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Forgot Password'),
+          title: const Text('Forgot Password'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text('Enter your email to receive a password reset link:'),
-              SizedBox(height: 10),
+              const Text('Enter your email to receive a password reset link:'),
+              const SizedBox(height: 10),
               TextField(
                 controller: TextEditingController(),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Email',
                 ),
               ),
@@ -296,11 +296,11 @@ class LoginPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -320,11 +320,11 @@ class LoginPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Success'),
+          title: const Text('Success'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();// Close the dialog
                 // Navigator.push(
@@ -359,18 +359,18 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       obscureText: _isObscured,
       controller: widget.controller,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-        enabledBorder: OutlineInputBorder(
+        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+        enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Color(0xFFBDBDBD),
           ),
         ),
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Color(0xFFBDBDBD),
           ),
         ),
-        prefixIcon: Icon(
+        prefixIcon: const Icon(
           Icons.password,
           color: Color(0xFFBDBDBD),
         ),

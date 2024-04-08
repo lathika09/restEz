@@ -244,9 +244,9 @@ class _UserPageState extends State<UserPage> {
           // backgroundColor: Colors.black,
           title: RichText(
             text: TextSpan(
-                style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
                 children: <TextSpan>[
-                  TextSpan(text: 'Rest', style: TextStyle(color: Colors.black)),
+                  const TextSpan(text: 'Rest', style: TextStyle(color: Colors.black)),
                   TextSpan(
                       text: 'Ez', style: TextStyle(color: Colors.blueAccent[700]))
                 ]
@@ -266,24 +266,24 @@ class _UserPageState extends State<UserPage> {
                     restroomLocation.longitude,
                   );
                   LatLng latLng = LatLng(restroomLocation.latitude, restroomLocation.longitude);
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => RestroomPageUser(
-                  //           document: restroomDoc,
-                  //           dist:distance.toStringAsFixed(1),
-                  //           pos: cPosition, restroomloc: latLng,
-                  //
-                  //         )
-                  //     ));
-
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => HelpPage(),
+                          builder: (context) => RestroomPageUser(
+                            document: restroomDoc,
+                            dist:distance.toStringAsFixed(1),
+                            pos: cPosition, restroomloc: latLng,
+
+                          )
                       ));
+
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const HelpPage(),
+                  //     ));
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.help,
                   color: Colors.black,
                   size: 25,
@@ -294,39 +294,38 @@ class _UserPageState extends State<UserPage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => NotificationScreen(),
+                          builder: (context) => const NotificationScreen(),
                       ));
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.notifications,
                   color: Colors.black,
                   size: 25,
                 ))
           ],
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(55),
+            preferredSize: const Size.fromHeight(55),
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20,vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 15),
                   child: Container(
                     height: 45,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
                         border: Border.all(
-                            color: Color.fromARGB(255, 216, 214, 214)),
+                            color: const Color.fromARGB(255, 216, 214, 214)),
                         borderRadius: BorderRadius.circular(10)),
                     child: DropdownButton(
                       elevation: 0,
                       menuMaxHeight: 300,
-                      hint: Text("Filter Restrooms "),
+                      hint: const Text("Filter Restrooms "),
                       dropdownColor: Colors.blue.shade50,
-                      icon: Icon(Icons.arrow_drop_down),
+                      icon: const Icon(Icons.arrow_drop_down),
                       iconSize: 30,
                       isExpanded: true,
-                      style:TextStyle(
+                      style:const TextStyle(
                         color: Colors.black,
                         fontSize: 19,
                       ),
@@ -345,7 +344,7 @@ class _UserPageState extends State<UserPage> {
                         return DropdownMenuItem(
 
                             value:valueItem,
-                            child:Text(valueItem,style:TextStyle(
+                            child:Text(valueItem,style:const TextStyle(
                               color: Colors.black,
                               fontSize: 17,
                             ),),
@@ -456,7 +455,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   Widget build(BuildContext context) {
     return Container(
       height: 60,
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: const BoxDecoration(
           border: Border(
               top: BorderSide(color: Color.fromARGB(255, 209, 208, 208)))),
@@ -474,9 +473,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
               decoration: BoxDecoration(
                   border: Border(
                     top: widget.index == 0
-                        ? BorderSide(
+                        ? const BorderSide(
                         color: Color.fromRGBO(66, 130, 200, 1), width: 2)
-                        : BorderSide(width: 2, color: Colors.white),
+                        : const BorderSide(width: 2, color: Colors.white),
                   )),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -515,15 +514,15 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                 showDialog(context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text("You need to Login first"),
-                      content: Text(
+                      title: const Text("You need to Login first"),
+                      content: const Text(
                           "Click on login button if you want to save"),
                       actions: <Widget>[
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: Text("Leave"),
+                          child: const Text("Leave"),
                         ),
                         TextButton(
                           onPressed: () async {
@@ -535,7 +534,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                                   //         SignupPageUser
                                 ));
                           },
-                          child: Text("Login"),
+                          child: const Text("Login"),
                         ),
                       ],
                     );
@@ -549,9 +548,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
               decoration: BoxDecoration(
                   border: Border(
                     top: widget.index == 1
-                        ? BorderSide(
+                        ? const BorderSide(
                         color: Color.fromRGBO(66, 130, 200, 1), width: 2)
-                        : BorderSide(width: 2, color: Colors.white),
+                        : const BorderSide(width: 2, color: Colors.white),
                   )),
               child: _isSignedIn?
               Column(
@@ -563,9 +562,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                     future: getNameByEmail(uEmail),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Icon(Icons.person,size: 16,color: Colors.white,); // Placeholder while loading
+                        return const Icon(Icons.person,size: 16,color: Colors.white,); // Placeholder while loading
                       } else if (snapshot.hasError) {
-                        return Icon(Icons.person,size: 16,color: Colors.black,);
+                        return const Icon(Icons.person,size: 16,color: Colors.black,);
                       } else {
                         if (snapshot.data != null) {
                           // Data retrieved successfully
@@ -574,7 +573,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                             radius: 12,
                             child: Text(
                               Utils.getInitials("${snapshot.data}"),
-                              style: TextStyle(fontSize: 10, color: Colors.white),
+                              style: const TextStyle(fontSize: 10, color: Colors.white),
                             ),
                           );
                         } else {
@@ -582,7 +581,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                           return CircleAvatar(
                               backgroundColor: Colors.blue[800],
                               radius: 12,
-                              child: Icon(Icons.person,size: 16,color: Colors.white,)
+                              child: const Icon(Icons.person,size: 16,color: Colors.white,)
                           );
                         }
                       }
@@ -606,7 +605,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                   CircleAvatar(
                       backgroundColor: Colors.blue[800],
                       radius: 12,
-                      child: Icon(Icons.person,size: 16,color: Colors.white,)
+                      child: const Icon(Icons.person,size: 16,color: Colors.white,)
                   ),
 
                   Text(

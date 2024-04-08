@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import '../widgets/widget.dart';
+
+
 
 class ReportIssues extends StatefulWidget {
   const ReportIssues({super.key, required this.rest_id, required this.uemail, required this.adminEmail, required this.restAddress, required this.restName,});
@@ -47,7 +48,6 @@ class _ReportIssuesState extends State<ReportIssues> {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        // Assuming the document contains 'name' and 'location' fields
         DocumentSnapshot adminDoc = querySnapshot.docs.first;
         return {
           'name': adminDoc['name'],
@@ -92,7 +92,7 @@ class _ReportIssuesState extends State<ReportIssues> {
     return Scaffold(
       appBar: CustomAppBar(
         appTitle: "Report Issue",
-        icon: FaIcon(Icons.arrow_back_ios),
+        icon: const FaIcon(Icons.arrow_back_ios),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +100,7 @@ class _ReportIssuesState extends State<ReportIssues> {
           Expanded(child:
           Container(
             width: double.infinity,
-            padding:EdgeInsets.symmetric(horizontal: 20,vertical: 18),
+            padding:const EdgeInsets.symmetric(horizontal: 20,vertical: 18),
             decoration:BoxDecoration(
               // borderRadius:BorderRadius.circular(30),
               color: Colors.indigo[50],
@@ -110,12 +110,12 @@ class _ReportIssuesState extends State<ReportIssues> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Send to  ",
+                  const Text("Send to  ",
                     style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
                   ),
                   Container(
-                      margin: EdgeInsets.only(top: 3),
-                      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                      margin: const EdgeInsets.only(top: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
@@ -133,9 +133,9 @@ class _ReportIssuesState extends State<ReportIssues> {
                                 CircleAvatar(
                                   radius: 20,
                                   backgroundColor: Colors.indigo[900],
-                                  child: Icon(Icons.person, color: Colors.white),
+                                  child: const Icon(Icons.person, color: Colors.white),
                                 ),
-                                SizedBox(width: 15),
+                                const SizedBox(width: 15),
                                 Text('${restRoomData['handledBy']}'),
                               ],
                             ); // Placeholder while loading
@@ -147,9 +147,9 @@ class _ReportIssuesState extends State<ReportIssues> {
                                 CircleAvatar(
                                   radius: 20,
                                   backgroundColor: Colors.indigo[900],
-                                  child: Icon(Icons.person, color: Colors.white),
+                                  child: const Icon(Icons.person, color: Colors.white),
                                 ),
-                                SizedBox(width: 15),
+                                const SizedBox(width: 15),
                                 Text('${restRoomData['handledBy']}'),
                               ],
                             );
@@ -163,17 +163,17 @@ class _ReportIssuesState extends State<ReportIssues> {
                                 CircleAvatar(
                                   radius: 20,
                                   backgroundColor: Colors.indigo[900],
-                                  child: Icon(Icons.person, color: Colors.white),
+                                  child: const Icon(Icons.person, color: Colors.white),
                                 ),
-                                SizedBox(width: 15),
+                                const SizedBox(width: 15),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('$adminName',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                    Text(adminName,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                                     ),
-                                    Text('$adminLocation',
-                                      style: TextStyle(fontWeight: FontWeight.w400, color: Colors.black54, fontSize: 13),
+                                    Text(adminLocation,
+                                      style: const TextStyle(fontWeight: FontWeight.w400, color: Colors.black54, fontSize: 13),
                                     ),
                                   ],
                                 ),
@@ -184,15 +184,15 @@ class _ReportIssuesState extends State<ReportIssues> {
                       )
 
                   ),
-                  SizedBox(height: 10,),
-                  Text("Report Issue  ",
+                  const SizedBox(height: 10,),
+                  const Text("Report Issue  ",
                     style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
                   ),
                   Container(
                     // color: Colors.black54,
                     width:MediaQuery.of(context).size.width ,
-                    margin: EdgeInsets.only(top: 3),
-                    padding: EdgeInsets.only(top: 3,left: 12,right: 12,bottom: 40),
+                    margin: const EdgeInsets.only(top: 3),
+                    padding: const EdgeInsets.only(top: 3,left: 12,right: 12,bottom: 40),
                     height: 200,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -205,7 +205,7 @@ class _ReportIssuesState extends State<ReportIssues> {
                     child: TextField(
                       controller: reportController,
                       maxLines: null,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Write Issue regarding this Restroom',
                         border: InputBorder.none,
                         hintMaxLines: 5,
@@ -221,7 +221,7 @@ class _ReportIssuesState extends State<ReportIssues> {
           ),
           Center(
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16,vertical: 18),
+              margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 18),
               width: MediaQuery.of(context).size.height/3,
               // color: Colors.black12,
               child: MaterialButton(
@@ -276,15 +276,15 @@ class _ReportIssuesState extends State<ReportIssues> {
                   },
                   color: Colors.blue[800],
                   textColor: Colors.white,
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
-                    side: BorderSide(
+                    side: const BorderSide(
                       color: Color(0xFFebf1fa), // Set the border color
                       width: 1.0,         // Set the border width
                     ),
                   ),
-                  child:Text("SEND ",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
+                  child:const Text("SEND ",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
                   ),)
               ),
             ),
@@ -387,11 +387,11 @@ class _ReportIssuesState extends State<ReportIssues> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Can\'t report' ),
+          title: const Text('Can\'t report' ),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -406,11 +406,11 @@ class _ReportIssuesState extends State<ReportIssues> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Successfully Reported'),
+          title: const Text('Successfully Reported'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
                 // Navigator.pushReplacement(

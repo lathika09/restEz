@@ -178,13 +178,13 @@ class Restroom {
       if (docSnapshot.exists) {
         Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
         if (data != null && data.containsKey('savedBy')) {
-          return data['savedBy'] ?? []; // Return savedBy data or an empty list if null
+          return data['savedBy'] ?? [];
         }
       }
-      return []; // Return an empty list if the document doesn't exist or savedBy field is not found
+      return [];
     } catch (error) {
       print("Error getting savedBy data: $error");
-      throw error; // Throw the error for handling in the UI
+      throw error;
     }
   }
 }

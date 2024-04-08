@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rest_ez_app/admin/signup.dart';
 import 'package:rest_ez_app/user/homepage.dart';
 import 'package:rest_ez_app/user/shared.dart';
 import 'package:rest_ez_app/user/signupUser.dart';
-
 import '../constant/imageString.dart';
+
+
 
 class UserLoginPage extends StatelessWidget {
   final TextEditingController login_email = TextEditingController();
@@ -126,9 +126,9 @@ class UserLoginPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 40,vertical: 5),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 5),
                     child: Container(
-                      padding: EdgeInsets.only(left: 3),
+                      padding: const EdgeInsets.only(left: 3),
 
                       child: MaterialButton(
                         minWidth:MediaQuery.of(context).size.width/2,
@@ -188,7 +188,6 @@ class UserLoginPage extends StatelessWidget {
                                     break;
                                 }
 
-                                // Check for the "user-not-found" error specifically
                                 if (error.code == 'user-not-found') {
                                   errorMessage = 'User not found. Please check your email and try again.';
                                 }
@@ -196,7 +195,6 @@ class UserLoginPage extends StatelessWidget {
 
                                 _showErrorDialog(context, errorMessage);
                               } else {
-                                // Handle other non-Firebase exceptions, if any
                                 print('Non-Firebase Exception: $error');
                                 _showErrorDialog(context, 'An unexpected error occurred.');
                               }
@@ -236,7 +234,7 @@ class UserLoginPage extends StatelessWidget {
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.only(top: 80),
+                    padding: const EdgeInsets.only(top: 80),
                     height: 200,
                     decoration: const BoxDecoration(
                       image: DecorationImage(image: AssetImage(login_pg),
@@ -257,15 +255,15 @@ class UserLoginPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Forgot Password'),
+          title: const Text('Forgot Password'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text('Enter your email to receive a password reset link:'),
-              SizedBox(height: 10),
+              const Text('Enter your email to receive a password reset link:'),
+              const SizedBox(height: 10),
               TextField(
                 controller: TextEditingController(),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Email',
                 ),
               ),
@@ -273,13 +271,13 @@ class UserLoginPage extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Reset Password'),
+              child: const Text('Reset Password'),
               onPressed: () async {
                 try {
                   await FirebaseAuth.instance.sendPasswordResetEmail(
@@ -305,11 +303,11 @@ class UserLoginPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -329,11 +327,11 @@ class UserLoginPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Success'),
+          title: const Text('Success'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();// Close the dialog
                 // Navigator.push(
@@ -368,18 +366,18 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       obscureText: _isObscured,
       controller: widget.controller,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-        enabledBorder: OutlineInputBorder(
+        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+        enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Color(0xFFBDBDBD),
           ),
         ),
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Color(0xFFBDBDBD),
           ),
         ),
-        prefixIcon: Icon(
+        prefixIcon: const Icon(
           Icons.password,
           color: Color(0xFFBDBDBD),
         ),

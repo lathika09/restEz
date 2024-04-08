@@ -1,7 +1,3 @@
-
-import 'dart:io';
-
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -13,7 +9,6 @@ import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:rest_ez_app/admin/EditRestroomData.dart';
 import 'package:rest_ez_app/user/fetchRestRoomDoc.dart';
-
 import '../constant/imageString.dart';
 import '../model/model.dart';
 
@@ -213,11 +208,10 @@ class _ManageRestroomState extends State<ManageRestroom> {
                                                     itemBuilder: (context, _) =>  const Icon(
                                                       Icons.star,
                                                       color: Colors.amber,
-                                                      // size: 10, // Adjust the size of the stars as needed
+                                                      // size: 10,
                                                     ),
                                                     onRatingUpdate: (rating) {
                                                       print(rating);
-                                                      // You can update the rating here if needed
                                                     },
                                                   ),
                                                   Text("(${restrooms[index].no_of_reviews}) ",style: const TextStyle(fontSize: 15)),
@@ -558,7 +552,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                       ),
                                       const SizedBox(height: 5,),
                                       AbsorbPointer(
-                                        absorbing: false,//used to eanable editing
+                                        absorbing: false,
                                         child: MultiSelectDialogField(
                                           items: genderItems,
                                           itemsTextStyle:TextStyle(fontSize: 16),
@@ -569,8 +563,6 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                           onConfirm: (values) {
                                             setState(() {
                                               selectedGender = values.toList();
-                                              // Convert selected weekday strings to integers
-                                              // selectedWeekdayIntegers = selectedSlot.map((weekday) => dayNameToValue[weekday]!).toList();
                                             });
                                           },
                                         ),
@@ -592,7 +584,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                           ),
                                           child: DropdownButton<String>(
                                             isExpanded: true,
-                                            hint: Text('Select an Option'),
+                                            hint: const Text('Select an Option'),
                                             underline: Container(
                                               height: 0,
                                               color: Colors.transparent,
@@ -612,7 +604,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                             items: _filterOptions.map((valueItem){
                                               return DropdownMenuItem(
                                                 value:valueItem,
-                                                child:Text(valueItem,style:TextStyle(
+                                                child:Text(valueItem,style:const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 16,),
                                                 ),
@@ -630,7 +622,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                             style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),
                                           ),
                                           Container(
-                                            margin: EdgeInsets.symmetric(horizontal: 16,vertical: 5),
+                                            margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 5),
                                             width: MediaQuery.of(context).size.width/2.9,
                                             child: MaterialButton(
                                                 elevation: 0,
@@ -648,7 +640,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                                 },
                                                 color: Colors.indigo[100],//800
                                                 textColor: Colors.white,
-                                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius: BorderRadius.circular(30),
                                                   side: BorderSide(
@@ -656,15 +648,15 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                                     width: 1.0,
                                                   ),
                                                 ),
-                                                child:Text("GET LOCATION ",style: TextStyle(color:Colors.black,fontSize: 15,fontWeight: FontWeight.bold
+                                                child:const Text("GET LOCATION ",style: TextStyle(color:Colors.black,fontSize: 15,fontWeight: FontWeight.bold
                                                 ),)
                                             ),
                                           ),
                                         ],
                                       ),
                                       Container(
-                                        margin: EdgeInsets.symmetric(vertical: 5.0),
-                                        padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 0),
+                                        margin: const EdgeInsets.symmetric(vertical: 5.0),
+                                        padding:const EdgeInsets.symmetric(horizontal: 10.0,vertical: 0),
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(6.0),
                                           color: Colors.indigo[50],
@@ -675,11 +667,11 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                           child:isClicked?
                                           Flexible(
                                             child: Container(
-                                              padding: EdgeInsets.symmetric(vertical: 10),
+                                              padding: const EdgeInsets.symmetric(vertical: 10),
                                               child: Text(
                                                 // "Select button to get location djd kms nkdnknd nskndkmsk cncknd uss huhud ndjnd bduhnd dhjudnu dundud dujndudn du",
                                                 address,
-                                                style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                                                style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
                                                 softWrap: true,
                                                 overflow: TextOverflow.visible,
                                               ),
@@ -746,7 +738,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                   )
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 16,vertical: 8),
+                margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
                 width: MediaQuery.of(context).size.height/5,
                 child: MaterialButton(
                     elevation: 0,
@@ -794,15 +786,15 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                     },
                     color: Colors.indigo[900],
                     textColor: Colors.white,
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
-                      side: BorderSide(
-                        color: Color(0xFFebf1fa), // Set the border color
-                        width: 1.0,         // Set the border width
+                      side: const BorderSide(
+                        color: Color(0xFFebf1fa),
+                        width: 1.0,
                       ),
                     ),
-                    child:Row(
+                    child:const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.home_work_sharp,size: 30,),
@@ -845,7 +837,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -879,11 +871,11 @@ class _AddRestroomDataState extends State<AddRestroomData> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Success'),
+          title: const Text('Success'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -902,11 +894,11 @@ class _AddRestroomDataState extends State<AddRestroomData> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },

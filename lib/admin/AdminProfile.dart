@@ -1,13 +1,13 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../constant/imageString.dart';
+
+
 
 class AdminProfile extends StatefulWidget {
   const AdminProfile({Key? key, required this.admin_email}) : super(key: key);
@@ -94,10 +94,10 @@ class _AdminProfileState extends State<AdminProfile> {
     if (pickedFile != null) {
       final imageFile = File(pickedFile.path);
 
-
-      if (adminEmail != null) {
-        uploadImageToFirebaseStorage(imageFile, adminEmail);
-      }
+      uploadImageToFirebaseStorage(imageFile, adminEmail);
+      // if (adminEmail != null) {
+      //   uploadImageToFirebaseStorage(imageFile, adminEmail);
+      // }
 
     }
   }
@@ -148,10 +148,10 @@ class _AdminProfileState extends State<AdminProfile> {
     return Scaffold(
         appBar:AppBar(
           backgroundColor:Colors.indigo.shade700,
-          iconTheme: IconThemeData(
+          iconTheme:const IconThemeData(
             color: Colors.white,
           ),
-          title:Center(
+          title:const Center(
             child: Text(appname,
               style: TextStyle(
                   fontSize: 30,
@@ -161,7 +161,7 @@ class _AdminProfileState extends State<AdminProfile> {
           ),
           elevation: 24.0,
           actions: <Widget>[IconButton(
-            icon: Icon(Icons.refresh,size: 30,color: Colors.white,),
+            icon: const Icon(Icons.refresh,size: 30,color: Colors.white,),
             onPressed: () {
               // Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateProfile()),);
               loadProfileImage(widget.admin_email);
@@ -210,36 +210,36 @@ class _AdminProfileState extends State<AdminProfile> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 20,),
+                      const SizedBox(height: 20,),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20
+                        padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20
                         ),
-                        margin: EdgeInsets.symmetric(horizontal: 30,vertical: 5),
+                        margin: const EdgeInsets.symmetric(horizontal: 30,vertical: 5),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                               width: 10,
-                              color: Color.fromRGBO(232, 234, 246, 1),
+                              color: const Color.fromRGBO(232, 234, 246, 1),
                           )
                         ),
                         child: Column(
                           children: [
                 
                             buildTextField("Name :",_name),
-                            SizedBox(height: 15,),
+                            const SizedBox(height: 15,),
                             //email
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   "Email :",
                                   style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500,color: Colors.black87),
                                 ),
                                 const SizedBox(width:10),
                                 Flexible(
                                   child: TextField(
-                                    style: TextStyle(
+                                    style:const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                       color: Colors.black54,
@@ -268,22 +268,22 @@ class _AdminProfileState extends State<AdminProfile> {
                               ],
                             ),
                             // buildTextField("Email :",_email),
-                            SizedBox(height: 20,),
+                            const SizedBox(height: 20,),
                 
                             //phone
                             buildTextField("Phone No. :",_phone),
-                            SizedBox(height: 20,),
+                            const SizedBox(height: 20,),
                 
                             //location
                             buildTextField("Address :",_add),
-                
-                            SizedBox(height: 20,),
+
+                            const SizedBox(height: 20,),
                 
                 
                           ],
                         ),
                       ),
-                      SizedBox(height: 30,),
+                      const SizedBox(height: 30,),
 
                     ],
                   ),
@@ -336,8 +336,8 @@ class _AdminProfileState extends State<AdminProfile> {
             )
                 : Container(
               width: double.infinity,
-                  //Color.fromRGBO(232, 234, 246, 1),
-                  height:MediaQuery.of(context).size.height/10 ,
+              //Color.fromRGBO(232, 234, 246, 1),
+              height:MediaQuery.of(context).size.height/10 ,
               decoration: BoxDecoration(
                 color:Colors.indigo.shade700,
                 boxShadow: [
@@ -349,9 +349,9 @@ class _AdminProfileState extends State<AdminProfile> {
                   ),
                 ],
               ),
-                  child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
                   // Edit button
                   MaterialButton(
                     minWidth:MediaQuery.of(context).size.width/3,
@@ -364,7 +364,7 @@ class _AdminProfileState extends State<AdminProfile> {
                     shape: RoundedRectangleBorder(
                         side: const BorderSide(
                             color:Colors.white,
-                          width: 2
+                            width: 2
                         ),
                         borderRadius: BorderRadius.circular(50)
                     ),
@@ -376,25 +376,20 @@ class _AdminProfileState extends State<AdminProfile> {
                         fontWeight: FontWeight.bold,
                       ),),
                   ),
-                                ],
-                              ),
-                ),
+                ],
+              ),
+            ),
           ],
         )
     );
   }
-  // Edit button click handler
   void onEditButtonClick() {
     setState(() {
       isEditing = true; // Enable editing mode
     });
   }
 
-  // Save button click handler
   void onSaveButtonClick() async {
-
-
-    // Update the Firestore document with new values
     final updatedData = {
       "name": _name.text,
       "email": _email.text,
@@ -424,7 +419,6 @@ class _AdminProfileState extends State<AdminProfile> {
       print("Error updating document: $e");
     }
   }
-  // textStyles for both enabled and disabled states
   final enabledTextStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,
@@ -445,7 +439,7 @@ class _AdminProfileState extends State<AdminProfile> {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500,color: Colors.black87),
+          style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w500,color: Colors.black87),
         ),
         const SizedBox(width:5),
         Flexible(

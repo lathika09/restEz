@@ -1,8 +1,5 @@
 import 'package:get/get.dart';
 
-import '../screens/welcome.dart';
-
-
 class SplashScreenController extends GetxController {
   static SplashScreenController get find => Get.find();
 

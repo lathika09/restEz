@@ -12,7 +12,6 @@ class NotificationScreen extends StatelessWidget {
         title: RichText(
           text: TextSpan(
               style: const TextStyle(fontSize: 28,
-                  // fontFamily: 'El Messiri',
                   fontWeight: FontWeight.bold),
               children: <TextSpan>[
                 const TextSpan(text: 'Rest', style: TextStyle(color: Colors.black)),
@@ -29,9 +28,9 @@ class NotificationScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     // Center(child: Text("noxtification")),
-                    SizedBox(height: 50,),
+                    const SizedBox(height: 50,),
                     Center(
-                      child: Container(
+                      child: SizedBox(
                         //margin: const EdgeInsets.symmetric(vertical: 40),
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height/2,
@@ -39,14 +38,14 @@ class NotificationScreen extends StatelessWidget {
                           //  "https://lottie.host/6904c33f-a134-46f8-8e07-b54ba2d6141e/0TNJyxIgmU.json"),
                       ),
                     ),
-                    Text("No Notification",
+                    const Text("No Notification",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold
                       ),
                     ),
-                    SizedBox(height: 450,)
+                    const SizedBox(height: 450,)
 
                   ],
                 ),

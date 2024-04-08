@@ -1,15 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:uuid/uuid.dart';
-
 import 'Profile.dart';
 
 class RatingPage extends StatefulWidget {
@@ -32,11 +25,11 @@ class _RatingPageState extends State<RatingPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Can\'t post' ),
+          title: const Text('Can\'t post' ),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -51,11 +44,11 @@ class _RatingPageState extends State<RatingPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Successfully Posted'),
+          title: const Text('Successfully Posted'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
                 // Navigator.pushReplacement(
@@ -241,14 +234,14 @@ class _RatingPageState extends State<RatingPage> {
             onPressed: (){
               Navigator.of(context).pop();
             },
-            icon: Icon(Icons.close)),
+            icon: const Icon(Icons.close)),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20,vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 15),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,8 +256,8 @@ class _RatingPageState extends State<RatingPage> {
                                   backgroundColor: Colors.blue[800],
                                   radius: 23,
                                   child: Text(
-                                    Utils.getInitials("${widget.uname}"),
-                                    style: TextStyle(
+                                    Utils.getInitials(widget.uname),
+                                    style: const TextStyle(
                                         fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
                                   ),);
                             } else if (snapshot.hasError) {
@@ -272,13 +265,13 @@ class _RatingPageState extends State<RatingPage> {
                                   backgroundColor: Colors.blue[800],
                                   radius: 23,
                                   child: Text(
-                                  Utils.getInitials("${widget.uname}"),
-                            style: TextStyle(
+                                  Utils.getInitials(widget.uname),
+                            style: const TextStyle(
                             fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
                             ),);
                             } else {
                               Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
-                              String? profileImageUrl = userData['prof_img']; // Assuming 'prof_img' is the field containing the profile image URL
+                              // String? profileImageUrl = userData['prof_img'];
                               return userData['prof_img'] != ""
                                   ?
                               CircleAvatar(
@@ -289,8 +282,8 @@ class _RatingPageState extends State<RatingPage> {
                                 backgroundColor: Colors.blue[800],
                                 radius: 23,
                                 child: Text(
-                                  Utils.getInitials("${widget.uname}"),
-                                  style: TextStyle(
+                                  Utils.getInitials(widget.uname),
+                                  style: const TextStyle(
                                       fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
                                 ),);
 
@@ -311,8 +304,8 @@ class _RatingPageState extends State<RatingPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("${widget.uname}",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
-                              Text("Posting publicly",style: TextStyle(color: Colors.black54,fontSize: 14)),
+                              Text(widget.uname,style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
+                              const Text("Posting publicly",style: TextStyle(color: Colors.black54,fontSize: 14)),
                             ],
                           ),
                         )
@@ -321,7 +314,7 @@ class _RatingPageState extends State<RatingPage> {
 
                     //STAR TAPPING
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 13),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children:
@@ -350,18 +343,18 @@ class _RatingPageState extends State<RatingPage> {
                     ),
                     Container(
                       // color: Colors.black54,
-                      padding: EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child:Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 12.0),
                             child: Text("Share more about your experience",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                           ),
                           Container(
                             // color: Colors.black54,
                             width:MediaQuery.of(context).size.width ,
-                            padding: EdgeInsets.only(top: 3,left: 12,right: 12,bottom: 40),
+                            padding: const EdgeInsets.only(top: 3,left: 12,right: 12,bottom: 40),
                             height: 200,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
@@ -374,7 +367,7 @@ class _RatingPageState extends State<RatingPage> {
                             child: TextField(
                               controller: reviewController,
                               maxLines: null,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 hintText: 'Share details of your own experience at this restroom',
                                 border: InputBorder.none,
                                 hintMaxLines: 5,
@@ -382,129 +375,6 @@ class _RatingPageState extends State<RatingPage> {
                               ),
                             ),
                           ),
-
-                          //ADD PHOTOS
-                          // Center(
-                          //   child: Container(
-                          //     margin: EdgeInsets.only(left: 16,top: 18,right: 16),
-                          //     width: MediaQuery.of(context).size.height/4.9,
-                          //     child: MaterialButton(
-                          //         elevation: 0,
-                          //         onPressed: () async{
-                          //           final ImagePicker picker = ImagePicker();
-                          //
-                          //           // Pick image
-                          //           final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
-                          //           if (image != null) {
-                          //             log('Image Path: ${image.path}');
-                          //             await sendImage(widget.id, widget.document['images'], File(image.path));
-                          //           }
-                          //           // showDialog(
-                          //           //   context: context,
-                          //           //   builder: (context) {
-                          //           //     return AlertDialog(
-                          //           //       // title: Text('Add Photos from'),
-                          //           //       content: Text('Add Photos from',style: TextStyle(fontSize: 18),),
-                          //           //       actions: [
-                          //           //
-                          //           //         Row(
-                          //           //           crossAxisAlignment: CrossAxisAlignment.start,
-                          //           //           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          //           //           children: [
-                          //           //
-                          //           //             TextButton(
-                          //           //               onPressed: () async{
-                          //           //                 // Navigator.of(context).pop();
-                          //           //                 final ImagePicker picker = ImagePicker();
-                          //           //                 List<dynamic> imagesList =widget.document['images']??[];
-                          //           //                 final List<XFile> images = await picker.pickMultiImage(imageQuality: 70);
-                          //           //                 for (var i in images) {
-                          //           //                   log('Image Path: ${i.path}');
-                          //           //
-                          //           //                   await sendImage(widget.id, widget.document['images'], File(i.path));
-                          //           //
-                          //           //                 }
-                          //           //
-                          //           //               },
-                          //           //               child: Container(
-                          //           //                   // width:MediaQuery.of(context).size.width/4,
-                          //           //                 padding:EdgeInsets.all(15),
-                          //           //                 decoration:BoxDecoration(
-                          //           //                   borderRadius: BorderRadius.circular(10),
-                          //           //                   border: Border.all(
-                          //           //                     width: 1,
-                          //           //                     color: Colors.black26
-                          //           //                   )
-                          //           //                 ),
-                          //           //                   child: Column(
-                          //           //                     crossAxisAlignment: CrossAxisAlignment.center,
-                          //           //                     children: [
-                          //           //                       Icon(Icons.photo,size: 30,color: Colors.indigo[900],),
-                          //           //                       Text('Gallery',style: TextStyle(color: Colors.indigo[900],fontSize: 15),),
-                          //           //                     ],
-                          //           //                   )
-                          //           //               ),
-                          //           //             ),
-                          //           //             TextButton(
-                          //           //               onPressed: () async {
-                          //           //                 Navigator.of(context).pop();
-                          //           //                 // setReportStatus(reports[index].id,"Solved",reports[index]['address']);
-                          //           //               },
-                          //           //               child:Container(
-                          //           //                   // width:MediaQuery.of(context).size.width/4,
-                          //           //                   padding:EdgeInsets.all(15),
-                          //           //                   decoration:BoxDecoration(
-                          //           //                       borderRadius: BorderRadius.circular(10),
-                          //           //                       border: Border.all(
-                          //           //                           width: 1,
-                          //           //                           color: Colors.black26
-                          //           //                       )
-                          //           //                   ),
-                          //           //                   child: Column(
-                          //           //                     crossAxisAlignment: CrossAxisAlignment.center,
-                          //           //                     children: [
-                          //           //                       Icon(Icons.camera_alt,size: 30,color: Colors.indigo[900],),
-                          //           //                       Text('Camera',style: TextStyle(color: Colors.indigo[900],fontSize: 15),),
-                          //           //                     ],
-                          //           //                   )
-                          //           //               ),
-                          //           //             ),
-                          //           //           ],
-                          //           //         ),
-                          //           //       ],
-                          //           //     );
-                          //           //   },
-                          //           // );
-                          //
-                          //
-                          //
-                          //
-                          //           // Navigator.push(
-                          //           //     context,
-                          //           //     MaterialPageRoute(
-                          //           //         builder: (context) => RatingPage(uname: widget.name, document: widget.document,)));
-                          //
-                          //         },
-                          //         color: Colors.white,
-                          //         textColor: Colors.black,
-                          //         padding: EdgeInsets.all(12),
-                          //         shape: RoundedRectangleBorder(
-                          //           borderRadius: BorderRadius.circular(30),
-                          //           side: BorderSide(
-                          //             color: Color(0xFF979393FF),
-                          //             width: 1.0,
-                          //           ),
-                          //         ),
-                          //         child:Row(
-                          //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          //           children: [
-                          //             Icon(Icons.add_a_photo,color: Colors.blue[800],),
-                          //             Text("Add Photos",style: TextStyle(color:Colors.blue[800],fontSize: 15,),),
-                          //           ],
-                          //         )
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
 
@@ -570,15 +440,15 @@ class _RatingPageState extends State<RatingPage> {
                   },
                   color: Colors.blue[700],
                   textColor: Colors.white,
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
-                    side: BorderSide(
-                      color: Color(0xFFebf1fa), // Set the border color
-                      width: 1.0,         // Set the border width
+                    side: const BorderSide(
+                      color: Color(0xFFebf1fa),
+                      width: 1.0,
                     ),
                   ),
-                  child:Text("Post",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
+                  child:const Text("Post",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
                   ),)
               ),
             ),

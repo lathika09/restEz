@@ -1,8 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +13,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rest_ez_app/user/LoginUser.dart';
 import 'package:rest_ez_app/user/RatingsPage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rest_ez_app/user/editPost.dart';
 import 'package:rest_ez_app/user/reportIssue.dart';
 import 'package:rest_ez_app/user/shared.dart';
-import 'package:rest_ez_app/user/signupUser.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:intl/intl.dart';
 import '../model/model.dart';
 import '../widgets/widget.dart';
 import 'Profile.dart';
@@ -373,1429 +368,454 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
           ),
           body: SafeArea(
             child: Padding(
-          padding: const EdgeInsets.all(8.0),
-            child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                stream: FirebaseFirestore.instance
-                    .collection('restrooms')
-                    .doc(widget.document.id)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else if (!snapshot.hasData || !snapshot.data!.exists) {
-                    return Text('Document not found');
-                  } else {
-                    var documentData = snapshot.data!.data()!;
-                    return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(documentData['name'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),),
-                Row(
-                  children: [
-                    Text("${documentData['ratings']}",style: TextStyle(fontSize: 16)),
-                    RatingBar.builder(
-                      initialRating: double.parse(widget.document['ratings'].toString()),
-                      itemSize: 20,
-                      minRating: 1,
-                      direction: Axis.horizontal,
-                      allowHalfRating: true,
-                      itemCount: 5,
-                      ignoreGestures: true,
-                      // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                      itemBuilder: (context, _) =>  Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        // size: 10,
-                      ),
-                      onRatingUpdate: (rating) {
-                        print(rating);
-
-                      },
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text("Public Restroom ",style: TextStyle(fontSize: 16)),
-                    SizedBox(width: 10,),
-                    Icon(Icons.social_distance),
-                    Text('  ${widget.dist} km ',style: TextStyle(fontSize: 16))
-                  ],
-                ),
-                SizedBox(height: 10,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    MaterialButton(
-                        elevation: 0,
-                        onPressed: () {
-                          navigateToRestroom(widget.pos, widget.restroomloc);
-                        },
-                        color: Colors.blue[700],
-                        textColor: Colors.white,
-                        padding: EdgeInsets.all(8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: BorderSide(
-                            color: Color(0xFFebf1fa),
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 6,vertical: 4),
-                          child: Row(
-                            children: [
-                              Icon(Icons.directions,color: Colors.white,),
-                              Text(
-                                "Directions",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        )
-                    ),
-                    MaterialButton(
-                        elevation: 0,
-                        onPressed: ()async {
-                          if(_isSignedIn){
-                            print("In onPResed");
-                            print("object : $restRoomData");
-                            List<dynamic> savedBy =restRoomData['savedBy']??[];
-                            print("hish");
-                            print(savedBy);
-                            print("before bookmark");
-                            Bookmark(savedBy);
-                            print("after bookmark");
-                            bool isFav = savedBy.contains(email)??false;
-                            if (isFav) {
-                              //savedBy.remove(widget.name);
-                              isSaved=isFav;
-                              print("is saved true");
-                            }
-                            print("is saved false");
-                            await FirebaseFirestore.instance
-                                .collection('restrooms')
-                                .doc(widget.document.id)
-                                .update({'savedBy': savedBy});
-
-                            print("after update");
-
-                            setState(() {
-                              print("in set");
-                              isSaved=!isSaved;
-                              print("is saved  changed :$isSaved");
-                              if(!isSaved){
-                                print("is saved false REMOVED");
-                                savedBy.remove(email);
-                              }
-                              else{
-                                print("is saved true ADDED");
-                                savedBy.add(email);
-                              }
-                              print("SET END");
-                              print(email);
-
-                            });
-                          }
-
-                        },
-                        color: Colors.white,
-                        textColor: Colors.blue[700],
-                        padding: EdgeInsets.all(8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: BorderSide(
-                            color: Colors.grey.shade300,
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 6,vertical: 4),
-                          child: Row(
-                            children: [
-                              // restRoomData['savedBy'].contains("Hari Kumar")==true
-                              //     ?Icon(Icons.bookmark,color: Colors.indigo,)
-                              //     :Icon(Icons.bookmark_border,color: Colors.blue[700],),
-                              _isSignedIn & email.isNotEmpty
-                              ?
-                              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('restrooms')
-                                    .doc(widget.document.id)
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
-                                    return Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.bookmark_border, color: Colors.blue[700]),
-                                        SizedBox(width: 5,),
-                                        Text(
-                                          "Save",
-                                          style: TextStyle(
-                                              color: Colors.blue[700],
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    );
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  } else {
-                                    List<dynamic> savedBy = snapshot.data?.data()?['savedBy'] ?? [];
-                                    bool isSaved = savedBy.contains(email) ?? false;
-                                    return isSaved
-                                        ?Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.bookmark, color: Colors.indigo),
-                                        SizedBox(width: 5,),
-                                        Text(
-                                          "Save",
-                                          style: TextStyle(
-                                              color: Colors.blue[700],
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    )
-                                        :Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.bookmark_border, color: Colors.blue[700]),
-                                        SizedBox(width: 5,),
-                                        Text(
-                                          "Save",
-                                          style: TextStyle(
-                                              color: Colors.blue[700],
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    );
-
-
-
-
-
-                                  }
-                                },
-                              )
-                              :
-                              GestureDetector(
-                                onTap: (){
-                                  showDialog(context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text("You need to Login first"),
-                                        content: Text(
-                                            "Click on login button if you want to save"),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Text("Leave"),
-                                          ),
-                                          TextButton(
-                                            onPressed: () async {
-                                              Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          UserLoginPage()
-                                                    //         SignupPageUser
-                                                  ));
-                                            },
-                                            child: Text("Login"),
-                                          ),
-                                        ],
-                                      );
-                                    },);
-                                },
-
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.bookmark_border, color: Colors.blue[700]),
-                                    SizedBox(width: 5,),
-                                    Text(
-                                      "Save",
-                                      style: TextStyle(
-                                          color: Colors.blue[700],
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                    ),
-                    MaterialButton(
-                        elevation: 0,
-
-                        onPressed: () => _launchWhatsApp(documentData['address']),
-                        color: Colors.white,
-                        textColor: Colors.blue[700],
-                        padding: EdgeInsets.all(8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: BorderSide(
-                            color: Colors.grey.shade300,
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 6,vertical: 4),
-                          child: Row(
-                            children: [
-                              Icon(Icons.share,color: Colors.blue[700],),
-                              Text(
-                                "Share",
-                                style: TextStyle(
-                                    color: Colors.blue[700],
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        )
-                    )
-                  ],
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 15,bottom: 5),
-                  height: 1,
-                  color: Colors.grey[300],
-                ),
-                TabBar(
-                    indicatorColor: Colors.blue[800],
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    indicatorWeight: 2,
-                    unselectedLabelStyle: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 18),
-                    labelStyle: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16),
-                    tabs: [
-                      Tab(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "About",
-                            style: TextStyle(),
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Reviews",
-                            style: TextStyle(),
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Photos",
-                            style: TextStyle(),
-                          ),
-                        ),
-                      ),
-                    ]),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      // About Tab Content
-                      SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.location_on_outlined,color: Colors.blue[900],),
-                                  Expanded(
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width/1.5,
-                                      padding: const EdgeInsets.only(left: 20.0,right:10,),
-                                      child: Text(
-                                        widget.document['address'],
-                                        style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,height: 1.5)
-                                        ,overflow: TextOverflow.visible,softWrap: true,
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.content_copy),
-                                    onPressed: () {
-                                      copyToClipboard(widget.document['address']);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Divider(),
-                            Padding(
-                              padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.groups,color: Colors.blue[900],),
-                                  Expanded(
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width/1.5,
-                                      padding: const EdgeInsets.only(left: 20.0,right:10),
-                                      child: Text(
-                                        (() {
-                                          String accessibility = '';
-                                          String genders = widget.document['gender'].join(', ');
-
-                                          if (widget.document['handicappedAccessible']) {
-                                            accessibility += 'Handicap, ';
-                                          }
-                                          if (genders.isNotEmpty) {
-                                            accessibility += genders;
-                                          }
-
-                                          return accessibility.isNotEmpty ? accessibility : 'Not specified';
-                                        })(),
-
-                                        style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,)
-                                        ,overflow: TextOverflow.visible,softWrap: true,
-                                      ),
-                                    ),
-                                  ),
-
-
-                                ],
-                              ),
-                            ),
-                            Divider(),
-                            Padding(
-                              padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.access_alarm,color: Colors.blue[900],),
-                                  Expanded(
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width/1.5,
-                                      padding: const EdgeInsets.only(left: 20.0,right:10),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            widget.document['availabilityHours'],
-                                            style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Colors.black)
-                                            ,overflow: TextOverflow.visible,softWrap: true,
-                                          ),
-                                          // Icon(Icons.arrow_drop_down_sharp,color: Colors.grey,)
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Divider(),
-                            InkWell(
-                              onTap: ()async{
-                                if(_isSignedIn && email!=""){
-                                  String? name = await getNameByEmail(email);
-
-                                  if (name != null){
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder:
-                                          (context) => ReportIssues( rest_id:widget.document.id, adminEmail: widget.document['handledBy'], restAddress:widget.document['address'], restName: widget.document['name'], uemail:email,),
-                                      ),
-                                    );
-
-                                  }
-                                  else{
-                                    print("name not found for report issue");
-
-                                  }
-                                }
-                                else{
-                                  showDialog(context: context, builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text("You need to SignUp first"),
-                                      content: Text("Click on login button if you want to give review"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text("Leave"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => UserLoginPage()
-                                                  //         SignupPageUser
-                                                ));
-
-
-                                          },
-                                          child: Text("SignUp"),
-                                        ),
-                                      ],
-                                    );
-                                  },);
-                                }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.report,color: Colors.blue[900],),
-                                    Expanded(
-                                      child: Container(
-                                        width: MediaQuery.of(context).size.width/1.5,
-                                        padding: const EdgeInsets.only(left: 20.0,right:10),
-                                        child: Row(
-                                          children: [
-
-                                            Text(
-                                              'Report Issue',
-                                              style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Colors.green[800])
-                                              ,overflow: TextOverflow.visible,softWrap: true,
-                                            ),
-
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-
-
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Divider(),
-
-                          ],
-                        ),
-                      ),
-                      // Reviews Tab Content
-                      SingleChildScrollView(
-                        child: Column(
+                padding: const EdgeInsets.all(8.0),
+                child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                    stream: FirebaseFirestore.instance
+                        .collection('restrooms')
+                        .doc(widget.document.id)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || !snapshot.data!.exists) {
+                        return Text('Document not found');
+                      } else {
+                        var documentData = snapshot.data!.data()!;
+                        return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: EdgeInsets.only(left: 12,right: 12,bottom: 10,top:18),
-                              child: Row(
-                                children: [
-                                  Column(
-                                    children: [
-                                      // FutureBuilder<double>(
-                                      //   future: calculateAverageRating(),
-                                      //   builder: (context, snapshot) {
-                                      //     if (snapshot.connectionState == ConnectionState.waiting) {
-                                      //       return CircularProgressIndicator();
-                                      //     } else if (snapshot.hasError) {
-                                      //
-                                      //       return Text('Error: ${snapshot.error}');
-                                      //     } else {
-                                      //
-                                      //       double averageRating = snapshot.data ?? 0;
-                                      //       avgRating = double.parse((snapshot.data ?? 0).toStringAsFixed(1));
-                                      //       String formattedAverageRating = averageRating.toStringAsFixed(1);
-                                      //       // setAverageRating(widget.document.id,avgRating);
-                                      //       return Text(formattedAverageRating,style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),);
-                                      //     }
-                                      //   },
-                                      // ),
-                              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                              stream: FirebaseFirestore.instance
-                                  .collection('restrooms')
-                                  .doc(widget.document.id)
-                                  .collection('reviews')
-                                  .snapshots(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return Text(
-                                    "3.0",
-                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  int totalRatings = 0;
-                                  int totalReviews = snapshot.data!.size;
-
-                                  snapshot.data!.docs.forEach((reviewDoc) {
-                                    dynamic ratingValue = reviewDoc['rating'];
-                                    if (ratingValue is int) {
-                                      totalRatings += ratingValue;
-                                    } else if (ratingValue is double) {
-                                      totalRatings += ratingValue.toInt();
-                                    }
-                                  });
-
-                                  double averageRating = totalReviews > 0 ? totalRatings / totalReviews : 0;
-                                  return Text(
-                                    averageRating.toStringAsFixed(1),
-                                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                                  );
-                                }
-                              },
-                              ),
-
-
-                                  RatingBar.builder(
-                                        initialRating: double.parse(widget.document['ratings'].toString()),
-                                        itemSize: 15,
-                                        minRating: 0,
-                                        direction: Axis.horizontal,
-                                        allowHalfRating: true,
-                                        itemCount: 5,
-                                        ignoreGestures: true,
-                                        // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                                        itemBuilder: (context, _) =>  Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                          // size: 10,
-                                        ),
-                                        onRatingUpdate: (rating) {
-                                          print(rating);
-
-
-                                          // You can update the rating here if needed
-                                        },
-                                      ),
-                                      // FutureBuilder<int>(
-                                      //   future: get_review(widget.document.id),
-                                      //   builder: (context, snapshot) {
-                                      //     if (snapshot.connectionState == ConnectionState.waiting) {
-                                      //       return CircularProgressIndicator();
-                                      //     } else if (snapshot.hasError) {
-                                      //       return Text('Error: ${snapshot.error}');
-                                      //     } else {
-                                      //       int reviews = snapshot.data ?? 0;
-                                      //       String reviewString = reviews.toString();
-                                      //       return Text('(${reviewString})',style: TextStyle());
-                                      //     }
-                                      //   },
-                                      // ),
-                                    StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                                      stream: FirebaseFirestore.instance
-                                          .collection('restrooms')
-                                          .doc(widget.document.id)
-                                          .collection('reviews')
-                                          .snapshots(),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.connectionState == ConnectionState.waiting) {
-                                          return  Container(
-                                              height: 10,
-                                              width:10,
-                                              child: CircularProgressIndicator());
-                                        } else if (snapshot.hasError) {
-                                          return Text('Error: ${snapshot.error}');
-                                        } else {
-                                          int reviews = snapshot.data!.docs.length;
-                                          String reviewString = reviews.toString();
-                                          return Text('($reviewString)', style: TextStyle());
-                                        }
-                                      },
-                                    ),
-
-                                    ],
+                            Text(documentData['name'],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 24),),
+                            Row(
+                              children: [
+                                Text("${documentData['ratings']}",style: TextStyle(fontSize: 16)),
+                                RatingBar.builder(
+                                  initialRating: double.parse(widget.document['ratings'].toString()),
+                                  itemSize: 20,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  itemCount: 5,
+                                  ignoreGestures: true,
+                                  // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                  itemBuilder: (context, _) =>  const Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    // size: 10,
                                   ),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        for (int rate = 5; rate >= 1; rate--)
-                                          FutureBuilder<double>(
-                                            future: convertRatingToValue(rate),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                                return RatingProgress(text: rate.toString(), value: 0.0);
-                                              } else if (snapshot.hasError) {
-                                                return Text('Error: ${snapshot.error}');
-                                              } else {
-                                                return RatingProgress(text: rate.toString(), value: (snapshot.data ?? 0.0));
-                                              }
-                                            },
-                                          ),
-                                          // StreamBuilder<double>(
-                                          //   stream: convertRatingToValueStream(rate),
-                                          //   builder: (context, snapshot) {
-                                          //     if (snapshot.connectionState == ConnectionState.waiting) {
-                                          //       return CircularProgressIndicator();
-                                          //     } else if (snapshot.hasError) {
-                                          //       return Text('Error: ${snapshot.error}');
-                                          //     } else {
-                                          //       return RatingProgress(text: rate.toString(), value: (snapshot.data ?? 0.0));
-                                          //     }
-                                          //   },
-                                          // ),
+                                  onRatingUpdate: (rating) {
+                                    print(rating);
 
-                                        // StreamBuilder<double>(
-                                        //   stream: ratingStream(rate),
-                                        //   builder: (context, snapshot) {
-                                        //     if (snapshot.connectionState == ConnectionState.waiting) {
-                                        //       return CircularProgressIndicator();
-                                        //     } else if (snapshot.hasError) {
-                                        //       return Text('Error: ${snapshot.error}');
-                                        //     } else {
-                                        //       return RatingProgress(text: rate.toString(), value: snapshot.data ?? 0.0);
-                                        //     }
-                                        //   },
-                                        // ),
-                                      ],
-                                    ),
-
-                                  ),
-
-
-                                ],
-                              ),
+                                  },
+                                ),
+                              ],
                             ),
-                            Divider(),
-                            Container(
-                              // color: Colors.black54,
-                              padding: EdgeInsets.only(left: 12,right: 12,bottom: 10,top:8),
-                              child: Column(
-                                crossAxisAlignment:CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text("Rate and Review",style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),),
-                                  Text("Share your experience to help others",style: TextStyle(fontSize: 14,color: Colors.black54),),
-                                  SizedBox(height: 8,),
-                                  InkWell(
-                                    onTap: ()async{
+                            Row(
+                              children: [
+                                Text("Public Restroom ",style: TextStyle(fontSize: 16)),
+                                SizedBox(width: 10,),
+                                Icon(Icons.social_distance),
+                                Text('  ${widget.dist} km ',style: TextStyle(fontSize: 16))
+                              ],
+                            ),
+                            const SizedBox(height: 10,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                MaterialButton(
+                                    elevation: 0,
+                                    onPressed: () {
+                                      navigateToRestroom(widget.pos, widget.restroomloc);
+                                    },
+                                    color: Colors.blue[700],
+                                    textColor: Colors.white,
+                                    padding: EdgeInsets.all(8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                      side: const BorderSide(
+                                        color: Color(0xFFebf1fa),
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                                      child: const Row(
+                                        children: [
+                                          Icon(Icons.directions,color: Colors.white,),
+                                          Text(
+                                            "Directions",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                ),
+                                MaterialButton(
+                                    elevation: 0,
+                                    onPressed: ()async {
                                       if(_isSignedIn){
-                                        String? name = await getNameByEmail(email);
-
-
-                                        if (name != null) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => RatingPage(uname: name, document: widget.document, id: widget.document.id, uemail: email,)));
-
-                                          print('Name associated with $email is: $name');
+                                        print("In onPResed");
+                                        print("object : $restRoomData");
+                                        List<dynamic> savedBy =restRoomData['savedBy']??[];
+                                        print("hish");
+                                        print(savedBy);
+                                        print("before bookmark");
+                                        Bookmark(savedBy);
+                                        print("after bookmark");
+                                        bool isFav = savedBy.contains(email)??false;
+                                        if (isFav) {
+                                          //savedBy.remove(widget.name);
+                                          isSaved=isFav;
+                                          print("is saved true");
                                         }
-                                        else {
-                                          print('No name found for email: $email');
-                                        }
-                                      }
-                                      else{
-                                        showDialog(context: context, builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text("You need to SignUp first"),
-                                            content: Text("Click on login button if you want to give review"),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Text("Leave"),
-                                              ),
-                                              TextButton(
-                                                onPressed: () async {
-                                                  Navigator.pushReplacement(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) => UserLoginPage()
-                                                      //         SignupPageUser
-                                                      ));
+                                        print("is saved false");
+                                        await FirebaseFirestore.instance
+                                            .collection('restrooms')
+                                            .doc(widget.document.id)
+                                            .update({'savedBy': savedBy});
 
+                                        print("after update");
 
-                                                },
-                                                child: Text("SignUp"),
-                                              ),
-                                            ],
-                                          );
-                                        },);
+                                        setState(() {
+                                          print("in set");
+                                          isSaved=!isSaved;
+                                          print("is saved  changed :$isSaved");
+                                          if(!isSaved){
+                                            print("is saved false REMOVED");
+                                            savedBy.remove(email);
+                                          }
+                                          else{
+                                            print("is saved true ADDED");
+                                            savedBy.add(email);
+                                          }
+                                          print("SET END");
+                                          print(email);
+
+                                        });
                                       }
 
                                     },
-                                    child:FutureBuilder<String?>(
-                                      future: getNameByEmail(email),
-                                      builder: (context, snaps) {
-                                        if (snaps.connectionState == ConnectionState.waiting) {
-                                          return CircularProgressIndicator();
-                                        } else if (snaps.hasError) {
-                                          return Text('Error: ${snaps.error}');
-                                        } else {
-                                          if (snaps.data != null) {
-                                            // Data retrieved successfully
-                                            return Row(
-                                              children: [
-                                            _isSignedIn ?
-                                            CircleAvatar(
-                                                backgroundColor: Colors.red[900],
-                                                radius: 26,
-                                                child: Text(
-                                                  Utils.getInitials("${snaps.data}"),
-                                                  style: TextStyle(
-                                                      fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
-                                                )
-
-                                            )
-
-
-                                                :
-                                            CircleAvatar(
-                                                backgroundColor: Colors.red[900],
-                                                radius: 26,
-                                                child:
-                                                Icon(Icons.person,size:28,color: Colors.white,),
-                                            ),
-
-                                                SizedBox(width: 20,),
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                  children:
-                                                  List.generate(5, (index) {
-                                                    int starIndex = index + 1;
-                                                    return Icon(
-                                                      Icons.star_border_outlined,
-                                                      size: 40,
-                                                      color:Colors.black54,
-                                                    );
-                                                  }),
-
-                                                ),
-                                              ],
-                                            );
-                                          } else {
-                                            // No user found
-                                            return Text('User not found.');
-                                          }
-                                        }
-                                      },
-                                    )
-
-                                  ),
-                                  Center(
+                                    color: Colors.white,
+                                    textColor: Colors.blue[700],
+                                    padding: EdgeInsets.all(8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                      side: BorderSide(
+                                        color: Colors.grey.shade300,
+                                        width: 1.0,
+                                      ),
+                                    ),
                                     child: Container(
-                                      margin: EdgeInsets.only(left: 16,top: 8,right: 16),
-                                      width: MediaQuery.of(context).size.width/2,
-                                      child: MaterialButton(
-                                          elevation: 0,
-                                          onPressed: () async{
-                                            if(_isSignedIn){
-                                              String? name = await getNameByEmail(email);
-
-                                              if (name != null) {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) => RatingPage(uname: name, document: widget.document, id: widget.document.id, uemail: email,)));
-
-                                                print('Name associated with $email is: $name');
-                                              } else {
-                                                print('No name found for email: $email');
-                                              }
-                                            }
-                                            else{
-                                              showDialog(context: context, builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  title: Text("You need to SignUp first"),
-                                                  content: Text("Click on SignUp button if you want to give review"),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context).pop();
-                                                      },
-                                                      child: Text("Leave"),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () async {
-                                                        Navigator.pushReplacement(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (context) => UserLoginPage()
-                                                            //         SignupPageUser
-                                                            ));
-
-
-                                                      },
-                                                      child: Text("SignUp"),
+                                      padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                                      child: Row(
+                                        children: [
+                                          // restRoomData['savedBy'].contains("Hari Kumar")==true
+                                          //     ?Icon(Icons.bookmark,color: Colors.indigo,)
+                                          //     :Icon(Icons.bookmark_border,color: Colors.blue[700],),
+                                          _isSignedIn & email.isNotEmpty
+                                              ?
+                                          StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('restrooms')
+                                                .doc(widget.document.id)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                                return Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.bookmark_border, color: Colors.blue[700]),
+                                                    SizedBox(width: 5,),
+                                                    Text(
+                                                      "Save",
+                                                      style: TextStyle(
+                                                          color: Colors.blue[700],
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.bold),
                                                     ),
                                                   ],
                                                 );
-                                              },);
-                                            }
-                                          },
-                                          color: Colors.white,
-                                          textColor: Colors.black,
-                                          padding: EdgeInsets.all(8),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                            side: BorderSide(
-                                              color: Color(0xFF979393FF), // Set the border color
-                                              width: 1.0,         // Set the border width
+                                              } else if (snapshot.hasError) {
+                                                return Text('Error: ${snapshot.error}');
+                                              } else {
+                                                List<dynamic> savedBy = snapshot.data?.data()?['savedBy'] ?? [];
+                                                bool isSaved = savedBy.contains(email) ?? false;
+                                                return isSaved
+                                                    ?Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.bookmark, color: Colors.indigo),
+                                                    SizedBox(width: 5,),
+                                                    Text(
+                                                      "Save",
+                                                      style: TextStyle(
+                                                          color: Colors.blue[700],
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                )
+                                                    :Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.bookmark_border, color: Colors.blue[700]),
+                                                    SizedBox(width: 5,),
+                                                    Text(
+                                                      "Save",
+                                                      style: TextStyle(
+                                                          color: Colors.blue[700],
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                );
+
+
+
+
+
+                                              }
+                                            },
+                                          )
+                                              :
+                                          GestureDetector(
+                                            onTap: (){
+                                              showDialog(context: context,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text("You need to Login first"),
+                                                    content: Text(
+                                                        "Click on login button if you want to save"),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context).pop();
+                                                        },
+                                                        child: Text("Leave"),
+                                                      ),
+                                                      TextButton(
+                                                        onPressed: () async {
+                                                          Navigator.pushReplacement(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      UserLoginPage()
+                                                                //         SignupPageUser
+                                                              ));
+                                                        },
+                                                        child: Text("Login"),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },);
+                                            },
+
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.bookmark_border, color: Colors.blue[700]),
+                                                SizedBox(width: 5,),
+                                                Text(
+                                                  "Save",
+                                                  style: TextStyle(
+                                                      color: Colors.blue[700],
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.bold),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          child:Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Icon(Icons.edit_note_outlined,color: Colors.blue[800],),
-                                              Text("Write a review",style: TextStyle(color:Colors.black,fontSize: 15,),),
-                                            ],
-                                          )
+                                        ],
+                                      ),
+                                    )
+                                ),
+                                MaterialButton(
+                                    elevation: 0,
+
+                                    onPressed: () => _launchWhatsApp(documentData['address']),
+                                    color: Colors.white,
+                                    textColor: Colors.blue[700],
+                                    padding: EdgeInsets.all(8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                      side: BorderSide(
+                                        color: Colors.grey.shade300,
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.share,color: Colors.blue[700],),
+                                          Text(
+                                            "Share",
+                                            style: TextStyle(
+                                                color: Colors.blue[700],
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                )
+                              ],
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 15,bottom: 5),
+                              height: 1,
+                              color: Colors.grey[300],
+                            ),
+                            TabBar(
+                                indicatorColor: Colors.blue[800],
+                                indicatorSize: TabBarIndicatorSize.tab,
+                                indicatorWeight: 2,
+                                unselectedLabelStyle: const TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 18),
+                                labelStyle: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16),
+                                tabs: const [
+                                  Tab(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "About",
+                                        style: TextStyle(),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                            Divider(),
-                            Container(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 12.0),
-                                    child: Text("Reviews",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                  Tab(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "Reviews",
+                                        style: TextStyle(),
+                                      ),
+                                    ),
                                   ),
-                                  StreamBuilder(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('restrooms')
-                                        .doc(widget.document.id)
-                                        .collection('reviews')
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return ReviewSkeleton();//Center(child: CircularProgressIndicator());
-                                      }
-                                      if (snapshot.hasError) {
-                                        return Text('Error: ${snapshot.error}');
-                                      }
-                                      if (!snapshot.hasData ||
-                                          snapshot.data!.docs.isEmpty) {
-                                        return Center(child: Text('No reviews available.'));
-                                      }
-                                      // Display reviews
-                                      List<Review> reviewlist = snapshot.data!.docs.map((doc) => Review.fromFirestore(doc)).toList();
-
-                                      return Container(
-                                        height: MediaQuery.of(context).size.height/2,
-                                        child: ListView.builder(
-                                          // physics: NeverScrollableScrollPhysics(),
-                                            itemCount: reviewlist.length,
-                                            scrollDirection: Axis.vertical,
-                                            itemBuilder: (context, index) {
-                                              // Review reviewDocument = reviewlist[index];
-
-                                              int likesCount = reviewlist[index].likeCounts;
-                                              List<dynamic> likedBy = reviewlist[index].likedBy ?? [];
-                                              print(reviewlist[index].name);
-
-                                              return Container(
-                                                height: 200,
-                                                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 15),
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      color: Colors.grey, // Choose your border color
-                                                      width: 1.0, // Adjust the border width as needed
-                                                    ),
+                                  Tab(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "Photos",
+                                        style: TextStyle(),
+                                      ),
+                                    ),
+                                  ),
+                                ]),
+                            Expanded(
+                              child: TabBarView(
+                                children: [
+                                  // About Tab Content
+                                  SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.location_on_outlined,color: Colors.blue[900],),
+                                              Expanded(
+                                                child: Container(
+                                                  width: MediaQuery.of(context).size.width/1.5,
+                                                  padding: const EdgeInsets.only(left: 20.0,right:10,),
+                                                  child: Text(
+                                                    widget.document['address'],
+                                                    style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,height: 1.5)
+                                                    ,overflow: TextOverflow.visible,softWrap: true,
                                                   ),
                                                 ),
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                                                          future: FirebaseFirestore.instance.collection('users').doc(reviewlist[index].email).get(),
-                                                          builder: (context, snapshot) {
-                                                            if (snapshot.connectionState == ConnectionState.waiting) {
-                                                              return  CircleAvatar(
-                                                                  backgroundColor: Colors.blue[800],
-                                                                  radius: 23,
-                                                                  backgroundImage:NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"));
-
-                                                            } else if (snapshot.hasError) {
-                                                              return  CircleAvatar(
-                                                                  backgroundColor: Colors.blue[800],
-                                                                  radius: 23,
-                                                                  backgroundImage:NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"));
-
-                                                            } else {
-                                                              Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
-                                                              String? profileImageUrl = userData['prof_img']; // Assuming 'prof_img' is the field containing the profile image URL
-                                                              return CircleAvatar(
-                                                                radius: 23,
-                                                                backgroundImage: userData['prof_img'] != ""
-                                                                    ? NetworkImage(userData['prof_img']) : NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"),
-                                                              );
-                                                            }
-                                                          },
-                                                        ),
-
-                                                        // CircleAvatar(
-                                                        //   backgroundColor: Colors.blue[800],
-                                                        //   radius: 23,
-                                                        //   backgroundImage: _profileImageUrl != null
-                                                        //       ? NetworkImage(_profileImageUrl!)
-                                                        //       :NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"),
-                                                        //
-                                                        //   // child:Icon(
-                                                        //   //   Icons.person,
-                                                        //   //   size: 25,
-                                                        //   //   color: Colors.white,
-                                                        //   // ),
-                                                        //   // Text(
-                                                        //   //   Utils.getInitials(reviewDoc['name']),
-                                                        //   //   style: TextStyle(
-                                                        //   //       fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
-                                                        //   // ),
-                                                        // ),
-                                                        Padding(
-                                                          padding: const EdgeInsets.only(left:14.0,right: 14),
-                                                          child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Text("${reviewlist[index].name}",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
-                                                              Text("",style: TextStyle(color: Colors.black54,fontSize: 14)),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        Spacer(),
-                                                        (_isSignedIn && email!="")
-                                                            ?PopupMenuButton<int>(
-                                                          icon: Icon(FontAwesomeIcons.ellipsisVertical),
-                                                          onSelected: (int value) async {
-                                                            // Handle menu option selection
-                                                            switch (value) {
-                                                              case 1:
-                                                                if(_isSignedIn && email!=""){
-                                                                  String? name = await getNameByEmail(email);
-
-                                                                  if (name != null) {
-                                                                    print("object");
-                                                                    print(reviewlist[index].rating.runtimeType);
-                                                                    DocumentSnapshot<Object?> reviewDocument = await FirebaseFirestore.instance
-                                                                        .collection('restrooms')
-                                                                        .doc(widget.document.id)
-                                                                        .collection('reviews')
-                                                                        .doc(reviewlist[index].id)
-                                                                        .get();
-
-                                                                    Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                          builder: (context) => EditRatingPage(
-                                                                            uname:name,
-                                                                            document: widget.document,
-                                                                            post: reviewlist[index].comment, rate:  reviewlist[index].rating.toInt(), reviewDocument: reviewDocument,
-                                                                            uemail: email,)
-                                                                      ),
-                                                                    );
-
-                                                                    print('Name associated with $email is: $name');
-                                                                  } else {
-                                                                    print('No name found for email: $email');
-                                                                  }
-                                                                }
-                                                                else{
-                                                                  showDialog(context: context, builder: (BuildContext context) {
-                                                                    return AlertDialog(
-                                                                      title: Text("You need to SignUp first"),
-                                                                      content: Text("Click on SignUp button if you want to edit review"),
-                                                                      actions: <Widget>[
-                                                                        TextButton(
-                                                                          onPressed: () {
-                                                                            Navigator.of(context).pop();
-                                                                          },
-                                                                          child: Text("Leave"),
-                                                                        ),
-                                                                        TextButton(
-                                                                          onPressed: () async {
-                                                                            Navigator.pushReplacement(
-                                                                                context,
-                                                                                MaterialPageRoute(
-                                                                                    builder: (context) => UserLoginPage()
-                                                                                  //         SignupPageUser
-                                                                                ));
-
-
-                                                                          },
-                                                                          child: Text("SignUp"),
-                                                                        ),
-                                                                      ],
-                                                                    );
-                                                                  },);
-                                                                }
-
-                                                                break;
-                                                              case 2:
-                                                                if(_isSignedIn && email!=""){
-                                                                  String? name = await getNameByEmail(email);
-
-                                                                  if (name != null) {
-                                                                    showDialog(
-                                                                      context: context,
-                                                                      builder: (BuildContext context) {
-                                                                        return AlertDialog(
-                                                                          title: Text("Delete Review"),
-                                                                          content: Text("Are you sure you want to delete this review?"),
-                                                                          actions: <Widget>[
-                                                                            TextButton(
-                                                                              onPressed: () {
-                                                                                Navigator.of(context).pop();
-                                                                              },
-                                                                              child: Text("No"),
-                                                                            ),
-                                                                            TextButton(
-                                                                              onPressed: () async {
-                                                                                // Delete review
-                                                                                await FirebaseFirestore.instance
-                                                                                    .collection('restrooms')
-                                                                                    .doc(widget.document.id)
-                                                                                    .collection('reviews')
-                                                                                    .doc(reviewlist[index].id)
-                                                                                    .delete();
-
-                                                                                //user no_of_review update
-                                                                                DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(email);
-                                                                                await userRef.update({'no_of_reviews': FieldValue.increment(-1)});
-                                                                                print("updated user no_of review success");
-
-
-                                                                                //update NO. OF REVIEWS
-                                                                                QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-                                                                                    .collection('restrooms')
-                                                                                    .doc(widget.document.id)
-                                                                                    .collection('reviews')
-                                                                                    .get();
-
-
-                                                                                int reviewsLength = querySnapshot.docs.length;
-                                                                                print('Number of reviews: $reviewsLength');
-                                                                                FirebaseFirestore.instance
-                                                                                    .collection('restrooms')
-                                                                                    .doc(widget.document.id).set({
-                                                                                  'no_of_reviews':reviewsLength ,
-                                                                                }, SetOptions(merge: true));
-                                                                                // get_review(widget.id);
-                                                                                Navigator.of(context).pop();
-                                                                              },
-                                                                              child: Text("Yes"),
-                                                                            ),
-                                                                          ],
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                  } else {
-                                                                    print('No name found for email: $email');
-                                                                  }
-
-
-                                                                }
-                                                                else{
-                                                                  showDialog(context: context, builder: (BuildContext context) {
-                                                                    return AlertDialog(
-                                                                      title: Text("You need to Signup first"),
-                                                                      content: Text("Click on login button if you want to edit review"),
-                                                                      actions: <Widget>[
-                                                                        TextButton(
-                                                                          onPressed: () {
-                                                                            Navigator.of(context).pop();
-                                                                          },
-                                                                          child: Text("Leave"),
-                                                                        ),
-                                                                        TextButton(
-                                                                          onPressed: () async {
-                                                                            Navigator.pushReplacement(
-                                                                                context,
-                                                                                MaterialPageRoute(
-                                                                                    builder: (context) => UserLoginPage()
-                                                                                  //         SignupPageUser
-                                                                                ));
-
-
-                                                                          },
-                                                                          child: Text("SignUp"),
-                                                                        ),
-                                                                      ],
-                                                                    );
-                                                                  },);
-                                                                }
-
-
-                                                                break;
-                                                            // case 3:
-                                                            // // Report
-                                                            //   break;
-                                                            }
-                                                          },
-                                                          itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-
-
-                                                            PopupMenuItem<int>(
-                                                              value: 1,
-                                                              height: 40,
-                                                              enabled: reviewlist[index].email == email,
-                                                              child: Row(
-                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                children: [
-                                                                  Icon(Icons.edit,color: Colors.indigo,size: 24,),
-                                                                  SizedBox(width: 8,),
-                                                                  Flexible(child: Text('Edit',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color: reviewlist[index].email == email ? Colors.indigo[900] : Colors.grey),)),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            PopupMenuItem<int>(
-                                                              value: 2,
-                                                              height: 40,
-                                                              enabled: reviewlist[index].email == email,
-                                                              child: Row(
-                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                children: [
-                                                                  Icon(Icons.delete_forever,color: Colors.indigo,size: 24,),
-                                                                  SizedBox(width: 8,),
-                                                                  Flexible(child: Text('Delete',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color: reviewlist[index].email == email ? Colors.indigo[900] : Colors.grey),)),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            // PopupMenuItem<int>(
-                                                            //   value: 3,
-                                                            //   height: 40,
-                                                            //   child: Row(
-                                                            //     mainAxisAlignment: MainAxisAlignment.start,
-                                                            //     children: [
-                                                            //       Icon(Icons.report,color: Colors.indigo,size: 24,),
-                                                            //       SizedBox(width: 8,),
-                                                            //       Flexible(child: Text('Report',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color:Colors.indigo[900]),)),
-                                                            //     ],
-                                                            //   ),
-                                                            // ),
-                                                          ],
-                                                        ):
-                                                        IconButton(
-                                                          icon:Icon(FontAwesomeIcons.ellipsisVertical),
-                                                          onPressed: () {
-                                                            showDialog(context: context, builder: (BuildContext context) {
-                                                              return AlertDialog(
-                                                                title: Text("You need to Login first"),
-                                                                content: Text("Click on login button if you want to edit review"),
-                                                                actions: <Widget>[
-                                                                  TextButton(
-                                                                    onPressed: () {
-                                                                      Navigator.of(context).pop();
-                                                                    },
-                                                                    child: Text("Leave"),
-                                                                  ),
-                                                                  TextButton(
-                                                                    onPressed: () async {
-                                                                      Navigator.pushReplacement(
-                                                                          context,
-                                                                          MaterialPageRoute(
-                                                                              builder: (context) => UserLoginPage()
-                                                                            //         SignupPageUser
-                                                                          ));
-
-
-                                                                    },
-                                                                    child: Text("SignUp"),
-                                                                  ),
-                                                                ],
-                                                              );
-                                                            });
-
-                                                          },
-                                                        )
-
-                                                      ],
-                                                    ),
-                                                    SizedBox(height: 10,),
-                                                    Row(
-                                                      children: [
-                                                        RatingBar.builder(
-                                                          initialRating: double.parse('${reviewlist[index].rating}'),
-                                                          itemSize: 15,
-                                                          minRating: 0,
-                                                          direction: Axis.horizontal,
-                                                          allowHalfRating: true,
-                                                          itemCount: 5,
-                                                          // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                                                          itemBuilder: (context, _) =>  Icon(
-                                                            Icons.star,
-                                                            color: Colors.amber,
-                                                            // size: 10, // Adjust the size of the stars as needed
-                                                          ),
-                                                          ignoreGestures: true,
-                                                          onRatingUpdate: (rating) {
-                                                            // rating=rrating;
-                                                            // rrating=rating;
-                                                            print(rating);
-                                                            // You can update the rating here if needed
-                                                          },
-                                                        ),
-                                                        Padding(
-                                                          padding: const EdgeInsets.only(left: 12.0),
-                                                          child: Text(getTimeAgo(reviewlist[index].timestamp),style: TextStyle(color: Colors.black54,fontSize: 12),),
-                                                        ),
-
-                                                      ],
-                                                    ),
-                                                    SizedBox(height: 5,),
-
-                                                    Container(
-                                                      width: MediaQuery.of(context).size.width,
-                                                      // height:MediaQuery.of(context).size.height/2,
-                                                      child:
-                                                      EllipsisText(
-                                                        text: "${reviewlist[index].comment}",
-                                                        style: TextStyle(fontSize: 15),
-                                                      ),
-
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets.only(top: 8.0),
-                                                      child: Row(
-
-                                                        children: [
-                                                          IconButton(
-                                                              onPressed: ()async{
-                                                                if(_isSignedIn && email!=""){
-                                                                  setState(() {
-                                                                    isLiked=!isLiked;
-                                                                    if(isLiked & !reviewlist[index].likedBy.contains(email)){
-                                                                      likedBy.add(email);
-                                                                      likesCount += 1;
-                                                                    }
-                                                                    else{
-                                                                      likedBy.remove(email);
-                                                                      if( likesCount == 0){
-                                                                        likesCount = 0;
-                                                                      }
-                                                                      else{
-                                                                        likesCount -= 1;
-                                                                      }
-                                                                    }
-                                                                  }
-
-                                                                  );
-                                                                  FirebaseFirestore.instance
-                                                                      .collection('restrooms')
-                                                                      .doc(widget.document.id)
-                                                                      .collection('reviews')
-                                                                      .doc(reviewlist[index].id) // Assuming reviewDoc.id is the document ID of the review
-                                                                      .update({
-                                                                    'likedBy': likedBy,
-                                                                    'likeCounts': likesCount});
-                                                                }
-                                                                else{
-                                                                  showDialog(context: context,
-                                                                    builder: (BuildContext context) {
-                                                                      return AlertDialog(
-                                                                        title: Text("You need to Sign-Up first"),
-                                                                        content: Text(
-                                                                            "Click on Sign-Up button if you want to like review"),
-                                                                        actions: <Widget>[
-                                                                          TextButton(
-                                                                            onPressed: () {
-                                                                              Navigator.of(context).pop();
-                                                                            },
-                                                                            child: Text("Leave"),
-                                                                          ),
-                                                                          TextButton(
-                                                                            onPressed: () async {
-                                                                              Navigator.pushReplacement(
-                                                                                  context,
-                                                                                  MaterialPageRoute(
-                                                                                      builder: (context) =>UserLoginPage()
-                                                                                    // SignupPageUser()
-                                                                                  ));
-                                                                            },
-                                                                            child: Text("SignUp"),
-                                                                          ),
-                                                                        ],
-                                                                      );
-                                                                    },);
-                                                                }
-                                                              },
-                                                              icon:_isSignedIn & reviewlist[index].likedBy.contains(email)
-                                                                  ?Icon(Icons.thumb_up,color: Colors.blue[800],)
-                                                                  :
-                                                              Icon(Icons.thumb_up_alt_outlined,color: Colors.black54,)
-
-                                                          ),
-                                                          // SizedBox(width: 5,),
-                                                          Text('${reviewlist[index].likeCounts}'),
-                                                          SizedBox(width: 8,),
-                                                          Text("Like",style: TextStyle(fontWeight: FontWeight.bold),)
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              );}
+                                              ),
+                                              IconButton(
+                                                icon: Icon(Icons.content_copy),
+                                                onPressed: () {
+                                                  copyToClipboard(widget.document['address']);
+                                                },
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      );
+                                        Divider(),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.groups,color: Colors.blue[900],),
+                                              Expanded(
+                                                child: Container(
+                                                  width: MediaQuery.of(context).size.width/1.5,
+                                                  padding: const EdgeInsets.only(left: 20.0,right:10),
+                                                  child: Text(
+                                                    (() {
+                                                      String accessibility = '';
+                                                      String genders = widget.document['gender'].join(', ');
 
-                                    },
-                                  ),
-                                ],
-                              ),
-                            )
+                                                      if (widget.document['handicappedAccessible']) {
+                                                        accessibility += 'Handicap, ';
+                                                      }
+                                                      if (genders.isNotEmpty) {
+                                                        accessibility += genders;
+                                                      }
+
+                                                      return accessibility.isNotEmpty ? accessibility : 'Not specified';
+                                                    })(),
+
+                                                    style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w400,)
+                                                    ,overflow: TextOverflow.visible,softWrap: true,
+                                                  ),
+                                                ),
+                                              ),
 
 
-                            // Add more widgets as needed
-                          ],
-                        ),
-                      ),
-
-
-
-
-                      // Photos Tab Content
-                      SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height:MediaQuery.of(context).size.height,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Center(
-                                    child: Container(
-                                      height:MediaQuery.of(context).size.width/7,
-                                      margin: EdgeInsets.only(left: 16,top: 18,right: 16,bottom: 10),
-                                      width: MediaQuery.of(context).size.width/2.6,
-                                      child: MaterialButton(
-                                          elevation: 0,
-                                          onPressed: () async{
+                                            ],
+                                          ),
+                                        ),
+                                        Divider(),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.access_alarm,color: Colors.blue[900],),
+                                              Expanded(
+                                                child: Container(
+                                                  width: MediaQuery.of(context).size.width/1.5,
+                                                  padding: const EdgeInsets.only(left: 20.0,right:10),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        widget.document['availabilityHours'],
+                                                        style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Colors.black)
+                                                        ,overflow: TextOverflow.visible,softWrap: true,
+                                                      ),
+                                                      // Icon(Icons.arrow_drop_down_sharp,color: Colors.grey,)
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Divider(),
+                                        InkWell(
+                                          onTap: ()async{
                                             if(_isSignedIn && email!=""){
                                               String? name = await getNameByEmail(email);
 
                                               if (name != null){
-                                                print(" data : ${widget.document['images']}");
-                                                final ImagePicker picker = ImagePicker();
-
-                                                // Pick image
-                                                final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
-                                                if (image != null) {
-                                                  print(" data : ${widget.document['images']}");
-                                                  log('Image Path: ${image.path}');
-                                                  await sendImage(widget.document.id, widget.document['images'], File(image.path));
-                                                }
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(builder:
+                                                      (context) => ReportIssues( rest_id:widget.document.id, adminEmail: widget.document['handledBy'], restAddress:widget.document['address'], restName: widget.document['name'], uemail:email,),
+                                                  ),
+                                                );
 
                                               }
                                               else{
@@ -1832,129 +852,1100 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                 );
                                               },);
                                             }
-
-
-
                                           },
-                                          color: Colors.white,
-                                          textColor: Colors.black,
-                                          padding: EdgeInsets.all(12),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                            side: BorderSide(
-                                              color: Color(0xFF979393FF),
-                                              width: 1.0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.report,color: Colors.blue[900],),
+                                                Expanded(
+                                                  child: Container(
+                                                    width: MediaQuery.of(context).size.width/1.5,
+                                                    padding: const EdgeInsets.only(left: 20.0,right:10),
+                                                    child: Row(
+                                                      children: [
+
+                                                        Text(
+                                                          'Report Issue',
+                                                          style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: Colors.green[800])
+                                                          ,overflow: TextOverflow.visible,softWrap: true,
+                                                        ),
+
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+
+
+                                              ],
                                             ),
                                           ),
-                                          child:Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Icon(Icons.add_a_photo,color: Colors.blue[800],),
-                                              Text("Add Photos",style: TextStyle(color:Colors.blue[800],fontSize: 15,),),
-                                            ],)
-                                      ),
+                                        ),
+                                        Divider(),
+
+                                      ],
                                     ),
                                   ),
-                                  //
-                                  Divider(),
-                                  StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('restrooms')
-                                        .doc(widget.document.id)
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      }
-                                      if (snapshot.hasError) {
-                                        return Center(
-                                          child: Text('Error: ${snapshot.error}'),
-                                        );
-                                      }
-                                      if (!snapshot.hasData || snapshot.data!.data() == null) {
-                                        return Center(
-                                          child: Text('No data available'),
-                                        );
-                                      }
+                                  // Reviews Tab Content
+                                  SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(left: 12,right: 12,bottom: 10,top:18),
+                                          child: Row(
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  // FutureBuilder<double>(
+                                                  //   future: calculateAverageRating(),
+                                                  //   builder: (context, snapshot) {
+                                                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                                                  //       return CircularProgressIndicator();
+                                                  //     } else if (snapshot.hasError) {
+                                                  //
+                                                  //       return Text('Error: ${snapshot.error}');
+                                                  //     } else {
+                                                  //
+                                                  //       double averageRating = snapshot.data ?? 0;
+                                                  //       avgRating = double.parse((snapshot.data ?? 0).toStringAsFixed(1));
+                                                  //       String formattedAverageRating = averageRating.toStringAsFixed(1);
+                                                  //       // setAverageRating(widget.document.id,avgRating);
+                                                  //       return Text(formattedAverageRating,style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),);
+                                                  //     }
+                                                  //   },
+                                                  // ),
+                                                  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                                                    stream: FirebaseFirestore.instance
+                                                        .collection('restrooms')
+                                                        .doc(widget.document.id)
+                                                        .collection('reviews')
+                                                        .snapshots(),
+                                                    builder: (context, snapshot) {
+                                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                                        return const Text(
+                                                          "3.0",
+                                                          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                        );
+                                                      } else if (snapshot.hasError) {
+                                                        return Text('Error: ${snapshot.error}');
+                                                      } else {
+                                                        int totalRatings = 0;
+                                                        int totalReviews = snapshot.data!.size;
 
-                                      Map<String, dynamic> data = snapshot.data!.data()!;
-                                      List<String> imageUrls = List<String>.from(data['images'] ?? []);
+                                                        snapshot.data!.docs.forEach((reviewDoc) {
+                                                          dynamic ratingValue = reviewDoc['rating'];
+                                                          if (ratingValue is int) {
+                                                            totalRatings += ratingValue;
+                                                          } else if (ratingValue is double) {
+                                                            totalRatings += ratingValue.toInt();
+                                                          }
+                                                        });
 
-                                      if (imageUrls.isEmpty) {
-                                        return Text('No images found.');
-                                      }
-                                      return Expanded(
-                                        // height: 500,
-                                        child:
-                                        GridView.builder(
-                                          shrinkWrap: true,
-                                          physics: ScrollPhysics(),
-                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2, // You can adjust the number of columns here
-                                            crossAxisSpacing: 0,
-                                            mainAxisSpacing: 0,
+                                                        double averageRating = totalReviews > 0 ? totalRatings / totalReviews : 0;
+                                                        return Text(
+                                                          averageRating.toStringAsFixed(1),
+                                                          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                        );
+                                                      }
+                                                    },
+                                                  ),
+
+
+                                                  RatingBar.builder(
+                                                    initialRating: double.parse(widget.document['ratings'].toString()),
+                                                    itemSize: 15,
+                                                    minRating: 0,
+                                                    direction: Axis.horizontal,
+                                                    allowHalfRating: true,
+                                                    itemCount: 5,
+                                                    ignoreGestures: true,
+                                                    // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                    itemBuilder: (context, _) =>  Icon(
+                                                      Icons.star,
+                                                      color: Colors.amber,
+                                                      // size: 10,
+                                                    ),
+                                                    onRatingUpdate: (rating) {
+                                                      print(rating);
+
+
+                                                      // You can update the rating here if needed
+                                                    },
+                                                  ),
+                                                  // FutureBuilder<int>(
+                                                  //   future: get_review(widget.document.id),
+                                                  //   builder: (context, snapshot) {
+                                                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                                                  //       return CircularProgressIndicator();
+                                                  //     } else if (snapshot.hasError) {
+                                                  //       return Text('Error: ${snapshot.error}');
+                                                  //     } else {
+                                                  //       int reviews = snapshot.data ?? 0;
+                                                  //       String reviewString = reviews.toString();
+                                                  //       return Text('(${reviewString})',style: TextStyle());
+                                                  //     }
+                                                  //   },
+                                                  // ),
+                                                  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                                                    stream: FirebaseFirestore.instance
+                                                        .collection('restrooms')
+                                                        .doc(widget.document.id)
+                                                        .collection('reviews')
+                                                        .snapshots(),
+                                                    builder: (context, snapshot) {
+                                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                                        return  Container(
+                                                            height: 10,
+                                                            width:10,
+                                                            child: CircularProgressIndicator());
+                                                      } else if (snapshot.hasError) {
+                                                        return Text('Error: ${snapshot.error}');
+                                                      } else {
+                                                        int reviews = snapshot.data!.docs.length;
+                                                        String reviewString = reviews.toString();
+                                                        return Text('($reviewString)', style: TextStyle());
+                                                      }
+                                                    },
+                                                  ),
+
+                                                ],
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  children: [
+                                                    for (int rate = 5; rate >= 1; rate--)
+                                                      FutureBuilder<double>(
+                                                        future: convertRatingToValue(rate),
+                                                        builder: (context, snapshot) {
+                                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                                            return RatingProgress(text: rate.toString(), value: 0.0);
+                                                          } else if (snapshot.hasError) {
+                                                            return Text('Error: ${snapshot.error}');
+                                                          } else {
+                                                            return RatingProgress(text: rate.toString(), value: (snapshot.data ?? 0.0));
+                                                          }
+                                                        },
+                                                      ),
+                                                    // StreamBuilder<double>(
+                                                    //   stream: convertRatingToValueStream(rate),
+                                                    //   builder: (context, snapshot) {
+                                                    //     if (snapshot.connectionState == ConnectionState.waiting) {
+                                                    //       return CircularProgressIndicator();
+                                                    //     } else if (snapshot.hasError) {
+                                                    //       return Text('Error: ${snapshot.error}');
+                                                    //     } else {
+                                                    //       return RatingProgress(text: rate.toString(), value: (snapshot.data ?? 0.0));
+                                                    //     }
+                                                    //   },
+                                                    // ),
+
+                                                    // StreamBuilder<double>(
+                                                    //   stream: ratingStream(rate),
+                                                    //   builder: (context, snapshot) {
+                                                    //     if (snapshot.connectionState == ConnectionState.waiting) {
+                                                    //       return CircularProgressIndicator();
+                                                    //     } else if (snapshot.hasError) {
+                                                    //       return Text('Error: ${snapshot.error}');
+                                                    //     } else {
+                                                    //       return RatingProgress(text: rate.toString(), value: snapshot.data ?? 0.0);
+                                                    //     }
+                                                    //   },
+                                                    // ),
+                                                  ],
+                                                ),
+
+                                              ),
+
+
+                                            ],
                                           ),
-                                          itemCount: imageUrls.length,
-                                          itemBuilder: (context, index) {
-                                            return InkWell(
-                                              onTap: () {
-                                                showPhotos(context, imageUrls[index]);
-                                              },
-                                              child: Container(
-                                                margin: EdgeInsets.all(5),
-                                                child: Image.network(
-                                                  imageUrls[index],
-                                                  fit: BoxFit.cover,
+                                        ),
+                                        Divider(),
+                                        Container(
+                                          // color: Colors.black54,
+                                          padding: EdgeInsets.only(left: 12,right: 12,bottom: 10,top:8),
+                                          child: Column(
+                                            crossAxisAlignment:CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: [
+                                              const Text("Rate and Review",style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),),
+                                              const Text("Share your experience to help others",style: TextStyle(fontSize: 14,color: Colors.black54),),
+                                              const SizedBox(height: 8,),
+                                              InkWell(
+                                                  onTap: ()async{
+                                                    if(_isSignedIn){
+                                                      String? name = await getNameByEmail(email);
+
+
+                                                      if (name != null) {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) => RatingPage(uname: name, document: widget.document, id: widget.document.id, uemail: email,)));
+
+                                                        print('Name associated with $email is: $name');
+                                                      }
+                                                      else {
+                                                        print('No name found for email: $email');
+                                                      }
+                                                    }
+                                                    else{
+                                                      showDialog(context: context, builder: (BuildContext context) {
+                                                        return AlertDialog(
+                                                          title: Text("You need to SignUp first"),
+                                                          content: Text("Click on login button if you want to give review"),
+                                                          actions: <Widget>[
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(context).pop();
+                                                              },
+                                                              child: Text("Leave"),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () async {
+                                                                Navigator.pushReplacement(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (context) => UserLoginPage()
+                                                                      //         SignupPageUser
+                                                                    ));
+
+
+                                                              },
+                                                              child: Text("SignUp"),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },);
+                                                    }
+
+                                                  },
+                                                  child:FutureBuilder<String?>(
+                                                    future: getNameByEmail(email),
+                                                    builder: (context, snaps) {
+                                                      if (snaps.connectionState == ConnectionState.waiting) {
+                                                        return const CircularProgressIndicator();
+                                                      } else if (snaps.hasError) {
+                                                        return Text('Error: ${snaps.error}');
+                                                      } else {
+                                                        if (snaps.data != null) {
+                                                          return Row(
+                                                            children: [
+                                                              _isSignedIn ?
+                                                              CircleAvatar(
+                                                                  backgroundColor: Colors.red[900],
+                                                                  radius: 26,
+                                                                  child: Text(
+                                                                    Utils.getInitials("${snaps.data}"),
+                                                                    style: const TextStyle(
+                                                                        fontSize: 22, color: Colors.white,fontWeight: FontWeight.bold),
+                                                                  )
+
+                                                              )
+
+
+                                                                  :
+                                                              CircleAvatar(
+                                                                backgroundColor: Colors.red[900],
+                                                                radius: 26,
+                                                                child:
+                                                                const Icon(Icons.person,size:28,color: Colors.white,),
+                                                              ),
+
+                                                              SizedBox(width: 20,),
+                                                              Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                children:
+                                                                List.generate(5, (index) {
+                                                                  int starIndex = index + 1;
+                                                                  return const Icon(
+                                                                    Icons.star_border_outlined,
+                                                                    size: 40,
+                                                                    color:Colors.black54,
+                                                                  );
+                                                                }),
+
+                                                              ),
+                                                            ],
+                                                          );
+                                                        } else {
+                                                          // No user found
+                                                          return const Text('User not found.');
+                                                        }
+                                                      }
+                                                    },
+                                                  )
+
+                                              ),
+                                              Center(
+                                                child: Container(
+                                                  margin: EdgeInsets.only(left: 16,top: 8,right: 16),
+                                                  width: MediaQuery.of(context).size.width/2,
+                                                  child: MaterialButton(
+                                                      elevation: 0,
+                                                      onPressed: () async{
+                                                        if(_isSignedIn){
+                                                          String? name = await getNameByEmail(email);
+
+                                                          if (name != null) {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder: (context) => RatingPage(uname: name, document: widget.document, id: widget.document.id, uemail: email,)));
+
+                                                            print('Name associated with $email is: $name');
+                                                          } else {
+                                                            print('No name found for email: $email');
+                                                          }
+                                                        }
+                                                        else{
+                                                          showDialog(context: context, builder: (BuildContext context) {
+                                                            return AlertDialog(
+                                                              title: const Text("You need to SignUp first"),
+                                                              content: const Text("Click on SignUp button if you want to give review"),
+                                                              actions: <Widget>[
+                                                                TextButton(
+                                                                  onPressed: () {
+                                                                    Navigator.of(context).pop();
+                                                                  },
+                                                                  child:const Text("Leave"),
+                                                                ),
+                                                                TextButton(
+                                                                  onPressed: () async {
+                                                                    Navigator.pushReplacement(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                            builder: (context) => UserLoginPage()
+                                                                          //         SignupPageUser
+                                                                        ));
+
+
+                                                                  },
+                                                                  child: const Text("SignUp"),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },);
+                                                        }
+                                                      },
+                                                      color: Colors.white,
+                                                      textColor: Colors.black,
+                                                      padding: const EdgeInsets.all(8),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(30),
+                                                        side: const BorderSide(
+                                                          color: Color(0xFF979393FF), // Set the border color
+                                                          width: 1.0,         // Set the border width
+                                                        ),
+                                                      ),
+                                                      child:Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        children: [
+                                                          Icon(Icons.edit_note_outlined,color: Colors.blue[800],),
+                                                          const Text("Write a review",style: TextStyle(color:Colors.black,fontSize: 15,),),
+                                                        ],
+                                                      )
+                                                  ),
                                                 ),
                                               ),
-                                            );
-                                          },
+                                            ],
+                                          ),
                                         ),
-                                        // ListView.builder(
-                                        //   itemCount: imageUrls.length,
-                                        //   physics:ScrollPhysics(),
-                                        //   itemBuilder: (context, index) {
-                                        //     return InkWell(
-                                        //       onTap: (){
-                                        //         showPhotos(context, imageUrls[index]);
-                                        //       },
-                                        //       child: Container(
-                                        //         height: 250,
-                                        //         margin: EdgeInsets.only(top: 10,left:12,right:12),
-                                        //         child: Image.network(
-                                        //           imageUrls[index],
-                                        //           fit: BoxFit.cover, // Adjust the fit as needed
-                                        //         ),
-                                        //       ),
-                                        //     );
-                                        //   },
-                                        // ),
-                                      );
-                                    },
-                                  )
+                                        Divider(),
+                                        Container(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const Padding(
+                                                padding: const EdgeInsets.only(left: 12.0),
+                                                child: Text("Reviews",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                              ),
+                                              StreamBuilder(
+                                                stream: FirebaseFirestore.instance
+                                                    .collection('restrooms')
+                                                    .doc(widget.document.id)
+                                                    .collection('reviews')
+                                                    .snapshots(),
+                                                builder: (context, snapshot) {
+
+                                                  if (snapshot.connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return ReviewSkeleton();//Center(child: CircularProgressIndicator());
+                                                  }
+                                                  if (snapshot.hasError) {
+                                                    return Text('Error: ${snapshot.error}');
+                                                  }
+                                                  if (!snapshot.hasData ||
+                                                      snapshot.data!.docs.isEmpty) {
+                                                    return Center(child: Text('No reviews available.'));
+                                                  }
+                                                  // Display reviews
+                                                  List<Review> reviewlist = snapshot.data!.docs.map((doc) => Review.fromFirestore(doc)).toList();
+
+                                                  return Container(
+                                                    height: MediaQuery.of(context).size.height/2,
+                                                    child: ListView.builder(
+                                                      // physics: NeverScrollableScrollPhysics(),
+                                                        itemCount: reviewlist.length,
+                                                        scrollDirection: Axis.vertical,
+                                                        itemBuilder: (context, index) {
+                                                          // Review reviewDocument = reviewlist[index];
+
+                                                          int likesCount = reviewlist[index].likeCounts;
+                                                          List<dynamic> likedBy = reviewlist[index].likedBy ?? [];
+                                                          print(reviewlist[index].name);
+
+                                                          return Container(
+                                                            height: 200,
+                                                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 15),
+                                                            decoration: const BoxDecoration(
+                                                              border: Border(
+                                                                bottom: BorderSide(
+                                                                  color: Colors.grey, // Choose your border color
+                                                                  width: 1.0, // Adjust the border width as needed
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Row(
+                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                  children: [
+                                                                    FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                                                      future: FirebaseFirestore.instance.collection('users').doc(reviewlist[index].email).get(),
+                                                                      builder: (context, snapshot) {
+                                                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                                                          return  CircleAvatar(
+                                                                              backgroundColor: Colors.blue[800],
+                                                                              radius: 23,
+                                                                              backgroundImage:NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"));
+
+                                                                        } else if (snapshot.hasError) {
+                                                                          return  CircleAvatar(
+                                                                              backgroundColor: Colors.blue[800],
+                                                                              radius: 23,
+                                                                              backgroundImage:NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"));
+
+                                                                        } else {
+                                                                          Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
+                                                                          String? profileImageUrl = userData['prof_img']; // Assuming 'prof_img' is the field containing the profile image URL
+                                                                          return CircleAvatar(
+                                                                            radius: 23,
+                                                                            backgroundImage: userData['prof_img'] != ""
+                                                                                ? NetworkImage(userData['prof_img']) : NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"),
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                    ),
+
+                                                                    // CircleAvatar(
+                                                                    //   backgroundColor: Colors.blue[800],
+                                                                    //   radius: 23,
+                                                                    //   backgroundImage: _profileImageUrl != null
+                                                                    //       ? NetworkImage(_profileImageUrl!)
+                                                                    //       :NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"),
+                                                                    //
+                                                                    //   // child:Icon(
+                                                                    //   //   Icons.person,
+                                                                    //   //   size: 25,
+                                                                    //   //   color: Colors.white,
+                                                                    //   // ),
+                                                                    //   // Text(
+                                                                    //   //   Utils.getInitials(reviewDoc['name']),
+                                                                    //   //   style: TextStyle(
+                                                                    //   //       fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold),
+                                                                    //   // ),
+                                                                    // ),
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.only(left:14.0,right: 14),
+                                                                      child: Column(
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(reviewlist[index].name,style:const  TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
+                                                                          const Text("",style: TextStyle(color: Colors.black54,fontSize: 14)),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                    Spacer(),
+                                                                    (_isSignedIn && email!="")
+                                                                        ?
+                                                                    PopupMenuButton<int>(
+                                                                      icon: const Icon(FontAwesomeIcons.ellipsisVertical),
+                                                                      onSelected: (int value) async {
+                                                                        switch (value) {
+                                                                          case 1:
+                                                                            if(_isSignedIn && email!=""){
+                                                                              String? name = await getNameByEmail(email);
+
+                                                                              if (name != null) {
+                                                                                print("object");
+                                                                                print(reviewlist[index].rating.runtimeType);
+                                                                                DocumentSnapshot<Object?> reviewDocument = await FirebaseFirestore.instance
+                                                                                    .collection('restrooms')
+                                                                                    .doc(widget.document.id)
+                                                                                    .collection('reviews')
+                                                                                    .doc(reviewlist[index].id)
+                                                                                    .get();
+
+                                                                                Navigator.push(
+                                                                                  context,
+                                                                                  MaterialPageRoute(
+                                                                                      builder: (context) => EditRatingPage(
+                                                                                        uname:name,
+                                                                                        document: widget.document,
+                                                                                        post: reviewlist[index].comment, rate:  reviewlist[index].rating.toInt(), reviewDocument: reviewDocument,
+                                                                                        uemail: email,)
+                                                                                  ),
+                                                                                );
+
+                                                                                print('Name associated with $email is: $name');
+                                                                              } else {
+                                                                                print('No name found for email: $email');
+                                                                              }
+                                                                            }
+                                                                            else{
+                                                                              showDialog(context: context, builder: (BuildContext context) {
+                                                                                return AlertDialog(
+                                                                                  title: const Text("You need to SignUp first"),
+                                                                                  content: const Text("Click on SignUp button if you want to edit review"),
+                                                                                  actions: <Widget>[
+                                                                                    TextButton(
+                                                                                      onPressed: () {
+                                                                                        Navigator.of(context).pop();
+                                                                                      },
+                                                                                      child: const Text("Leave"),
+                                                                                    ),
+                                                                                    TextButton(
+                                                                                      onPressed: () async {
+                                                                                        Navigator.pushReplacement(
+                                                                                            context,
+                                                                                            MaterialPageRoute(
+                                                                                                builder: (context) => UserLoginPage()
+                                                                                              //         SignupPageUser
+                                                                                            ));
+
+
+                                                                                      },
+                                                                                      child: const Text("SignUp"),
+                                                                                    ),
+                                                                                  ],
+                                                                                );
+                                                                              },);
+                                                                            }
+
+                                                                            break;
+                                                                          case 2:
+                                                                            if(_isSignedIn && email!=""){
+                                                                              String? name = await getNameByEmail(email);
+
+                                                                              if (name != null) {
+                                                                                showDialog(
+                                                                                  context: context,
+                                                                                  builder: (BuildContext context) {
+                                                                                    return AlertDialog(
+                                                                                      title: const Text("Delete Review"),
+                                                                                      content: const Text("Are you sure you want to delete this review?"),
+                                                                                      actions: <Widget>[
+                                                                                        TextButton(
+                                                                                          onPressed: () {
+                                                                                            Navigator.of(context).pop();
+                                                                                          },
+                                                                                          child: const Text("No"),
+                                                                                        ),
+                                                                                        TextButton(
+                                                                                          onPressed: () async {
+                                                                                            // Delete review
+                                                                                            await FirebaseFirestore.instance
+                                                                                                .collection('restrooms')
+                                                                                                .doc(widget.document.id)
+                                                                                                .collection('reviews')
+                                                                                                .doc(reviewlist[index].id)
+                                                                                                .delete();
+
+                                                                                            //user no_of_review update
+                                                                                            DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(email);
+                                                                                            await userRef.update({'no_of_reviews': FieldValue.increment(-1)});
+                                                                                            print("updated user no_of review success");
+
+
+                                                                                            //update NO. OF REVIEWS
+                                                                                            QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+                                                                                                .collection('restrooms')
+                                                                                                .doc(widget.document.id)
+                                                                                                .collection('reviews')
+                                                                                                .get();
+
+
+                                                                                            int reviewsLength = querySnapshot.docs.length;
+                                                                                            print('Number of reviews: $reviewsLength');
+                                                                                            FirebaseFirestore.instance
+                                                                                                .collection('restrooms')
+                                                                                                .doc(widget.document.id).set({
+                                                                                              'no_of_reviews':reviewsLength ,
+                                                                                            }, SetOptions(merge: true));
+                                                                                            // get_review(widget.id);
+                                                                                            Navigator.of(context).pop();
+                                                                                          },
+                                                                                          child: const Text("Yes"),
+                                                                                        ),
+                                                                                      ],
+                                                                                    );
+                                                                                  },
+                                                                                );
+                                                                              } else {
+                                                                                print('No name found for email: $email');
+                                                                              }
+
+
+                                                                            }
+                                                                            else{
+                                                                              showDialog(context: context, builder: (BuildContext context) {
+                                                                                return AlertDialog(
+                                                                                  title: const Text("You need to Signup first"),
+                                                                                  content: const Text("Click on login button if you want to edit review"),
+                                                                                  actions: <Widget>[
+                                                                                    TextButton(
+                                                                                      onPressed: () {
+                                                                                        Navigator.of(context).pop();
+                                                                                      },
+                                                                                      child: const Text("Leave"),
+                                                                                    ),
+                                                                                    TextButton(
+                                                                                      onPressed: () async {
+                                                                                        Navigator.pushReplacement(
+                                                                                            context,
+                                                                                            MaterialPageRoute(
+                                                                                                builder: (context) => UserLoginPage()
+                                                                                              //         SignupPageUser
+                                                                                            ));
+
+
+                                                                                      },
+                                                                                      child: const Text("SignUp"),
+                                                                                    ),
+                                                                                  ],
+                                                                                );
+                                                                              },);
+                                                                            }
+
+                                                                            break;
+                                                                        }
+                                                                      },
+                                                                      itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+
+
+                                                                        PopupMenuItem<int>(
+                                                                          value: 1,
+                                                                          height: 40,
+                                                                          enabled: reviewlist[index].email == email,
+                                                                          child: Row(
+                                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                                            children: [
+                                                                              const Icon(Icons.edit,color: Colors.indigo,size: 24,),
+                                                                              const SizedBox(width: 8,),
+                                                                              Flexible(child: Text('Edit',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color: reviewlist[index].email == email ? Colors.indigo[900] : Colors.grey),)),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        PopupMenuItem<int>(
+                                                                          value: 2,
+                                                                          height: 40,
+                                                                          enabled: reviewlist[index].email == email,
+                                                                          child: Row(
+                                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                                            children: [
+                                                                              const Icon(Icons.delete_forever,color: Colors.indigo,size: 24,),
+                                                                              const SizedBox(width: 8,),
+                                                                              Flexible(child: Text('Delete',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color: reviewlist[index].email == email ? Colors.indigo[900] : Colors.grey),)),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                        // PopupMenuItem<int>(
+                                                                        //   value: 3,
+                                                                        //   height: 40,
+                                                                        //   child: Row(
+                                                                        //     mainAxisAlignment: MainAxisAlignment.start,
+                                                                        //     children: [
+                                                                        //       Icon(Icons.report,color: Colors.indigo,size: 24,),
+                                                                        //       SizedBox(width: 8,),
+                                                                        //       Flexible(child: Text('Report',style: TextStyle(fontWeight: FontWeight.w600,fontSize: 16,color:Colors.indigo[900]),)),
+                                                                        //     ],
+                                                                        //   ),
+                                                                        // ),
+                                                                      ],
+                                                                    )
+                                                                        :
+                                                                    IconButton(
+                                                                      icon:const Icon(FontAwesomeIcons.ellipsisVertical),
+                                                                      onPressed: () {
+                                                                        showDialog(context: context, builder: (BuildContext context) {
+                                                                          return AlertDialog(
+                                                                            title: const Text("You need to Login first"),
+                                                                            content: const Text("Click on login button if you want to edit review"),
+                                                                            actions: <Widget>[
+                                                                              TextButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.of(context).pop();
+                                                                                },
+                                                                                child: const Text("Leave"),
+                                                                              ),
+                                                                              TextButton(
+                                                                                onPressed: () async {
+                                                                                  Navigator.pushReplacement(
+                                                                                      context,
+                                                                                      MaterialPageRoute(
+                                                                                          builder: (context) => UserLoginPage()
+                                                                                        //         SignupPageUser
+                                                                                      ));
+
+
+                                                                                },
+                                                                                child: const Text("SignUp"),
+                                                                              ),
+                                                                            ],
+                                                                          );
+                                                                        });
+
+                                                                      },
+                                                                    )
+
+                                                                  ],
+                                                                ),
+                                                                const SizedBox(height: 10,),
+                                                                Row(
+                                                                  children: [
+                                                                    RatingBar.builder(
+                                                                      initialRating: double.parse('${reviewlist[index].rating}'),
+                                                                      itemSize: 15,
+                                                                      minRating: 0,
+                                                                      direction: Axis.horizontal,
+                                                                      allowHalfRating: true,
+                                                                      itemCount: 5,
+                                                                      // itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                                                                      itemBuilder: (context, _) =>  Icon(
+                                                                        Icons.star,
+                                                                        color: Colors.amber,
+                                                                        // size: 10, // Adjust the size of the stars as needed
+                                                                      ),
+                                                                      ignoreGestures: true,
+                                                                      onRatingUpdate: (rating) {
+                                                                        // rating=rrating;
+                                                                        // rrating=rating;
+                                                                        print(rating);
+                                                                        // You can update the rating here if needed
+                                                                      },
+                                                                    ),
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.only(left: 12.0),
+                                                                      child: Text(getTimeAgo(reviewlist[index].timestamp),style: TextStyle(color: Colors.black54,fontSize: 12),),
+                                                                    ),
+
+                                                                  ],
+                                                                ),
+                                                                const SizedBox(height: 5,),
+
+                                                                Container(
+                                                                  width: MediaQuery.of(context).size.width,
+                                                                  // height:MediaQuery.of(context).size.height/2,
+                                                                  child:
+                                                                  EllipsisText(
+                                                                    text: "${reviewlist[index].comment}",
+                                                                    style:const  TextStyle(fontSize: 15),
+                                                                  ),
+
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(top: 8.0),
+                                                                  child: Row(
+
+                                                                    children: [
+                                                                      IconButton(
+                                                                          onPressed: ()async{
+                                                                            if(_isSignedIn && email!=""){
+                                                                              setState(() {
+                                                                                isLiked=!isLiked;
+                                                                                if(isLiked & !reviewlist[index].likedBy.contains(email)){
+                                                                                  likedBy.add(email);
+                                                                                  likesCount += 1;
+                                                                                }
+                                                                                else{
+                                                                                  likedBy.remove(email);
+                                                                                  if( likesCount == 0){
+                                                                                    likesCount = 0;
+                                                                                  }
+                                                                                  else{
+                                                                                    likesCount -= 1;
+                                                                                  }
+                                                                                }
+                                                                              }
+
+                                                                              );
+                                                                              FirebaseFirestore.instance
+                                                                                  .collection('restrooms')
+                                                                                  .doc(widget.document.id)
+                                                                                  .collection('reviews')
+                                                                                  .doc(reviewlist[index].id) // Assuming reviewDoc.id is the document ID of the review
+                                                                                  .update({
+                                                                                'likedBy': likedBy,
+                                                                                'likeCounts': likesCount});
+                                                                            }
+                                                                            else{
+                                                                              showDialog(context: context,
+                                                                                builder: (BuildContext context) {
+                                                                                  return AlertDialog(
+                                                                                    title: const Text("You need to Sign-Up first"),
+                                                                                    content: const Text(
+                                                                                        "Click on Sign-Up button if you want to like review"),
+                                                                                    actions: <Widget>[
+                                                                                      TextButton(
+                                                                                        onPressed: () {
+                                                                                          Navigator.of(context).pop();
+                                                                                        },
+                                                                                        child: const Text("Leave"),
+                                                                                      ),
+                                                                                      TextButton(
+                                                                                        onPressed: () async {
+                                                                                          Navigator.pushReplacement(
+                                                                                              context,
+                                                                                              MaterialPageRoute(
+                                                                                                  builder: (context) =>UserLoginPage()
+                                                                                                // SignupPageUser()
+                                                                                              ));
+                                                                                        },
+                                                                                        child: const Text("SignUp"),
+                                                                                      ),
+                                                                                    ],
+                                                                                  );
+                                                                                },);
+                                                                            }
+                                                                          },
+                                                                          icon:_isSignedIn & reviewlist[index].likedBy.contains(email)
+                                                                              ?Icon(Icons.thumb_up,color: Colors.blue[800],)
+                                                                              :
+                                                                          Icon(Icons.thumb_up_alt_outlined,color: Colors.black54,)
+
+                                                                      ),
+                                                                      // SizedBox(width: 5,),
+                                                                      Text('${reviewlist[index].likeCounts}'),
+                                                                      const SizedBox(width: 8,),
+                                                                      const Text("Like",style: TextStyle(fontWeight: FontWeight.bold),)
+                                                                    ],
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                          );}
+                                                    ),
+                                                  );
+
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        )
+
+
+                                        // Add more widgets as needed
+                                      ],
+                                    ),
+                                  ),
+
+
+
+
+                                  // Photos Tab Content
+                                  SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height:MediaQuery.of(context).size.height,
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Center(
+                                                  child: Container(
+                                                    height:MediaQuery.of(context).size.width/7,
+                                                    margin: const EdgeInsets.only(left: 16,top: 18,right: 16,bottom: 10),
+                                                    width: MediaQuery.of(context).size.width/2.6,
+                                                    child: MaterialButton(
+                                                        elevation: 0,
+                                                        onPressed: () async{
+                                                          if(_isSignedIn && email!=""){
+                                                            String? name = await getNameByEmail(email);
+
+                                                            if (name != null){
+                                                              print(" data : ${widget.document['images']}");
+                                                              final ImagePicker picker = ImagePicker();
+
+                                                              // Pick image
+                                                              final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
+                                                              if (image != null) {
+                                                                print(" data : ${widget.document['images']}");
+                                                                log('Image Path: ${image.path}');
+                                                                await sendImage(widget.document.id, widget.document['images'], File(image.path));
+                                                              }
+
+                                                            }
+                                                            else{
+                                                              print("name not found for report issue");
+
+                                                            }
+                                                          }
+                                                          else{
+                                                            showDialog(context: context, builder: (BuildContext context) {
+                                                              return AlertDialog(
+                                                                title: const Text("You need to SignUp first"),
+                                                                content: const Text("Click on login button if you want to give review"),
+                                                                actions: <Widget>[
+                                                                  TextButton(
+                                                                    onPressed: () {
+                                                                      Navigator.of(context).pop();
+                                                                    },
+                                                                    child: const Text("Leave"),
+                                                                  ),
+                                                                  TextButton(
+                                                                    onPressed: () async {
+                                                                      Navigator.pushReplacement(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                              builder: (context) => UserLoginPage()
+                                                                            //         SignupPageUser
+                                                                          ));
+
+
+                                                                    },
+                                                                    child: const Text("SignUp"),
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },);
+                                                          }
+
+
+
+                                                        },
+                                                        color: Colors.white,
+                                                        textColor: Colors.black,
+                                                        padding: const EdgeInsets.all(12),
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(30),
+                                                          side: const BorderSide(
+                                                            color: Color(0xFF979393FF),
+                                                            width: 1.0,
+                                                          ),
+                                                        ),
+                                                        child:Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                          children: [
+                                                            Icon(Icons.add_a_photo,color: Colors.blue[800],),
+                                                            Text("Add Photos",style: TextStyle(color:Colors.blue[800],fontSize: 15,),),
+                                                          ],)
+                                                    ),
+                                                  ),
+                                                ),
+                                                //
+                                                Divider(),
+                                                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                                                  stream: FirebaseFirestore.instance
+                                                      .collection('restrooms')
+                                                      .doc(widget.document.id)
+                                                      .snapshots(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                                      return const Center(
+                                                        child: CircularProgressIndicator(),
+                                                      );
+                                                    }
+                                                    if (snapshot.hasError) {
+                                                      return Center(
+                                                        child: Text('Error: ${snapshot.error}'),
+                                                      );
+                                                    }
+                                                    if (!snapshot.hasData || snapshot.data!.data() == null) {
+                                                      return const Center(
+                                                        child: Text('No data available'),
+                                                      );
+                                                    }
+
+                                                    Map<String, dynamic> data = snapshot.data!.data()!;
+                                                    List<String> imageUrls = List<String>.from(data['images'] ?? []);
+
+                                                    if (imageUrls.isEmpty) {
+                                                      return Text('No images found.');
+                                                    }
+                                                    return Expanded(
+                                                      // height: 500,
+                                                      child:
+                                                      GridView.builder(
+                                                        shrinkWrap: true,
+                                                        physics: const ScrollPhysics(),
+                                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                                          crossAxisCount: 2, // no. of columns
+                                                          crossAxisSpacing: 0,
+                                                          mainAxisSpacing: 0,
+                                                        ),
+                                                        itemCount: imageUrls.length,
+                                                        itemBuilder: (context, index) {
+                                                          return InkWell(
+                                                            onTap: () {
+                                                              showPhotos(context, imageUrls[index]);
+                                                            },
+                                                            child: Container(
+                                                              margin: EdgeInsets.all(5),
+                                                              child: Image.network(
+                                                                imageUrls[index],
+                                                                fit: BoxFit.cover,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                      // ListView.builder(
+                                                      //   itemCount: imageUrls.length,
+                                                      //   physics:ScrollPhysics(),
+                                                      //   itemBuilder: (context, index) {
+                                                      //     return InkWell(
+                                                      //       onTap: (){
+                                                      //         showPhotos(context, imageUrls[index]);
+                                                      //       },
+                                                      //       child: Container(
+                                                      //         height: 250,
+                                                      //         margin: EdgeInsets.only(top: 10,left:12,right:12),
+                                                      //         child: Image.network(
+                                                      //           imageUrls[index],
+                                                      //           fit: BoxFit.cover, // Adjust the fit as needed
+                                                      //         ),
+                                                      //       ),
+                                                      //     );
+                                                      //   },
+                                                      // ),
+                                                    );
+                                                  },
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )
+
+                                  ),
+
                                 ],
                               ),
                             ),
+
+
                           ],
-                        )
 
-                      ),
+                        );}
+                    }
+                )
+            ),
 
-                    ],
-                  ),
-                ),
-
-
-              ],
-
-            );}
-                }
-            )
-        ),
-
-      ),
+          ),
         ),
     );
   }
@@ -1969,7 +1960,6 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
       if (snapshot.docs.isNotEmpty) {
         return snapshot.docs.first['prof_img'] as String?;
       } else {
-        // User not found or prof_img not available
         return null;
       }
     } catch (e) {
@@ -2001,7 +1991,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                 Container(
                   child: Image.network(
                     url,
-                    fit: BoxFit.cover, // Adjust the fit as needed
+                    fit: BoxFit.cover,
                   ),
                 ),
                 IconButton(onPressed: (){
@@ -2079,7 +2069,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
 
   String getTimeAgo(Timestamp timestamp) {
     final now = DateTime.now();
-    final createdAt = timestamp.toDate(); // Convert Firestore Timestamp to DateTime
+    final createdAt = timestamp.toDate();
     final difference = now.difference(createdAt);
 
     if (difference.inDays > 365) {
@@ -2103,13 +2093,13 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Can\'t add photos' ),
+          title: const Text('Can\'t add photos' ),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -2147,11 +2137,11 @@ class ReviewSkeleton extends StatelessWidget {
     return Container(
       height: 200,
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15),
-      decoration: BoxDecoration(
+      decoration:const BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Colors.grey, // Choose your border color
-            width: 1.0, // Adjust the border width as needed
+            color: Colors.grey,
+            width: 1.0,
           ),
         ),
       ),
@@ -2172,7 +2162,7 @@ class ReviewSkeleton extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Container(
@@ -2190,7 +2180,7 @@ class ReviewSkeleton extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Container(
               width: MediaQuery.of(context).size.width,
               height: 80.0,
@@ -2205,13 +2195,13 @@ class ReviewSkeleton extends StatelessWidget {
                     height: 30.0,
                     color: Colors.grey[300],
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Container(
                     width: 30.0,
                     height: 30.0,
                     color: Colors.grey[300],
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Container(
                     width: 60.0,
                     height: 12.0,

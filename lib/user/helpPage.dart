@@ -5,7 +5,6 @@ import 'package:lottie/lottie.dart';
 
 class HelpPage extends StatefulWidget {
   const HelpPage({super.key});
-
   @override
   State<HelpPage> createState() => _HelpPageState();
 }
@@ -33,7 +32,6 @@ class _HelpPageState extends State<HelpPage> {
         title: RichText(
           text: TextSpan(
               style: const TextStyle(fontSize: 28,
-                  // fontFamily: 'El Messiri',
                   fontWeight: FontWeight.bold),
               children: <TextSpan>[
                 const TextSpan(text: 'Rest', style: TextStyle(color: Colors.black)),
@@ -47,7 +45,7 @@ class _HelpPageState extends State<HelpPage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.close,
                 color: Colors.black,
               ))
@@ -59,7 +57,7 @@ class _HelpPageState extends State<HelpPage> {
             color: Colors.white,
             height: MediaQuery.of(context).size.height * 0.1,
             width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(top: 18, bottom: 18, left: 18),
+            padding: const EdgeInsets.only(top: 18, bottom: 18, left: 18),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -68,7 +66,7 @@ class _HelpPageState extends State<HelpPage> {
                   height: MediaQuery.of(context).size.height * 0.06,
                   width: MediaQuery.of(context).size.width * 0.78,
 
-                  child: Text("Help Page ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                  child: const Text("Help Page ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
                 ),
                 // SizedBox(width: 30,)
               ],
@@ -80,7 +78,7 @@ class _HelpPageState extends State<HelpPage> {
 
                 Container(
                   // color: Colors.blue,
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 15),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: List.generate(
@@ -157,7 +155,7 @@ class _HelpPageState extends State<HelpPage> {
                   border: Border(
                     bottom: BorderSide(
                       color: Colors.grey.shade400,
-                      width: 0.8, // Adjust the width of the border
+                      width: 0.8,
                     ),
                   )),
               child: Text(
@@ -186,24 +184,25 @@ class First extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
+      padding: const EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("To search nearby Restroom",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
+          const Text("To search nearby Restroom",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
           // SizedBox(height: 10,),
           Center(
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width/1.8,
               height: MediaQuery.of(context).size.width/1.8,
               child: Lottie.network("https://lottie.host/b4b53a3f-3af4-415b-8be9-10c6dd8a37b1/tXSCKKEK41.json"),
             ),
           ),
           // SizedBox(height: 10,),
-          Center(child: Flexible(
+          Flexible(
               child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
             width: MediaQuery.of(context).size.width/1.2,
-              child: Column(
+              child: const Column(
                 children: [
                   Text(
                     "Just allow the location to be accessed when asked.",
@@ -213,7 +212,7 @@ class First extends StatelessWidget {
                 ],
               )
               )
-          ))
+          )
 
         ],
       ),
@@ -228,34 +227,35 @@ class Second extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
+      padding: const EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("To nearby Restroom for handicap or based on Gender",style: TextStyle(fontWeight: FontWeight.bold,fontSize:20),softWrap: true,),
+          const Text("To nearby Restroom for handicap or based on Gender",style: TextStyle(fontWeight: FontWeight.bold,fontSize:20),softWrap: true,),
           // SizedBox(height: 10,),
           Center(
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width/2.5,
               height: MediaQuery.of(context).size.width/2.5,
               child: Lottie.network("https://lottie.host/518b94f4-e01b-488b-89fe-f1a5b28ac3af/Zy6IcXMnnA.json"),
             ),
           ),
           // SizedBox(height: 10,),
-          Center(child: Flexible(
+          Flexible(
               child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   width: MediaQuery.of(context).size.width/1.1,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Text(
+                          const Text(
                             "Step 1: ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "Allow the location when asked.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -265,24 +265,24 @@ class Second extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 2 : ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "You can filter location based on handicap and gender by using the drop-down present just below the appbar.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
                           ),
                         ],
                       ),
-                      Text("This will automatically display nearby restrooms within 5 km.",
+                      const Text("This will automatically display nearby restrooms within 5 km.",
                         style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,)
                     ],
                   )
               )
-          ))
+          )
 
         ],
       ),
@@ -296,34 +296,37 @@ class Third extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
+      padding: const EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("To give a review",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
+          const Text("To give a review",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
           // SizedBox(height: 10,),
           Center(
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width/1.8,
               height: MediaQuery.of(context).size.width/1.8,
               child: Lottie.network("https://lottie.host/389acb2e-215c-4637-a85f-fac86b023856/1bmDxKMwx6.json"),
             ),
           ),
           // SizedBox(height: 10,),
-          Center(child: Flexible(
+          Flexible(
               child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+
                   width: MediaQuery.of(context).size.width/1.2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 1: ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "Select the restroom you want to rate.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -333,12 +336,12 @@ class Third extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 2 : ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "You have to log in first before giving reviews or ratings.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -348,12 +351,12 @@ class Third extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 3 : ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "Click on the Write a Review button in the Review tab.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -364,7 +367,7 @@ class Third extends StatelessWidget {
                     ],
                   )
               )
-          ))
+          )
 
         ],
       ),
@@ -378,34 +381,36 @@ class Forth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
+      padding:const EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("To report an issue about the restroom",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
+          const Text("To report an issue about the restroom",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
           // SizedBox(height: 10,),
           Center(
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width/2,
               height: MediaQuery.of(context).size.width/2,
               child: Lottie.network("https://lottie.host/15983367-0991-47e7-91f3-0fdbc2bd4443/GOCgxHaUx4.json"),
             ),
           ),
           // SizedBox(height: 10,),
-          Center(child: Flexible(
+          Flexible(
               child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+
                   width: MediaQuery.of(context).size.width/1.2,
                   child: Column(
                     children: [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 1: ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "Select the restroom you want to report an issue about.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -415,12 +420,12 @@ class Forth extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 2 : ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "You have to log in first before issuing a report",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -430,12 +435,12 @@ class Forth extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 3 : ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "Click on the \'Report Issue\' button in the About tab.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -445,7 +450,7 @@ class Forth extends StatelessWidget {
                     ],
                   )
               )
-          ))
+          )
 
         ],
       ),
@@ -459,34 +464,35 @@ class Fifth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
+      padding: const EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("To suggest a new restroom",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
+          const Text("To suggest a new restroom",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
           // SizedBox(height: 10,),
           Center(
-            child: Container(
+            child: SizedBox(
               width: MediaQuery.of(context).size.width/2.2,
               height: MediaQuery.of(context).size.width/2.2,
               child: Lottie.network("https://lottie.host/6b9985f6-7641-4a95-851d-a7d399ea95b4/YSrd7THJ7E.json"),
             ),
           ),
           // SizedBox(height: 10,),
-          Center(child: Flexible(
+          Flexible(
               child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   width: MediaQuery.of(context).size.width/1.1,
                   child: Column(
                     children: [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 1: ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "You have to log in first before suggesting a restroom.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -496,12 +502,12 @@ class Fifth extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 2 : ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "Go to the profile page.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
@@ -511,25 +517,25 @@ class Fifth extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Step 3 : ",
                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                           Flexible(
                             child: Container(
-                              child: Text(
+                              child: const Text(
                                 "Click on the \'Suggest Resroom\' button.",
                                 style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,),
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 10,),
-                      Text("You can add addresses by your current location, so you need to be in that restroom currently to suggest one to the admin.",
+                      const SizedBox(height: 10,),
+                      const Text("You can add addresses by your current location, so you need to be in that restroom currently to suggest one to the admin.",
                         style: TextStyle(fontSize: 16,),overflow: TextOverflow.visible,softWrap: true,)
                     ],
                   )
               )
-          ))
+          )
 
         ],
       ),
@@ -537,43 +543,3 @@ class Fifth extends StatelessWidget {
   }
 }
 
-// class Sixth extends StatelessWidget {
-//   const Sixth({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: EdgeInsets.only(left: 15,right:15,top: 20,bottom: 10),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text("To search nearby Restroom",style: TextStyle(fontWeight: FontWeight.bold,fontSize:22),),
-//           // SizedBox(height: 10,),
-//           Center(
-//             child: Container(
-//               width: MediaQuery.of(context).size.width/1.6,
-//               height: MediaQuery.of(context).size.width/1.6,
-//               child: Lottie.network("https://lottie.host/b4b53a3f-3af4-415b-8be9-10c6dd8a37b1/tXSCKKEK41.json"),
-//             ),
-//           ),
-//           // SizedBox(height: 10,),
-//           Center(child: Flexible(
-//               child: Container(
-//                   width: MediaQuery.of(context).size.width/1.2,
-//                   child: Column(
-//                     children: [
-//                       Text(
-//                         "Just allow the location to be accessed when asked.",
-//                         style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-//                       Text("This will automatically display nearby restrooms within 5 km.",
-//                         style: TextStyle(fontSize: 18,),)
-//                     ],
-//                   )
-//               )
-//           ))
-//
-//         ],
-//       ),
-//     );
-//   }
-// }

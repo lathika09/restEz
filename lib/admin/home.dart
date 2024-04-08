@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,11 +6,10 @@ import 'package:rest_ez_app/admin/AdminProfile.dart';
 import 'package:rest_ez_app/admin/issueList.dart';
 import 'package:rest_ez_app/admin/restroomManage.dart';
 import 'package:rest_ez_app/admin/suggestionsList.dart';
-import 'package:rest_ez_app/user/Profile.dart';
-
 import '../constant/imageString.dart';
 import 'loginPage.dart';
 import 'notification.dart';
+
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key,required this.email});
@@ -52,7 +50,6 @@ class _AdminPageState extends State<AdminPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // User canceled, simply close the dialog
                       Navigator.of(context).pop();
                     },
                     child: const Text("No"),

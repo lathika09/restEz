@@ -31,7 +31,7 @@ class _MakeSuggestionState extends State<MakeSuggestion> {
                         padding:EdgeInsets.symmetric(horizontal: 15,vertical: 18),
                     decoration:BoxDecoration(borderRadius:BorderRadius.circular(30),color: Colors.white,),
 
-                      child: Column(
+                      child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("dmi"),

@@ -40,13 +40,13 @@ class RatingProgress extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Row(
         children: [
-          Expanded(
+          const Expanded(
 
               flex:1,
               child: SizedBox()),
           Expanded(
               flex: 1,
-              child: Text(text,style: TextStyle(fontSize: 12),)
+              child: Text(text,style: const TextStyle(fontSize: 12),)
           ),
           Expanded(
               flex: 11,
@@ -91,7 +91,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       automaticallyImplyLeading: true,
       backgroundColor: Colors.blue[800],
       elevation:2,
-      title: Text(widget.appTitle!,style: TextStyle(fontSize: 24,color: Colors.white,fontWeight: FontWeight.bold),),
+      title: Text(widget.appTitle!,style: const TextStyle(fontSize: 24,color: Colors.white,fontWeight: FontWeight.bold),),
       leading: widget.icon!=null ? Container(
         margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 10,),
         decoration: BoxDecoration(

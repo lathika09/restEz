@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:uuid/uuid.dart';
-
 import 'Profile.dart';
 
 class EditRatingPage extends StatefulWidget {
@@ -15,7 +12,6 @@ class EditRatingPage extends StatefulWidget {
   final String uemail;
   final DocumentSnapshot document;
   final DocumentSnapshot reviewDocument;
-
   final String post;
   final int rate;
 
@@ -40,7 +36,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
             TextButton(
               child: Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -189,7 +185,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Padding(
+                              const Padding(
                                 padding: const EdgeInsets.only(bottom: 12.0),
                                 child: Text("Share more about your experience",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
                               ),
@@ -206,7 +202,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.only(right: 12.0),
-                                    child: Row(
+                                    child: const Row(
                                       children: [
                                         Icon(FontAwesomeIcons.pen,size: 12,color: Colors.indigo,),
                                         SizedBox(width: 4,),
@@ -221,7 +217,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                           Container(
                             // color: Colors.black54,
                             width:MediaQuery.of(context).size.width ,
-                            padding: EdgeInsets.only(top: 3,left: 12,right: 12,bottom: 40),
+                            padding: const EdgeInsets.only(top: 3,left: 12,right: 12,bottom: 40),
                             height: 200,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
@@ -236,7 +232,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
                                 ? TextField(
                               controller: reviewController,
                               maxLines: null,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 hintText: 'Share details of your own experience at this restroom',
                                 border: InputBorder.none,
                                 hintMaxLines: 5,
@@ -245,45 +241,45 @@ class _EditRatingPageState extends State<EditRatingPage> {
                             )
                                 : Text(
                               widget.post,
-                              style: TextStyle(fontSize: 16.0),
+                              style: const TextStyle(fontSize: 16.0),
                             ),
 
                           ),
 
                           //ADD PHOTOS
-                          Center(
-                            child: Container(
-                              margin: EdgeInsets.only(left: 16,top: 18,right: 16),
-                              width: MediaQuery.of(context).size.height/4.9,
-                              child: MaterialButton(
-                                  elevation: 0,
-                                  onPressed: () async{
-                                    // Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //         builder: (context) => RatingPage(uname: widget.name, document: widget.document,)));
-
-                                  },
-                                  color: Colors.white,
-                                  textColor: Colors.black,
-                                  padding: EdgeInsets.all(12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                    side: BorderSide(
-                                      color: Color(0xFF979393FF), // Set the border color
-                                      width: 1.0,         // Set the border width
-                                    ),
-                                  ),
-                                  child:Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Icon(Icons.add_a_photo,color: Colors.blue[800],),
-                                      Text("Add Photos",style: TextStyle(color:Colors.blue[800],fontSize: 15,),),
-                                    ],
-                                  )
-                              ),
-                            ),
-                          ),
+                          // Center(
+                          //   child: Container(
+                          //     margin:const  EdgeInsets.only(left: 16,top: 18,right: 16),
+                          //     width: MediaQuery.of(context).size.height/4.9,
+                          //     child: MaterialButton(
+                          //         elevation: 0,
+                          //         onPressed: () async{
+                          //           // Navigator.push(
+                          //           //     context,
+                          //           //     MaterialPageRoute(
+                          //           //         builder: (context) => RatingPage(uname: widget.name, document: widget.document,)));
+                          //
+                          //         },
+                          //         color: Colors.white,
+                          //         textColor: Colors.black,
+                          //         padding: const EdgeInsets.all(12),
+                          //         shape: RoundedRectangleBorder(
+                          //           borderRadius: BorderRadius.circular(30),
+                          //           side:const BorderSide(
+                          //             color: Color(0xFF979393FF),
+                          //             width: 1.0,
+                          //           ),
+                          //         ),
+                          //         child:Row(
+                          //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          //           children: [
+                          //             Icon(Icons.add_a_photo,color: Colors.blue[800],),
+                          //             Text("Add Photos",style: TextStyle(color:Colors.blue[800],fontSize: 15,),),
+                          //           ],
+                          //         )
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
 
@@ -296,7 +292,7 @@ class _EditRatingPageState extends State<EditRatingPage> {
           ),
           Center(
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16,vertical: 18),
+              margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 18),
               width: MediaQuery.of(context).size.height/3,
               child: MaterialButton(
                   elevation: 0,
@@ -369,12 +365,12 @@ class _EditRatingPageState extends State<EditRatingPage> {
                   padding: EdgeInsets.all(12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
-                    side: BorderSide(
-                      color: Color(0xFFebf1fa), // Set the border color
-                      width: 1.0,         // Set the border width
+                    side: const BorderSide(
+                      color: Color(0xFFebf1fa),
+                      width: 1.0,
                     ),
                   ),
-                  child:Text("Post",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
+                  child:const Text("Post",style: TextStyle(color:Colors.white,fontSize: 20,fontWeight: FontWeight.bold
                   ),)
               ),
             ),

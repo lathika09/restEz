@@ -30,28 +30,21 @@ class _UserProfileState extends State<UserProfile> {
   final TextEditingController _no_rep= TextEditingController();
   DocumentSnapshot<Map<String, dynamic>>? userDoc;
 
-  // bool isEditing = false;
   bool isEditing = false;
 
   Future<void> editUserData(String uemail,String newName) async {
     try {
-      // Get the updated name from the text controller
-      // String newName = _name.text;
-
-      // Update the Firestore document with the new name
       await FirebaseFirestore.instance
           .collection("users")
           .doc(uemail)
           .set({"name": newName}, SetOptions(merge: true));
       print("edkted sucess");
     } catch (e) {
-      // Handle errors
       print("Error saving user data: $e");
     }
   }
   Future<DocumentSnapshot<Map<String, dynamic>>?> fetchUserByEmail(String email) async {
     try {
-      // Query userEmails collection to get userId
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('email', isEqualTo: email)
@@ -60,7 +53,6 @@ class _UserProfileState extends State<UserProfile> {
       if (querySnapshot.docs.isNotEmpty) {
         String userId = querySnapshot.docs.first.get('userId');
 
-        // Fetch user document using userId
         DocumentSnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -69,11 +61,9 @@ class _UserProfileState extends State<UserProfile> {
         return userSnapshot;
       //   DocumentSnapshot<Map<String, dynamic>>? userDoc = await fetchUserByEmail('hari@gmail.com');
       } else {
-        // No user found with the provided email
         return null;
       }
     } catch (e) {
-      // Handle errors
       print("Error fetching user by email: $e");
       return null;
     }
@@ -88,10 +78,8 @@ class _UserProfileState extends State<UserProfile> {
 
       if (snapshot.docs.isNotEmpty) {
         setState(() {
-          // Get the user data from the first document in the snapshot
           Map<String, dynamic> userData = snapshot.docs.first.data();
 
-          // Update text controllers with user data
           // _name.text = userData["name"] ?? "";
           _email.text = userData["email"] ?? "";
           _no_rev.text=(userData['no_of_reviews'] ?? 0).toString();
@@ -101,11 +89,9 @@ class _UserProfileState extends State<UserProfile> {
 
         });
       } else {
-        // Handle case when no user data found
         print("No user data found for email: $userEmail");
       }
     } catch (e) {
-      // Handle errors
       print("Error fetching user data: $e");
     }
   }
@@ -151,16 +137,16 @@ class _UserProfileState extends State<UserProfile> {
       child: Scaffold(
         appBar:AppBar(
           backgroundColor:Colors.indigo[700],
-          iconTheme: IconThemeData(
+          iconTheme: const IconThemeData(
             color: Colors.white,
           ),
           title:RichText(
             text: TextSpan(
-                style: TextStyle(fontSize: 29,
+                style: const TextStyle(fontSize: 29,
                     // fontFamily: 'El Messiri',
                     fontWeight: FontWeight.bold),
                 children: <TextSpan>[
-                  TextSpan(text: 'Rest', style: TextStyle(color: Colors.white)),
+                  const TextSpan(text: 'Rest', style: TextStyle(color: Colors.white)),
                   TextSpan(
                       text: 'Ez', style: TextStyle(color: Colors.tealAccent[100]))
                 ]
@@ -168,7 +154,7 @@ class _UserProfileState extends State<UserProfile> {
           ),
           elevation: 24.0,
           actions: <Widget>[IconButton(
-            icon: Icon(Icons.edit,size: 30,color: Colors.white,),
+            icon: const Icon(Icons.edit,size: 30,color: Colors.white,),
             onPressed: () async{
               setState(() {
                 isEditing = !isEditing;
@@ -177,7 +163,7 @@ class _UserProfileState extends State<UserProfile> {
           ),
             if (isEditing)
               IconButton(
-                icon: Icon(Icons.save),
+                icon: const Icon(Icons.save),
                 onPressed: () {
                   setState(() {
                     isEditing = false;
@@ -198,7 +184,7 @@ class _UserProfileState extends State<UserProfile> {
 
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(height: 22,),
+                const SizedBox(height: 22,),
                 Center(
                   child: Stack(
                     children: [
@@ -248,11 +234,11 @@ class _UserProfileState extends State<UserProfile> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10,),
+                const SizedBox(height: 10,),
                 SizedBox(
                   child: Container(
-                    margin:EdgeInsets.symmetric(horizontal: 20,vertical: 10) ,
-                    padding: EdgeInsets.symmetric(horizontal: 20,vertical: 18),
+                    margin:const EdgeInsets.symmetric(horizontal: 20,vertical: 10) ,
+                    padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 18),
                    decoration: BoxDecoration(
                      color: Colors.white,
                      // color: Colors.indigo[100],
@@ -270,7 +256,7 @@ class _UserProfileState extends State<UserProfile> {
                             child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Name :",
                                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
                                   ),
@@ -285,12 +271,12 @@ class _UserProfileState extends State<UserProfile> {
                                         if (snapshot.connectionState == ConnectionState.waiting) {
                                           return Text(
                                             _name.text,
-                                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+                                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
                                           );
                                         } else if (snapshot.hasError) {
                                           return Text('Error: ${snapshot.error}');
                                         } else if (!snapshot.hasData || !snapshot.data!.exists) {
-                                          return Text('Document not found');
+                                          return const Text('Document not found');
                                         } else {
                                           var userData = snapshot.data!.data()!;
                                           return Flexible(
@@ -301,18 +287,18 @@ class _UserProfileState extends State<UserProfile> {
                                               ),
                                               child: isEditing
                                                   ? TextFormField(
-                                                    controller:_name,
+                                                controller:_name,
                                                 validator: (value) {
                                                   if (value == null || value.isEmpty) {
                                                     return 'Please enter valid name';
                                                   }
                                                   return null;
                                                 },
-                                                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
-                                                    // initialValue:userData['name'],
-                                                    maxLines: null,
-                                                    keyboardType: TextInputType.multiline,
-                                                    decoration: const InputDecoration(
+                                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+                                                // initialValue:userData['name'],
+                                                maxLines: null,
+                                                keyboardType: TextInputType.multiline,
+                                                decoration: const InputDecoration(
                                                   contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                                                   enabledBorder: OutlineInputBorder(
                                                     borderSide: BorderSide(color: Color(0xFFBDBDBD)),
@@ -320,26 +306,25 @@ class _UserProfileState extends State<UserProfile> {
                                                   border: OutlineInputBorder(
                                                     borderSide: BorderSide(color: Color(0xFFBDBDBD)),
                                                   ),
-                                                    ),
-                                                                                                  // onEditingComplete: () {
-                                                                                                  //   // Update the text controller with the new value
-                                                                                                  //   String newValue = _name.text;
-                                                                                                  //   editUserData(widget.uemail, newValue);
-                                                                                                  //
-                                                                                                  //   // Clear focus when editing is complete
-                                                                                                  //   FocusScope.of(context).unfocus();
-                                                                                                  // },
-                                                    onSaved: (newValue) {
-                                                      _name.text = newValue!;
-                                                      editUserData(widget.uemail, newValue);
+                                                ),
+                                                // onEditingComplete: () {
+                                                //   // Update the text controller with the new value
+                                                //   String newValue = _name.text;
+                                                //   editUserData(widget.uemail, newValue);
+                                                //
+                                                //   // Clear focus when editing is complete
+                                                //   FocusScope.of(context).unfocus();
+                                                // },
+                                                onSaved: (newValue) {
+                                                  _name.text = newValue!;
+                                                  editUserData(widget.uemail, newValue);
 
+                                                },
 
-                                                      },
-
-                                                  )
+                                              )
                                                   : Text(
                                                 userData['name'],
-                                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+                                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
                                               ),
                                             ),
                                           );
@@ -347,13 +332,13 @@ class _UserProfileState extends State<UserProfile> {
                                 ])
                           // buildTextField("Name :",_name)
                         ),
-                        SizedBox(height: 15,),
+                        const SizedBox(height: 15,),
                         //spec
                         Container(
                             // padding: EdgeInsets.only(left: 15),
 
                             child: buildTextField("Email :",_email)),
-                        SizedBox(height: 15,),
+                        const SizedBox(height: 15,),
 
 
 
@@ -362,18 +347,18 @@ class _UserProfileState extends State<UserProfile> {
                             // padding: EdgeInsets.only(left: 15),
                             child: buildTextField("No. of Reviews :",_no_rev)),
 
-                        SizedBox(height: 15,),
+                        const SizedBox(height: 15,),
                         Container(
                             // padding: EdgeInsets.only(left: 15),
 
                             child: buildTextField("No. of Reports :",_no_rep)),
-                        SizedBox(height: 15,),
+                        const SizedBox(height: 15,),
                         Container(
                             // padding: EdgeInsets.only(left: 15),
 
                             child: buildTextField("No. of Suggestion :",_no_sug)),
 
-                        SizedBox(height: 25,),
+                        const SizedBox(height: 25,),
                         Container(
                           // padding: EdgeInsets.symmetric(horizontal: 10),
                           // width: MediaQuery.of(context).size.width,
@@ -381,11 +366,6 @@ class _UserProfileState extends State<UserProfile> {
                             // minWidth:MediaQuery.of(context).size.width/,
                             height: 48,
                             onPressed:(){
-                              // Navigator.push(context,
-                              //     MaterialPageRoute(builder: (context) =>
-                              //         pPage()
-                              //       // MakeSuggestion()
-                              //     ));
                               giveSuggestionModalSheet(context);
 
                             },
@@ -396,12 +376,12 @@ class _UserProfileState extends State<UserProfile> {
                                 ),
                                 borderRadius: BorderRadius.circular(50)
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.create,color: Colors.white,),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 18.0),
+                                  padding: EdgeInsets.only(left: 18.0),
                                   child: Text("Suggest Restroom",
                                     style: TextStyle(
                                       color: Colors.white,
@@ -415,16 +395,16 @@ class _UserProfileState extends State<UserProfile> {
                         ),
 
 
-                        SizedBox(height: 5,),
+                        const SizedBox(height: 5,),
 
                       ],
                     ),
                   ),
 
                 ),
-                SizedBox(height: 10,),
+                const SizedBox(height: 10,),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
                   // width: MediaQuery.of(context).size.width,
                   child: MaterialButton(
                     // minWidth:MediaQuery.of(context).size.width/3,
@@ -434,8 +414,8 @@ class _UserProfileState extends State<UserProfile> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text("Logout Confirmation"),
-                            content: Text("Are you sure you want to log out?"),
+                            title: const Text("Logout Confirmation"),
+                            content: const Text("Are you sure you want to log out?"),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () async {
@@ -448,14 +428,14 @@ class _UserProfileState extends State<UserProfile> {
                                   );
 
                                 },
-                                child: Text("Yes"),
+                                child: const Text("Yes"),
                               ),
                               TextButton(
                                 onPressed: () {
                                   // User canceled, simply close the dialog
                                   Navigator.of(context).pop();
                                 },
-                                child: Text("No"),
+                                child: const Text("No"),
                               ),
                             ],
                           );
@@ -470,7 +450,7 @@ class _UserProfileState extends State<UserProfile> {
                         ),
                         borderRadius: BorderRadius.circular(50)
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.logout,color: Colors.indigo,),
@@ -487,7 +467,7 @@ class _UserProfileState extends State<UserProfile> {
                     ),
                   ),
                 ),
-                SizedBox(height: 30,),
+                const SizedBox(height: 30,),
 
 
               ],
@@ -508,7 +488,7 @@ class _UserProfileState extends State<UserProfile> {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 15,fontWeight: FontWeight.w400,color: Colors.black87),
+          style: const TextStyle(fontSize: 15,fontWeight: FontWeight.w400,color: Colors.black87),
         ),
         const SizedBox(width:5),
         Flexible(
@@ -518,7 +498,7 @@ class _UserProfileState extends State<UserProfile> {
                 borderRadius: BorderRadius.circular(10)
             ),
             child: TextField(
-              style: TextStyle(
+              style: const TextStyle(
                 // backgroundColor: Colors.white,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
@@ -626,16 +606,13 @@ class _UserProfileState extends State<UserProfile> {
       Timestamp timestamp = Timestamp.now();
       DocumentReference newRestroomRef = FirebaseFirestore.instance.collection('newRestroom').doc(address);
 
-      // Check if the document exists and get its data
       DocumentSnapshot docSnapshot = await newRestroomRef.get();
       if (docSnapshot.exists) {
-        // Document already exists
         Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
         if (data != null) {
           List<dynamic>? suggestedBy = data['suggestedBy'];
           String adm=data['sendTo'];
 
-          // Check if the user is already in the suggestedBy array
           // && selectedAdmin==adm // //REASON TO REMOVE IS THAT MANY ADMIN WILL GET SAME SUGGEST
           if (suggestedBy != null && suggestedBy.contains(nm) ) {
             isReq=false;
@@ -706,11 +683,11 @@ class _UserProfileState extends State<UserProfile> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Successfully Sent'),
-              content: Text("Successfully send suggestion about new restroom location"),
+              title: const Text('Successfully Sent'),
+              content: const Text("Successfully send suggestion about new restroom location"),
               actions: <Widget>[
                 TextButton(
-                  child: Text('OK'),
+                  child: const Text('OK'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -771,13 +748,13 @@ class _UserProfileState extends State<UserProfile> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Flexible(child: Text(
+                        const Flexible(child: Text(
                           "Give Location of New Restroom ",
                           style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),softWrap: true,overflow: TextOverflow.visible,
                         )
                         ),
-                        SizedBox(height: 5,),
-                        Flexible(child: Text('Click on below \'GET LOCATION\' Botton to get your Current Location for getting Restroom location and address',
+                        const SizedBox(height: 5,),
+                        const Flexible(child: Text('Click on below \'GET LOCATION\' Botton to get your Current Location for getting Restroom location and address',
                           style: TextStyle(fontSize: 17,color: Colors.black87),softWrap: true,overflow: TextOverflow.visible,
 
                         )),
@@ -811,7 +788,7 @@ class _UserProfileState extends State<UserProfile> {
                                       child: Text(
                                         // "Select button to get location djd kms nkdnknd nskndkmsk cncknd",
                                         location,
-                                        style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                                        style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -819,14 +796,14 @@ class _UserProfileState extends State<UserProfile> {
                                 ],
                               ),),
                               Container(
-                                padding: EdgeInsets.only(top: 20),
+                                padding: const EdgeInsets.only(top: 20),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Flexible(flex:1,child: Container(
                                         width: double.infinity/4,
-                                        child: Text("Address : ",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),))),
-                                    Flexible(
+                                        child: const Text("Address : ",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),))),
+                                    const Flexible(
                                         flex: 0,
                                         child: SizedBox(width: 10,)),
 
@@ -843,7 +820,7 @@ class _UserProfileState extends State<UserProfile> {
                                       child: Text(
                                         // "Select button to get location djd kms nkdnknd nskndkmsk cncknd uss huhud ndjnd bduhnd dhjudnu dundud dujndudn du",
                                         address,
-                                        style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                                        style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
                                         softWrap: true,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -856,8 +833,8 @@ class _UserProfileState extends State<UserProfile> {
                                   children: [
                                     Flexible(flex:1,child: Container(
                                         width: double.infinity/4,
-                                        child: Text("Select Admin : ",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),))),
-                                    Flexible(flex: 0,
+                                        child: const Text("Select Admin : ",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500),))),
+                                    const Flexible(flex: 0,
                                         child: SizedBox(width: 10,)),
                                     FutureBuilder<List<String>>(
                                       future: getAllAdminEmails(),
@@ -876,7 +853,7 @@ class _UserProfileState extends State<UserProfile> {
 
                                               child: DropdownButton<String>(
                                                 isExpanded: true,
-                                                hint: Text('Select an Option'),
+                                                hint: const Text('Select an Option'),
                                                 underline: Container(
                                                   height: 0,
                                                   color: Colors.transparent,
@@ -894,7 +871,7 @@ class _UserProfileState extends State<UserProfile> {
                                                     value: valueItem,
                                                     child: Text(
                                                       valueItem,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 16,
                                                       ),
@@ -922,7 +899,7 @@ class _UserProfileState extends State<UserProfile> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16,vertical: 15),
+                      margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 15),
                       width: MediaQuery.of(context).size.width/2.5,
                       // height:MediaQuery.of(context).size.height/12,
                       // height: 100,
@@ -945,17 +922,17 @@ class _UserProfileState extends State<UserProfile> {
                           padding: EdgeInsets.all(12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
-                            side: BorderSide(
+                            side: const BorderSide(
                               color: Color(0xFFebf1fa), // Set the border color
                               width: 1.0,         // Set the border width
                             ),
                           ),
-                          child:Text("GET LOCATION ",style: TextStyle(color:Colors.white,fontSize: 18,fontWeight: FontWeight.bold
+                          child:const Text("GET LOCATION ",style: TextStyle(color:Colors.white,fontSize: 18,fontWeight: FontWeight.bold
                           ),)
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16,vertical: 15),
+                      margin:const EdgeInsets.symmetric(horizontal: 16,vertical: 15),
                       width: MediaQuery.of(context).size.width/2.5,
                       // height:MediaQuery.of(context).size.height/12,
                       // height: 100,
@@ -1040,10 +1017,8 @@ class _UserProfileState extends State<UserProfile> {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        // Assuming there's only one user with the given name
         return querySnapshot.docs.first['email'];
       } else {
-        // No user found with the given name
         return null;
       }
     } catch (error) {

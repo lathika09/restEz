@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rest_ez_app/admin/home.dart';
 import 'package:rest_ez_app/constant/imageString.dart';
-
 import '../admin/loginPage.dart';
 import '../user/homepage.dart';
 
@@ -57,7 +55,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20,),
+              const SizedBox(height: 20,),
               Expanded(
                 flex: 1,
                 child: SingleChildScrollView(
@@ -111,18 +109,15 @@ class WelcomePage extends StatelessWidget {
                             color: Colors.white,
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
-                          ),),
+                          ),
+                        ),
                       ),
-
-
                     ],
                   ),
                 ),
               )
-
             ],
           ),
-
         ),
       ),
     );

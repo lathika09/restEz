@@ -2,10 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
-
 import '../splashScreens/splash_controller.dart';
 import 'LoginUser.dart';
-import 'homepage.dart';
 
 
 class SignupPageUser extends StatelessWidget {
@@ -19,7 +17,7 @@ class SignupPageUser extends StatelessWidget {
   }
 
   bool validatePhoneNumber(String phoneNumber) {
-    return GetUtils.isPhoneNumber(phoneNumber); // Using GetUtils to validate phone number
+    return GetUtils.isPhoneNumber(phoneNumber);
   }
 
 
@@ -33,12 +31,12 @@ class SignupPageUser extends StatelessWidget {
 
         // brightness:Brightness.light,
         backgroundColor:Colors.white,
-        // title: const Text("MediWise",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 26,color:Colors.white),),
+        // title: const Text("Restez",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 26,color:Colors.white),),
         leading: IconButton(
           onPressed: (){
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_ios,size: 25,color: Colors.black,),
+          icon: const Icon(Icons.arrow_back_ios,size: 25,color: Colors.black,),
 
         ),
       ),
@@ -51,17 +49,17 @@ class SignupPageUser extends StatelessWidget {
           //     fit: BoxFit.cover,
           //   ),
           // ),
-          padding: EdgeInsets.symmetric(horizontal: 40,vertical:0),
+          padding: const EdgeInsets.symmetric(horizontal: 40,vertical:0),
           height: MediaQuery.of(context).size.height-60,
           width: double.infinity,
           child: Column(
 
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text("Sign up",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),),
+              const Text("Sign up",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),),
               Padding(
 
-                padding: EdgeInsets.symmetric(vertical:10),
+                padding: const EdgeInsets.symmetric(vertical:10),
                 child: Column(
                   children: [
                     Column(
@@ -71,7 +69,7 @@ class SignupPageUser extends StatelessWidget {
                           "Name",
                           style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500,color: Colors.black87),
                         ),
-                        SizedBox(height:3),
+                        const SizedBox(height:3),
                         TextField(
                           obscureText: false,
                           controller:_name,
@@ -90,11 +88,11 @@ class SignupPageUser extends StatelessWidget {
                             ),
                             prefixIcon: Icon(
                               Icons.person,
-                              color: Color(0xFFBDBDBD), // Adjust the color as needed
+                              color: Color(0xFFBDBDBD),
                             ),
                           ),
                         ),
-                        SizedBox(height:10),
+                        const SizedBox(height:10),
                       ],
                     ),
                     Column(
@@ -104,7 +102,7 @@ class SignupPageUser extends StatelessWidget {
                           "Email",
                           style: TextStyle(fontSize: 16,fontWeight: FontWeight.w500,color: Colors.black87),
                         ),
-                        SizedBox(height:3),
+                        const SizedBox(height:3),
                         TextField(
                           obscureText: false,
 
@@ -122,12 +120,12 @@ class SignupPageUser extends StatelessWidget {
                             ),
                             prefixIcon: Icon(
                               Icons.email,
-                              color: Color(0xFFBDBDBD), // Adjust the color as needed
+                              color: Color(0xFFBDBDBD),
                             ),
                           ),
                           controller:_email,
                         ),
-                        SizedBox(height:10),
+                        const SizedBox(height:10),
                       ],
                     ),
                     Column(
@@ -139,7 +137,7 @@ class SignupPageUser extends StatelessWidget {
                         ),
                         const SizedBox(height:3),
                         PasswordTextField(controller: _pswd),
-                        SizedBox(height:10),
+                        const SizedBox(height:10),
                       ],
                     ),
                     Column(
@@ -159,7 +157,7 @@ class SignupPageUser extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(top:5,left: 3),
+                padding: const EdgeInsets.only(top:5,left: 3),
                 child: MaterialButton(
                   minWidth:MediaQuery.of(context).size.width/2,
                   height: 50,
@@ -278,11 +276,11 @@ class SignupPageUser extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -298,11 +296,11 @@ class SignupPageUser extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Success'),
+          title: const Text('Success'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -338,13 +336,13 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       obscureText: _isObscured,
       controller: widget.controller,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-        enabledBorder: OutlineInputBorder(
+        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+        enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Color(0xFFBDBDBD),
           ),
         ),
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderSide: BorderSide(
             color: Color(0xFFBDBDBD),
           ),

@@ -8,7 +8,6 @@ class SharedPreference {
   static String userTokenKey = "USERTOKENKEY";
   static String userPhoneKey = "USERPHONEKEY";
 
-  // saving the data to shared preferences
 
   static Future<bool> saveUserLoggedInStatus(bool isUserLogggedIn) async {
     SharedPreferences sf = await SharedPreferences.getInstance();
