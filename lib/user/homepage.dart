@@ -157,44 +157,6 @@ class _UserPageState extends State<UserPage> {
     print(markersSet);
   }
 
-  void addUserMarker() async {
-    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    // GeoPoint? restroomLocation = (document.data() as Map<String, dynamic>)['location'];
-
-
-    setState(() {
-      userMarker.add(Marker(
-        markerId: MarkerId('currentLocation'),
-        position: LatLng(cPosition.latitude, cPosition.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Custom icon for current location
-      ));
-      LatLng latLng = LatLng(cPosition.latitude, cPosition.longitude);
-
-      userMarker.add(Marker(
-        markerId: MarkerId(latLng.toString()),
-        position: latLng,
-        icon: BitmapDescriptor.defaultMarker,
-        infoWindow: InfoWindow(
-          title: 'Current Location',
-          // snippet: 'Ratings : ${document['ratings']}',
-          onTap: () async {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => RestroomPageUser(
-            //       document: document,
-            //       dist: distance.toStringAsFixed(1),
-            //       pos: cPosition,
-            //       restroomloc: latLng,
-            //     ),
-            //   ),
-            // );
-          },
-        ),
-      ));
-    });
-  }
-
 
   void addMarker(LatLng latLng,DocumentSnapshot document) async{
   Position cPosition =await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -307,7 +269,7 @@ class _UserPageState extends State<UserPage> {
             IconButton(
                 onPressed: () async{
                   Position cPosition =await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-                  DocumentSnapshot<Map<String, dynamic>> restroomDoc = await FirebaseFirestore.instance.collection('restrooms').doc('ztQP5fpjvZtUNGiduAAz').get(); //ztQP5fpjvZtUNGiduAAz
+                  DocumentSnapshot<Map<String, dynamic>> restroomDoc = await FirebaseFirestore.instance.collection('restrooms').doc('0o1xX1rv4BLWMhbgwy9r').get(); //ztQP5fpjvZtUNGiduAAz
                   GeoPoint? restroomLocation = (restroomDoc.data() as Map<String, dynamic>)['location'];
 
                   double distance = calculateDistance(
@@ -588,6 +550,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                         ),
                         TextButton(
                           onPressed: () async {
+                            Navigator.of(context).pop();
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(

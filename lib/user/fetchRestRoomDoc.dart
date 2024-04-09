@@ -257,7 +257,10 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text('Restroom Name ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const Padding(
+                                      padding:  EdgeInsets.only(bottom: 3.0),
+                                      child:  Text('Restroom Name ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    ),
                                     Container(
                                       margin: const EdgeInsets.only(top: 2),
                                       padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
@@ -276,7 +279,10 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                         )
                                     ),
                                     const SizedBox(height: 10,),
-                                    const Text('Location ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const Padding(
+                                      padding:  EdgeInsets.only(bottom: 3.0),
+                                      child:  Text('Location ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    ),
                                     Container(
                                         margin: const EdgeInsets.only(top: 2),
                                         padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
@@ -296,7 +302,11 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                     ),
                                     const SizedBox(height: 10,),
 
-                                    const  Text('Availability ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+
+                                    const Padding(
+                                      padding:  EdgeInsets.only(bottom: 3.0),
+                                      child: Text('Availability ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    ),
                                     Container(
                                         margin: const EdgeInsets.only(top: 2),
                                         padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
@@ -316,7 +326,9 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                     ),
                                     const SizedBox(height: 10,),
 
-                                    const Text('Accessible For ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    const Padding(padding:  EdgeInsets.only(bottom: 3.0),
+                                      child:  Text('Accessible For ',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                    ),
                                     Container(
                                         margin: const EdgeInsets.only(top: 2),
                                         padding: const EdgeInsets.only(top: 5,left: 10,bottom: 5),
@@ -892,10 +904,19 @@ class _FetchRestroomState extends State<FetchRestroom> {
                           onPressed: (){
                         Navigator.pop(context);
                       },
-                          icon: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.blue[50],
-                          child: Icon(Icons.close_fullscreen,size: 35,color: Colors.blue[900],))),
+                          icon: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: Color.fromRGBO(20, 38, 162, 1), // Border color
+                                width: 0.6, // Border width
+                              ),
+                            ),
+                            child: CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.blue[50],
+                            child: Icon(Icons.close_fullscreen,size: 30,color: Colors.blue[900],)),
+                          )),
                       IconButton(
                           onPressed: (){
                         showDialog(
@@ -913,7 +934,6 @@ class _FetchRestroomState extends State<FetchRestroom> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    // Delete photo if user confirms
                                     deletePhoto(url,rest_id);
                                     Navigator.of(context).pop();
                                     Navigator.of(context).pop();
@@ -925,10 +945,19 @@ class _FetchRestroomState extends State<FetchRestroom> {
                           },
                         );
                         // Navigator.pop(context);
-                      }, icon: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.blue[50],
-                          child: Icon(Icons.delete,size: 35,color: Colors.blue[900],))),
+                      }, icon: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Color.fromRGBO(20, 38, 162, 1), // Border color
+                            width: 0.6, // Border width
+                          ),
+                        ),
+                        child: CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.blue[50],
+                            child: Icon(Icons.delete,size: 30,color: Colors.blue[900],)),
+                      )),
                     ],
                   ),
                 ],

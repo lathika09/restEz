@@ -176,7 +176,7 @@ class _AdminPageState extends State<AdminPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.indigo.shade200.withOpacity(0.3),
+                                color: Colors.indigo.shade200.withOpacity(0.2),
                                 spreadRadius: 20,
                                 blurRadius: 10,
                                 offset: const Offset(0, 0),
@@ -222,7 +222,7 @@ class _AdminPageState extends State<AdminPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.indigo.shade200.withOpacity(0.3),
+                                color: Colors.indigo.shade200.withOpacity(0.2),
                                 spreadRadius: 20,
                                 blurRadius: 10,
                                 offset: const Offset(0, 0),
@@ -280,7 +280,7 @@ class _AdminPageState extends State<AdminPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.indigo.shade200.withOpacity(0.3),
+                                color: Colors.indigo.shade200.withOpacity(0.2),
                                 spreadRadius: 20,
                                 blurRadius: 10,
                                 offset: const Offset(0, 0),
@@ -325,7 +325,7 @@ class _AdminPageState extends State<AdminPage> {
                             borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.indigo.shade200.withOpacity(0.3),
+                                color: Colors.indigo.shade200.withOpacity(0.2),
                                 spreadRadius: 20,
                                 blurRadius: 10,
                                 offset: const Offset(0, 0),

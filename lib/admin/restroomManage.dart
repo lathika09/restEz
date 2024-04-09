@@ -503,7 +503,7 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Padding(
+                                 Container(
                                   padding: EdgeInsets.only(left: 10,right:10),
                                   child: Text("Restroom Details",
                                     style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
@@ -663,31 +663,26 @@ class _AddRestroomDataState extends State<AddRestroomData> {
                                           color: Colors.indigo[50],
                                           border: Border.all(color: Colors.indigo.shade100),
                                         ),
-                                        child: SizedBox(
-                                          // height: 40,
-                                          child:isClicked?
-                                          Flexible(
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 10),
-                                              child: Text(
-                                                // "Select button to get location djd kms nkdnknd nskndkmsk cncknd uss huhud ndjnd bduhnd dhjudnu dundud dujndudn du",
-                                                address,
-                                                style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
-                                                softWrap: true,
-                                                overflow: TextOverflow.visible,
-                                              ),
-                                            ),
-                                          ):
-                                          TextField(
-                                            controller: addressController,
-                                            maxLines: 3,
+                                        child: isClicked?
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(vertical: 10),
+                                          child: Text(
+                                            // "Select button to get location djd kms nkdnknd nskndkmsk cncknd uss huhud ndjnd bduhnd dhjudnu dundud dujndudn du",
+                                            address,
+                                            style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                                            softWrap: true,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                        ):
+                                        TextField(
+                                          controller: addressController,
+                                          maxLines: 3,
 
-                                            decoration: const InputDecoration(
-                                              contentPadding: EdgeInsets.symmetric(vertical: 10.0),
-                                              hintText: 'Enter Location Address',
-                                              labelStyle: TextStyle(fontSize: 16),
-                                              border: InputBorder.none, //
-                                            ),
+                                          decoration: const InputDecoration(
+                                            contentPadding: EdgeInsets.symmetric(vertical: 10.0),
+                                            hintText: 'Enter Location Address',
+                                            labelStyle: TextStyle(fontSize: 16),
+                                            border: InputBorder.none, //
                                           ),
                                         ),
                                       ),

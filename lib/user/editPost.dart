@@ -298,13 +298,15 @@ class _EditRatingPageState extends State<EditRatingPage> {
                   elevation: 0,
                   onPressed: () async{
                       try {
-                        if(reviewController.text!=widget.post && reviewController.text!=null && editselectedRating!=widget.rate){
+                        if(reviewController.text!="" && editselectedRating!=0){
+                          print("if");
                           await FirebaseFirestore.instance
                               .collection('restrooms')
                               .doc(widget.document.id)
                               .collection('reviews')
                               .doc(widget.reviewDocument.id)
                               .update({
+                            'comment': reviewController.text,
                             'rating':editselectedRating,
                             'editedAt':Timestamp.now(),
 
@@ -315,13 +317,15 @@ class _EditRatingPageState extends State<EditRatingPage> {
                           ));
                           Navigator.pop(context);
                         }
-                        else if(editselectedRating!=widget.rate){
+                        else if(editselectedRating!=0 && reviewController.text==""){
+                          print("else if");
                           await FirebaseFirestore.instance
                               .collection('restrooms')
                               .doc(widget.document.id)
                               .collection('reviews')
                               .doc(widget.reviewDocument.id)
                               .update({
+                            'comment': widget.post,
                             'rating':editselectedRating,
                             'editedAt':Timestamp.now(),
 
@@ -332,20 +336,47 @@ class _EditRatingPageState extends State<EditRatingPage> {
                           ));
                           Navigator.pop(context);
                         }
-                        else if(reviewController.text!=widget.post){
+                        else if(editselectedRating==0 && reviewController.text!=""){
+                          print(" new else if");
                           await FirebaseFirestore.instance
                               .collection('restrooms')
                               .doc(widget.document.id)
                               .collection('reviews')
                               .doc(widget.reviewDocument.id)
                               .update({
-                            'comment': reviewController.text,
+                            'comment':reviewController.text,
+                            'rating':widget.rate,
+                            'editedAt':Timestamp.now(),
+
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Review edited rate successfully!'),
+                          ));
+                          Navigator.pop(context);
+                        }
+                        else if(reviewController.text!=widget.post && reviewController.text!=""){
+                          print("2nd else if");
+                          await FirebaseFirestore.instance
+                              .collection('restrooms')
+                              .doc(widget.document.id)
+                              .collection('reviews')
+                              .doc(widget.reviewDocument.id)
+                              .update({
+                            'comment': widget.post,
+                            'rating':widget.rate,
                             'editedAt':Timestamp.now(),
 
                           });
 
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('Review edited review successfully!'),
+                          ));
+                          Navigator.pop(context);
+                        }
+                        else{
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Review has not been edited as no change made or no null value can be given!'),
                           ));
                           Navigator.pop(context);
                         }

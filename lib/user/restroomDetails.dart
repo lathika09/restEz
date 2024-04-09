@@ -338,11 +338,11 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
     getUserLoggedInEmail();
   }
   void _launchWhatsApp(String message) async {
-    // Encode the message using Uri.encodeFull to handle special characters
     String encodedMessage = Uri.encodeFull(message);
+    String mapsUrl = "https://www.google.com/maps/search/?api=1&query=$encodedMessage";
+
     String whatsappUrl = "whatsapp://send?text=$encodedMessage";
 
-    // Check if WhatsApp is installed and launch the URL
     await canLaunch(whatsappUrl)
         ? launch(whatsappUrl)
         : print('Could not launch WhatsApp');
@@ -1172,7 +1172,31 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                           );
                                                         } else {
                                                           // No user found
-                                                          return const Text('User not found.');
+                                                          return Row(
+                                                            children: [
+                                                              CircleAvatar(
+                                                              backgroundColor: Colors.red[900],
+                                                              radius: 24,
+                                                              child:
+                                                              const Icon(Icons.person,size:28,color: Colors.white,),
+                                                            ),
+
+                                                              SizedBox(width: 20,),
+                                                              Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                                children:
+                                                                List.generate(5, (index) {
+                                                                  int starIndex = index + 1;
+                                                                  return const Icon(
+                                                                    Icons.star_border_outlined,
+                                                                    size: 36,
+                                                                    color:Colors.black54,
+                                                                  );
+                                                                }),
+
+                                                              ),
+                                                            ],
+                                                          );
                                                         }
                                                       }
                                                     },
@@ -2019,10 +2043,19 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                 ),
                 IconButton(onPressed: (){
                   Navigator.pop(context);
-                }, icon: CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.blue[50],
-                    child: Icon(Icons.close_fullscreen,size: 35,color: Colors.blue[900],))),
+                }, icon: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: Color.fromRGBO(20, 38, 162, 1), // Border color
+                      width: 0.6, // Border width
+                    ),
+                  ),
+                  child: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Colors.blue[50],
+                      child: Icon(Icons.close_fullscreen,size: 30,color: Colors.blue[900],)),
+                )),
               ],
             ),
         );

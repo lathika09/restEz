@@ -31,7 +31,9 @@ class _EditRestroomDataState extends State<EditRestroomData> {
   List<String> selectedGender = [];
   List<MultiSelectItem<String>> genderItems = [
     MultiSelectItem<String>('Female', 'Female'),
-    MultiSelectItem<String>('Male', 'Male'),];
+    MultiSelectItem<String>('Male', 'Male'),
+    MultiSelectItem<String>('Others', 'Others'),
+  ];
 
   String selectedHours="";
   List<String> availableItems = ['Open 24 Hours', 'Closed'];
@@ -224,7 +226,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                           child: TextField(
                                             controller: addressController,
                                             maxLines: 3,
-
+                                            enabled: false,
                                             decoration: const InputDecoration(
                                               contentPadding: EdgeInsets.symmetric(vertical: 10.0),
                                               hintText: 'Enter Location Address',
@@ -407,7 +409,8 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                              margin: const EdgeInsets.only(top: 5,bottom: 10),
                                              padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 12),
                                              decoration: BoxDecoration(
-                                               color: Colors.white,
+                                               color: Colors.indigo[50],
+                                               border: Border.all(color: Colors.indigo.shade100),
                                                borderRadius: BorderRadius.circular(10),
                                              ),
                                              width: double.infinity,
@@ -583,10 +586,19 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                           onPressed: (){
                             Navigator.pop(context);
                           },
-                          icon: CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.blue[50],
-                              child: Icon(Icons.close_fullscreen,size: 35,color: Colors.blue[900],))),
+                          icon: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: Color.fromRGBO(20, 38, 162, 1), // Border color
+                                width: 0.6, // Border width
+                              ),
+                            ),
+                            child: CircleAvatar(
+                                radius: 24,
+                                backgroundColor: Colors.blue[50],
+                                child: Icon(Icons.close_fullscreen,size: 30,color: Colors.blue[900],)),
+                          )),
                       IconButton(
                           onPressed: (){
                             showDialog(
@@ -616,10 +628,21 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                               },
                             );
                             // Navigator.pop(context);
-                          }, icon: CircleAvatar(
-                          radius: 30,
+                          }, icon: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Color.fromRGBO(20, 38, 162, 1), // Border color
+                            width: 0.6, // Border width
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 24,
                           backgroundColor: Colors.blue[50],
-                          child: Icon(Icons.delete,size: 35,color: Colors.blue[900],))),
+                          child: Icon(Icons.delete, size: 30, color: Colors.blue[900]),
+                        ),
+                      ),
+                      ),
                     ],
                   ),
                 ],

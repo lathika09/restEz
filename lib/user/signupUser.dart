@@ -50,7 +50,7 @@ class SignupPageUser extends StatelessWidget {
           //   ),
           // ),
           padding: const EdgeInsets.symmetric(horizontal: 40,vertical:0),
-          height: MediaQuery.of(context).size.height-60,
+          // height: MediaQuery.of(context).size.height,
           width: double.infinity,
           child: Column(
 

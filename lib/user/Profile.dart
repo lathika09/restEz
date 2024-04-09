@@ -433,7 +433,6 @@ class _UserProfileState extends State<UserProfile> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  // User canceled, simply close the dialog
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text("No"),
@@ -456,7 +455,7 @@ class _UserProfileState extends State<UserProfile> {
                       children: [
                         Icon(Icons.logout,color: Colors.indigo,),
                         Padding(
-                          padding: const EdgeInsets.only(left: 18.0),
+                          padding:  EdgeInsets.only(left: 18.0),
                           child: Text("LogOut",
                             style: TextStyle(
                               color: Colors.indigo,
