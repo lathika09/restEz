@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,6 +7,7 @@ import 'package:rest_ez_app/admin/AdminProfile.dart';
 import 'package:rest_ez_app/admin/issueList.dart';
 import 'package:rest_ez_app/admin/restroomManage.dart';
 import 'package:rest_ez_app/admin/suggestionsList.dart';
+import 'package:rest_ez_app/screens/welcome.dart';
 import '../constant/imageString.dart';
 import 'loginPage.dart';
 import 'notification.dart';
@@ -20,6 +22,26 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
+  Future<String> fetchLocationByEmail(String email) async {
+    try {
+      final QuerySnapshot adminSnapshot = await FirebaseFirestore.instance
+          .collection('admins')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (adminSnapshot.docs.isNotEmpty) {
+        final adminDoc = adminSnapshot.docs.first;
+        return adminDoc['location'] as String;
+      } else {
+        throw 'No document found with email: $email';
+      }
+    } catch (error) {
+      print('Error fetching location by email: $error');
+      return "";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +64,7 @@ class _AdminPageState extends State<AdminPage> {
                     onPressed: () async {
                       Navigator.of(context).pop();
                       Navigator.pushReplacement( context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => WelcomePage()),
                       );
                       await FirebaseAuth.instance.signOut();
                     },
@@ -223,14 +245,22 @@ class _AdminPageState extends State<AdminPage> {
                                   const Text("Suggestions",maxLines:1,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16),),
                                 ],),
                             ),
-                            onTap: (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) =>
-                                    // UserProfile(name: "Hari Kumar")
-                                    SuggestionStatus( adminEmail: widget.email,)
-                              ),
-                              );
+                            onTap: ()async{
+                              final location = await fetchLocationByEmail(widget.email);
+                              if (location != "") {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) =>
+                                  // UserProfile(name: "Hari Kumar")
+                                  SuggestionStatus( adminEmail: widget.email, loc: location,)
+                                  ),
+                                );
+                              }
+                              else {
+                                print('Location not found for ${widget.email}');
+                              }
+
+
                             },
                           ),
                         ),

@@ -280,7 +280,7 @@ class SignupPage extends StatelessWidget {
 
 
                   },
-                  color: Colors.blue[600],
+                  color: Colors.indigo[600],
                   shape: RoundedRectangleBorder(
                       side: const BorderSide(
                           color:Colors.black

@@ -52,10 +52,11 @@ class _ReportedIssueListState extends State<ReportedIssueList> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width/1.5,
                     height: MediaQuery.of(context).size.width/1.5,
-                    child: Lottie.network(
-                      "https://lottie.host/9faa3517-2a55-454a-9793-4f3aa2133aff/OQgxrD20wa.json",
-                      fit: BoxFit.cover,
-                    ),
+                    child: Lottie.asset("assets/report.json"),
+                    // Lottie.network(
+                    //   "https://lottie.host/9faa3517-2a55-454a-9793-4f3aa2133aff/OQgxrD20wa.json",
+                    //   fit: BoxFit.cover,
+                    // ),
                   ),
 
                   const Center(child: Text('No reports available.',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),)),

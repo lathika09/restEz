@@ -98,6 +98,15 @@ flutter:
     - assets/logo.png
     - assets/logo3.png
     - assets/8.png
+    - assets/lottie1.json
+    - assets/lottie2.json
+    - assets/lottie3.json
+    - assets/lottie4.json
+    - assets/lottie5.json
+    - assets/notify.json
+    - assets/pic.json
+    - assets/report.json
+    - assets/no_rest.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

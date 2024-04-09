@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -50,7 +51,7 @@ class _AdminProfileState extends State<AdminProfile> {
         });
       }
     } catch (e) {
-      print("Error fetching doctor data: $e");
+      log("Error fetching doctor data: $e");
     }
   }
 
@@ -65,7 +66,7 @@ class _AdminProfileState extends State<AdminProfile> {
       await uploadTask.whenComplete(() async {
         loadProfileImage(Email);
         final imageUrl = await storageReference.getDownloadURL();
-        print('Image uploaded to Firebase Storage: $imageUrl');
+        log('Image uploaded to Firebase Storage: $imageUrl');
 
         final querySnap =await FirebaseFirestore.instance.collection('admins').where("email", isEqualTo: Email).get();
         // await FirebaseFirestore.instance.collection('doctor').doc(Email).update({
@@ -79,13 +80,13 @@ class _AdminProfileState extends State<AdminProfile> {
           });
         }
         else {
-          print("No document found with email: $Email");
+          log("No document found with email: $Email");
         }
 
-        print('Image URL saved in Firestore.');
+        log('Image URL saved in Firestore.');
       });
     } catch (e) {
-      print('Error uploading image to Firebase Storage: $e');
+      log('Error uploading image to Firebase Storage: $e');
     }
   }
   Future<void> _onImagePickerButtonPressed(String adminEmail) async {
@@ -109,7 +110,6 @@ class _AdminProfileState extends State<AdminProfile> {
         _profileImageUrl = imageUrl;
       });
     }
-    print("PROFILE");
   }
 
 
@@ -135,7 +135,7 @@ class _AdminProfileState extends State<AdminProfile> {
       final String downloadURL = await storageReference.getDownloadURL();
       return downloadURL;
     } catch (e) {
-      print('Error getting profile image URL: $e');
+      log('Error getting profile image URL: $e');
       return null;
     }
   }
@@ -177,7 +177,7 @@ class _AdminProfileState extends State<AdminProfile> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: 22,),
+                      const SizedBox(height: 22,),
                       Center(
                         child: Stack(
                           children: [
@@ -189,23 +189,24 @@ class _AdminProfileState extends State<AdminProfile> {
                                 radius: 60,
                                 backgroundImage: _profileImageUrl != null
                                     ? NetworkImage(_profileImageUrl!)
-                                    :NetworkImage("https://www.pngitem.com/pimgs/m/421-4212266_transparent-default-avatar-png-default-avatar-images-png.png"),
+                                    :const NetworkImage("https://www.pngitem.com/pimgs/m/421-4212266_transparent-default-avatar-png-default-avatar-images-png.png"),
                 
                               ),
                             ),
                             Positioned(
+                              bottom: -1,
+                              left: 80,
                               child: IconButton(
                                 onPressed:() async{
-                                  print("pressed");
+                                  log("pressed");
                                   _onImagePickerButtonPressed(widget.admin_email);
                                   // loadProfileImage();
                                 },
-                                icon: Icon(Icons.add_a_photo),
+                                icon: const Icon(Icons.add_a_photo),
                                 iconSize: 30,
                                 color: Colors.black,
                               ),
-                              bottom: -1,
-                              left: 80,
+
                             ),
                           ],
                         ),
@@ -299,7 +300,7 @@ class _AdminProfileState extends State<AdminProfile> {
                     color: Colors.indigo.withOpacity(0.2),
                     spreadRadius: 10,
                     blurRadius: 20,
-                    offset: Offset(10, 0),
+                    offset: const Offset(10, 0),
                   ),
                 ],
               ),
@@ -322,7 +323,7 @@ class _AdminProfileState extends State<AdminProfile> {
                         ),
                         borderRadius: BorderRadius.circular(50)
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                     child: const Text("Save",
                       style: TextStyle(
                         color: Colors.white,
@@ -345,7 +346,7 @@ class _AdminProfileState extends State<AdminProfile> {
                     color: Colors.indigo.withOpacity(0.2),
                     spreadRadius: 10,
                     blurRadius: 20,
-                    offset: Offset(10, 0),
+                    offset: const Offset(10, 0),
                   ),
                 ],
               ),
@@ -360,7 +361,7 @@ class _AdminProfileState extends State<AdminProfile> {
                       onEditButtonClick();
                     },
 
-                    color:Color.fromRGBO(232, 234, 246, 1),
+                    color:const Color.fromRGBO(232, 234, 246, 1),
                     shape: RoundedRectangleBorder(
                         side: const BorderSide(
                             color:Colors.white,
@@ -368,7 +369,7 @@ class _AdminProfileState extends State<AdminProfile> {
                         ),
                         borderRadius: BorderRadius.circular(50)
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                     child: const Text("Edit",
                       style: TextStyle(
                         color: Colors.indigo,
@@ -413,10 +414,10 @@ class _AdminProfileState extends State<AdminProfile> {
           isEditing = false;
         });
       } else {
-        print("No document found with email: ${widget.admin_email}");
+        log("No document found with email: ${widget.admin_email}");
       }
     } catch (e) {
-      print("Error updating document: $e");
+      log("Error updating document: $e");
     }
   }
   final enabledTextStyle = TextStyle(

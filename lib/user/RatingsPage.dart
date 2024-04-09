@@ -361,7 +361,7 @@ class _RatingPageState extends State<RatingPage> {
                                 color: Colors.grey.shade50,
                                 border: Border.all(
                                   width: 1,
-                                  color: Colors.blue.shade400,
+                                  color: Colors.grey.shade400,
                                 )
                             ),
                             child: TextField(
@@ -438,7 +438,7 @@ class _RatingPageState extends State<RatingPage> {
                     }
 
                   },
-                  color: Colors.blue[700],
+                  color: Colors.indigo[600],
                   textColor: Colors.white,
                   padding: const EdgeInsets.all(12),
                   shape: RoundedRectangleBorder(

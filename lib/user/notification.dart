@@ -34,7 +34,8 @@ class NotificationScreen extends StatelessWidget {
                         //margin: const EdgeInsets.symmetric(vertical: 40),
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height/2,
-                        child: Lottie.network("https://lottie.host/bfbb09ce-c8fc-4bd9-8525-8622d9334d28/uci9kEqmj7.json")
+                        child: Lottie.asset("assets/notify.json"),
+                        // Lottie.network("https://lottie.host/bfbb09ce-c8fc-4bd9-8525-8622d9334d28/uci9kEqmj7.json")
                           //  "https://lottie.host/6904c33f-a134-46f8-8e07-b54ba2d6141e/0TNJyxIgmU.json"),
                       ),
                     ),

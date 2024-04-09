@@ -95,7 +95,7 @@ class _ManageRestroomState extends State<ManageRestroom> {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           else{
-            if (snapshot.data == null) {
+            if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -103,13 +103,14 @@ class _ManageRestroomState extends State<ManageRestroom> {
                   Container(
                     width: MediaQuery.of(context).size.width/1.5,
                     height: MediaQuery.of(context).size.width/1.5,
-                    child: Lottie.network(
-                      "https://lottie.host/c72f6495-bc75-4d34-b993-73f5f1a2c2a5/QlBprdv0WJ.json",
-                      fit: BoxFit.cover,
-                    ),
+                    child:Lottie.asset("assets/no_rest.json"),
+                    // Lottie.network(
+                    //   "https://lottie.host/c72f6495-bc75-4d34-b993-73f5f1a2c2a5/QlBprdv0WJ.json",
+                    //   fit: BoxFit.cover,
+                    // ),
                   ),
 
-                  Center(child: Text('No restrooms managed by you yet.',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),)),
+                  const Center(child: Text('No restrooms managed by you yet.',style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),)),
                 ],
               );}
             List<Restroom> restrooms = snapshot.data!.docs
@@ -261,10 +262,10 @@ class _ManageRestroomState extends State<ManageRestroom> {
                                           },
                                           color: Colors.white,
                                           textColor: Colors.indigo[900],
-                                          padding: EdgeInsets.all(8),
+                                          padding: const EdgeInsets.all(8),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(30),
-                                            side: BorderSide(
+                                            side: const BorderSide(
                                               color: Color.fromRGBO(113, 130, 213, 1.0),
                                               width: 1.0,
                                             ),
@@ -273,7 +274,7 @@ class _ManageRestroomState extends State<ManageRestroom> {
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               Icon(Icons.edit,color: Colors.indigo[900],),
-                                              SizedBox(width: 10,),
+                                             const  SizedBox(width: 10,),
                                               Text("Edit",style: TextStyle(color:Colors.indigo[900],fontSize: 20,fontWeight: FontWeight.bold
                                               ),),
                                             ],

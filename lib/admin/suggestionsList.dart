@@ -4,8 +4,9 @@ import 'package:rest_ez_app/admin/addVerified.dart';
 
 
 class SuggestionStatus extends StatefulWidget {
-  const SuggestionStatus({super.key, required this.adminEmail});
+  const SuggestionStatus({super.key, required this.adminEmail, required this.loc});
   final String adminEmail;
+  final String loc;
 
   @override
   State<SuggestionStatus> createState() => _SuggestionStatusState();
@@ -21,11 +22,11 @@ class _SuggestionStatusState extends State<SuggestionStatus> {
   List<dynamic> suggests = [];
   final CollectionReference newRestroomCollection = FirebaseFirestore.instance.collection('newRestrooom');
 
-  Future<void> getSuggestionsForAdmin(String adminEmail) async {
+  Future<void> getSuggestionsForAdmin(String adminEmail,String location) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('newRestroom')
-          .where('sendTo', isEqualTo: 'admin@gmail.com : Chembur')
+          .where('sendTo', isEqualTo: '$adminEmail : $location')
           .get();
 print(querySnapshot.docs);
       for (DocumentSnapshot doc in querySnapshot.docs) {
@@ -66,7 +67,7 @@ print(querySnapshot.docs);
   }
 
 
-  Future<void> updateNewRestroomStatus(String adminEmail,String restroomId,String newStatus) async {
+  Future<void> updateNewRestroomStatus(String adminEmail,String restroomId,String newStatus,String location) async {
     try {
 
        final DocumentReference suggestRef =FirebaseFirestore.instance.collection('newRestroom').doc(restroomId);
@@ -81,14 +82,14 @@ print(querySnapshot.docs);
 
        print('Status updated successfully.');
       suggests.clear();
-      await getSuggestionsForAdmin(adminEmail);
+      await getSuggestionsForAdmin(adminEmail,location);
 
     } catch (e) {
       print('Error updating appointment status: $e');
     }
   }
 
-  Future<void> deleteNewRestroomByAddress(String adminEmail,String address) async {
+  Future<void> deleteNewRestroomByAddress(String adminEmail,String address,String location) async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('newRestroom')
@@ -100,7 +101,7 @@ print(querySnapshot.docs);
           await docSnapshot.reference.delete();
           print('Document with address $address deleted successfully.');
           suggests.clear();
-          await getSuggestionsForAdmin(adminEmail);
+          await getSuggestionsForAdmin(adminEmail,location);
         }
       } else {
         print('Document with address $address does not exist.');
@@ -116,7 +117,7 @@ print(querySnapshot.docs);
     super.initState();
 
 
-    getSuggestionsForAdmin("admin@gmail.com");
+    getSuggestionsForAdmin(widget.adminEmail,widget.loc);
     print("print : }");
   }
 
@@ -354,6 +355,7 @@ print(querySnapshot.docs);
                                                       widget.adminEmail,
                                                       _suggest['address'],
                                                       "Cancel",
+                                                      widget.loc
 
                                                     );
                                                     Navigator.of(context).pop();
@@ -406,7 +408,7 @@ print(querySnapshot.docs);
                                                       widget.adminEmail,
                                                       _suggest['address'],
                                                       "Verified",
-
+                                                      widget.loc
                                                     );
                                                     Navigator.of(context).pop();
                                                   },
@@ -455,7 +457,7 @@ print(querySnapshot.docs);
                                                       widget.adminEmail,
                                                       _suggest['address'],
                                                       "Cancel",
-
+                                                      widget.loc
                                                     );
                                                     Navigator.of(context).pop();
                                                   },
@@ -546,7 +548,7 @@ print(querySnapshot.docs);
                                                 TextButton(
                                                   onPressed: () async {
                                                     Navigator.of(context).pop();
-                                                    deleteNewRestroomByAddress(widget.adminEmail,_suggest['address']);
+                                                    deleteNewRestroomByAddress(widget.adminEmail,_suggest['address'],widget.loc);
 
                                                   },
                                                   child: const Text('Delete'),

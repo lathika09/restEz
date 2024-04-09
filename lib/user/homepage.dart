@@ -12,6 +12,7 @@ import 'package:rest_ez_app/user/notification.dart';
 import 'package:rest_ez_app/user/shared.dart';
 
 import 'LoginUser.dart';
+import 'MakeSuggestion.dart';
 import 'Profile.dart';
 // import 'package:location/location.dart';
 
@@ -156,6 +157,8 @@ class _UserPageState extends State<UserPage> {
     print(markersSet);
   }
 
+
+
   void addMarker(LatLng latLng,DocumentSnapshot document) async{
   Position cPosition =await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   GeoPoint? restroomLocation = (document.data() as Map<String, dynamic>)['location'];
@@ -256,7 +259,7 @@ class _UserPageState extends State<UserPage> {
             IconButton(
                 onPressed: () async{
                   Position cPosition =await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-                  DocumentSnapshot<Map<String, dynamic>> restroomDoc = await FirebaseFirestore.instance.collection('restrooms').doc('0o1xX1rv4BLWMhbgwy9r').get(); //ztQP5fpjvZtUNGiduAAz
+                  DocumentSnapshot<Map<String, dynamic>> restroomDoc = await FirebaseFirestore.instance.collection('restrooms').doc('ztQP5fpjvZtUNGiduAAz').get(); //ztQP5fpjvZtUNGiduAAz
                   GeoPoint? restroomLocation = (restroomDoc.data() as Map<String, dynamic>)['location'];
 
                   double distance = calculateDistance(
@@ -282,7 +285,15 @@ class _UserPageState extends State<UserPage> {
                       MaterialPageRoute(
                           builder: (context) => const HelpPage(),
                       ));
-                },
+
+
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) =>  PolylineScreen(),
+                  //     ));
+
+                  },
                 icon: const Icon(
                   Icons.help,
                   color: Colors.black,
@@ -310,14 +321,15 @@ class _UserPageState extends State<UserPage> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 15),
                   child: Container(
-                    height: 45,
+                    height: 44,
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
                         color: Colors.grey[200],
                         border: Border.all(
                             color: const Color.fromARGB(255, 216, 214, 214)),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: DropdownButton(
+                        borderRadius: BorderRadius.circular(10),
+                    ),
+                    child:DropdownButton(
                       elevation: 0,
                       menuMaxHeight: 300,
                       hint: const Text("Filter Restrooms "),
@@ -474,7 +486,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                   border: Border(
                     top: widget.index == 0
                         ? const BorderSide(
-                        color: Color.fromRGBO(66, 130, 200, 1), width: 2)
+                        color: Color.fromRGBO(20, 38, 162, 1.0), width: 2)
                         : const BorderSide(width: 2, color: Colors.white),
                   )),
               child: Column(
@@ -483,14 +495,14 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                 children: [
                   Icon(
                     Icons.map,
-                    color: widget.index == 0 ? Colors.blue[700] : Colors.grey[500],
+                    color: widget.index == 0 ? Colors.indigo[600] : Colors.grey[500],
                     size: 26,
                   ),
                   Text(
                     "Home",
                     style: TextStyle(
                         color:
-                        widget.index == 0 ? Colors.blue[700] : Colors.grey[500],
+                        widget.index == 0 ? Colors.indigo[800] : Colors.grey[500],
                         fontSize: 12,
                         fontWeight: FontWeight.w400),
                   )
@@ -503,6 +515,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             onTap: ()async {
               if(_isSignedIn){
                 String? name = await getNameByEmail(uEmail);
+                // Navigator.push(
+                //     context, MaterialPageRoute(builder: (context) => UserProfile(uname: name!, uemail:uEmail,)));
                 if (name != null) {
                   Navigator.push(
                       context, MaterialPageRoute(builder: (context) => UserProfile(uname: name, uemail:uEmail,)));
@@ -549,7 +563,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                   border: Border(
                     top: widget.index == 1
                         ? const BorderSide(
-                        color: Color.fromRGBO(66, 130, 200, 1), width: 2)
+                        color: Color.fromRGBO(20, 38, 162, 1.0), width: 2)
                         : const BorderSide(width: 2, color: Colors.white),
                   )),
               child: _isSignedIn?
@@ -562,14 +576,19 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                     future: getNameByEmail(uEmail),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Icon(Icons.person,size: 16,color: Colors.white,); // Placeholder while loading
+                        return const CircleAvatar(
+                            backgroundColor: Colors.indigo,
+                            radius: 12,
+                            child:Icon(Icons.person,size: 16,color: Colors.white,));
                       } else if (snapshot.hasError) {
-                        return const Icon(Icons.person,size: 16,color: Colors.black,);
+                        return const CircleAvatar(
+                            backgroundColor: Colors.indigo,
+                            radius: 12,
+                            child:Icon(Icons.person,size: 16,color: Colors.white,));
                       } else {
                         if (snapshot.data != null) {
-                          // Data retrieved successfully
                           return CircleAvatar(
-                            backgroundColor: Colors.blue[800],
+                            backgroundColor: Colors.indigo[600],
                             radius: 12,
                             child: Text(
                               Utils.getInitials("${snapshot.data}"),
@@ -579,7 +598,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                         } else {
                           // No user found
                           return CircleAvatar(
-                              backgroundColor: Colors.blue[800],
+                              backgroundColor: Colors.indigo[600],
                               radius: 12,
                               child: const Icon(Icons.person,size: 16,color: Colors.white,)
                           );
@@ -603,7 +622,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircleAvatar(
-                      backgroundColor: Colors.blue[800],
+                      backgroundColor: Colors.indigo[600],
                       radius: 12,
                       child: const Icon(Icons.person,size: 16,color: Colors.white,)
                   ),
@@ -624,13 +643,14 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       ),
     );
   }
+
+
   Future<String?> getNameByEmail(String email) async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
           .collection('users')
           .where('email', isEqualTo: email)
           .get();
-
       if (querySnapshot.docs.isNotEmpty) {
         return querySnapshot.docs.first['name'];
       } else {
@@ -642,4 +662,5 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       return null;
     }
   }
+
 }

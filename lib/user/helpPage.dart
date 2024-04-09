@@ -192,23 +192,24 @@ class First extends StatelessWidget {
           // SizedBox(height: 10,),
           Center(
             child: SizedBox(
-              width: MediaQuery.of(context).size.width/1.8,
-              height: MediaQuery.of(context).size.width/1.8,
-              child: Lottie.network("https://lottie.host/b4b53a3f-3af4-415b-8be9-10c6dd8a37b1/tXSCKKEK41.json"),
+              width: MediaQuery.of(context).size.width/1.6,
+              height: MediaQuery.of(context).size.width/1.6,
+              child: Lottie.asset("assets/lottie1.json"),
+              // Lottie.network("https://lottie.host/b4b53a3f-3af4-415b-8be9-10c6dd8a37b1/tXSCKKEK41.json"),
             ),
           ),
           // SizedBox(height: 10,),
           Flexible(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-            width: MediaQuery.of(context).size.width/1.2,
+                padding: const EdgeInsets.symmetric(horizontal: 3),
+            width: MediaQuery.of(context).size.width,
               child: const Column(
                 children: [
                   Text(
                     "Just allow the location to be accessed when asked.",
-                    style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                    style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),),
                   Text("This will automatically display nearby restrooms within 5 km.",
-                    style: TextStyle(fontSize: 18,),)
+                    style: TextStyle(fontSize: 17,),)
                 ],
               )
               )
@@ -231,20 +232,21 @@ class Second extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("To nearby Restroom for handicap or based on Gender",style: TextStyle(fontWeight: FontWeight.bold,fontSize:20),softWrap: true,),
+          const Text("To find nearby Restroom for handicap or based on Gender",style: TextStyle(fontWeight: FontWeight.bold,fontSize:20),softWrap: true,),
           // SizedBox(height: 10,),
           Center(
             child: SizedBox(
-              width: MediaQuery.of(context).size.width/2.5,
-              height: MediaQuery.of(context).size.width/2.5,
-              child: Lottie.network("https://lottie.host/518b94f4-e01b-488b-89fe-f1a5b28ac3af/Zy6IcXMnnA.json"),
+              width: MediaQuery.of(context).size.width/2.1,
+              height: MediaQuery.of(context).size.width/2.1,
+              child:Lottie.asset("assets/lottie2.json"),
+              // Lottie.network("https://lottie.host/518b94f4-e01b-488b-89fe-f1a5b28ac3af/Zy6IcXMnnA.json"),
             ),
           ),
           // SizedBox(height: 10,),
           Flexible(
               child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  width: MediaQuery.of(context).size.width/1.1,
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  width: MediaQuery.of(context).size.width,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -304,17 +306,18 @@ class Third extends StatelessWidget {
           // SizedBox(height: 10,),
           Center(
             child: SizedBox(
-              width: MediaQuery.of(context).size.width/1.8,
-              height: MediaQuery.of(context).size.width/1.8,
-              child: Lottie.network("https://lottie.host/389acb2e-215c-4637-a85f-fac86b023856/1bmDxKMwx6.json"),
+              width: MediaQuery.of(context).size.width/1.7,
+              height: MediaQuery.of(context).size.width/1.7,
+              child: Lottie.asset("assets/lottie3.json"),
+              // Lottie.network("https://lottie.host/389acb2e-215c-4637-a85f-fac86b023856/1bmDxKMwx6.json"),
             ),
           ),
           // SizedBox(height: 10,),
           Flexible(
               child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
 
-                  width: MediaQuery.of(context).size.width/1.2,
+                  width: MediaQuery.of(context).size.width,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -391,15 +394,16 @@ class Forth extends StatelessWidget {
             child: SizedBox(
               width: MediaQuery.of(context).size.width/2,
               height: MediaQuery.of(context).size.width/2,
-              child: Lottie.network("https://lottie.host/15983367-0991-47e7-91f3-0fdbc2bd4443/GOCgxHaUx4.json"),
+              child: Lottie.asset("assets/lottie4.json"),
+              // Lottie.network("https://lottie.host/15983367-0991-47e7-91f3-0fdbc2bd4443/GOCgxHaUx4.json"),
             ),
           ),
           // SizedBox(height: 10,),
           Flexible(
               child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
 
-                  width: MediaQuery.of(context).size.width/1.2,
+                  width: MediaQuery.of(context).size.width,
                   child: Column(
                     children: [
                       Row(
@@ -474,14 +478,15 @@ class Fifth extends StatelessWidget {
             child: SizedBox(
               width: MediaQuery.of(context).size.width/2.2,
               height: MediaQuery.of(context).size.width/2.2,
-              child: Lottie.network("https://lottie.host/6b9985f6-7641-4a95-851d-a7d399ea95b4/YSrd7THJ7E.json"),
+              child:Lottie.asset("assets/lottie5.json"),
+              // Lottie.network("https://lottie.host/6b9985f6-7641-4a95-851d-a7d399ea95b4/YSrd7THJ7E.json"),
             ),
           ),
           // SizedBox(height: 10,),
           Flexible(
               child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  width: MediaQuery.of(context).size.width/1.1,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  width: MediaQuery.of(context).size.width,
                   child: Column(
                     children: [
                       Row(

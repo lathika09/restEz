@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rest_ez_app/user/LoginUser.dart';
 import 'package:rest_ez_app/user/RatingsPage.dart';
 import 'package:rest_ez_app/user/editPost.dart';
@@ -413,10 +414,10 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                             ),
                             Row(
                               children: [
-                                Text("Public Restroom ",style: TextStyle(fontSize: 16)),
-                                SizedBox(width: 10,),
-                                Icon(Icons.social_distance),
-                                Text('  ${widget.dist} km ',style: TextStyle(fontSize: 16))
+                                const Text("Public Restroom ",style: TextStyle(fontSize: 16)),
+                                const SizedBox(width: 10,),
+                                const Icon(Icons.social_distance),
+                                Text('  ${widget.dist} km ',style:  const TextStyle(fontSize: 16))
                               ],
                             ),
                             const SizedBox(height: 10,),
@@ -428,9 +429,9 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                     onPressed: () {
                                       navigateToRestroom(widget.pos, widget.restroomloc);
                                     },
-                                    color: Colors.blue[700],
+                                    color: Colors.indigo[600],
                                     textColor: Colors.white,
-                                    padding: EdgeInsets.all(8),
+                                    padding:  const EdgeInsets.symmetric(vertical: 6,horizontal: 8),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                       side: const BorderSide(
@@ -439,7 +440,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                       ),
                                     ),
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 6,vertical: 4),
+                                      padding:  const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
                                       child: const Row(
                                         children: [
                                           Icon(Icons.directions,color: Colors.white,),
@@ -500,8 +501,8 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
 
                                     },
                                     color: Colors.white,
-                                    textColor: Colors.blue[700],
-                                    padding: EdgeInsets.all(8),
+                                    textColor: Colors.indigo[600],
+                                    padding:  const EdgeInsets.symmetric(vertical: 6,horizontal: 8),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                       side: BorderSide(
@@ -528,12 +529,12 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                 return Row(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: [
-                                                    Icon(Icons.bookmark_border, color: Colors.blue[700]),
+                                                    Icon(Icons.bookmark_border, color: Colors.indigo[600]),
                                                     SizedBox(width: 5,),
                                                     Text(
                                                       "Save",
                                                       style: TextStyle(
-                                                          color: Colors.blue[700],
+                                                          color: Colors.indigo[600],
                                                           fontSize: 16,
                                                           fontWeight: FontWeight.bold),
                                                     ),
@@ -553,7 +554,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                     Text(
                                                       "Save",
                                                       style: TextStyle(
-                                                          color: Colors.blue[700],
+                                                          color: Colors.indigo[600],
                                                           fontSize: 16,
                                                           fontWeight: FontWeight.bold),
                                                     ),
@@ -562,12 +563,12 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                     :Row(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: [
-                                                    Icon(Icons.bookmark_border, color: Colors.blue[700]),
+                                                    Icon(Icons.bookmark_border, color: Colors.indigo[600]),
                                                     SizedBox(width: 5,),
                                                     Text(
                                                       "Save",
                                                       style: TextStyle(
-                                                          color: Colors.blue[700],
+                                                          color: Colors.indigo[600],
                                                           fontSize: 16,
                                                           fontWeight: FontWeight.bold),
                                                     ),
@@ -587,15 +588,15 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                               showDialog(context: context,
                                                 builder: (BuildContext context) {
                                                   return AlertDialog(
-                                                    title: Text("You need to Login first"),
-                                                    content: Text(
+                                                    title: const Text("You need to Login first"),
+                                                    content: const Text(
                                                         "Click on login button if you want to save"),
                                                     actions: <Widget>[
                                                       TextButton(
                                                         onPressed: () {
                                                           Navigator.of(context).pop();
                                                         },
-                                                        child: Text("Leave"),
+                                                        child: const Text("Leave"),
                                                       ),
                                                       TextButton(
                                                         onPressed: () async {
@@ -617,12 +618,12 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                             child: Row(
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-                                                Icon(Icons.bookmark_border, color: Colors.blue[700]),
+                                                Icon(Icons.bookmark_border, color: Colors.indigo[600]),
                                                 SizedBox(width: 5,),
                                                 Text(
                                                   "Save",
                                                   style: TextStyle(
-                                                      color: Colors.blue[700],
+                                                      color: Colors.indigo[600],
                                                       fontSize: 16,
                                                       fontWeight: FontWeight.bold),
                                                 ),
@@ -638,8 +639,8 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
 
                                     onPressed: () => _launchWhatsApp(documentData['address']),
                                     color: Colors.white,
-                                    textColor: Colors.blue[700],
-                                    padding: EdgeInsets.all(8),
+                                    textColor: Colors.indigo[600],
+                                    padding:  const EdgeInsets.symmetric(vertical: 6,horizontal: 8),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                       side: BorderSide(
@@ -651,11 +652,11 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                       padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 4),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.share,color: Colors.blue[700],),
+                                          Icon(Icons.share,color: Colors.indigo[600],),
                                           Text(
                                             "Share",
                                             style: TextStyle(
-                                                color: Colors.blue[700],
+                                                color: Colors.indigo[600],
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -671,17 +672,17 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                               color: Colors.grey[300],
                             ),
                             TabBar(
-                                indicatorColor: Colors.blue[800],
+                                indicatorColor: Colors.indigo[600],
                                 indicatorSize: TabBarIndicatorSize.tab,
                                 indicatorWeight: 2,
                                 unselectedLabelStyle: const TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w400,
-                                    fontSize: 18),
+                                    fontSize: 16),
                                 labelStyle: const TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 16),
+                                    fontSize: 17),
                                 tabs: const [
                                   Tab(
                                     child: Padding(
@@ -745,7 +746,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                         ),
                                         Divider(),
                                         Padding(
-                                          padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
+                                          padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 8.0),
                                           child: Row(
                                             children: [
                                               Icon(Icons.groups,color: Colors.blue[900],),
@@ -780,7 +781,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                         ),
                                         Divider(),
                                         Padding(
-                                          padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
+                                          padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 8.0),
                                           child: Row(
                                             children: [
                                               Icon(Icons.access_alarm,color: Colors.blue[900],),
@@ -854,7 +855,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                             }
                                           },
                                           child: Padding(
-                                            padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 15.0),
+                                            padding: const EdgeInsets.only(left:12,right:10,bottom:8,top: 8.0),
                                             child: Row(
                                               children: [
                                                 Icon(Icons.report,color: Colors.blue[900],),
@@ -1135,7 +1136,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                               _isSignedIn ?
                                                               CircleAvatar(
                                                                   backgroundColor: Colors.red[900],
-                                                                  radius: 26,
+                                                                  radius: 24,
                                                                   child: Text(
                                                                     Utils.getInitials("${snaps.data}"),
                                                                     style: const TextStyle(
@@ -1148,7 +1149,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                   :
                                                               CircleAvatar(
                                                                 backgroundColor: Colors.red[900],
-                                                                radius: 26,
+                                                                radius: 24,
                                                                 child:
                                                                 const Icon(Icons.person,size:28,color: Colors.white,),
                                                               ),
@@ -1161,7 +1162,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                   int starIndex = index + 1;
                                                                   return const Icon(
                                                                     Icons.star_border_outlined,
-                                                                    size: 40,
+                                                                    size: 36,
                                                                     color:Colors.black54,
                                                                   );
                                                                 }),
@@ -1180,7 +1181,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                               ),
                                               Center(
                                                 child: Container(
-                                                  margin: EdgeInsets.only(left: 16,top: 8,right: 16),
+                                                  margin: EdgeInsets.only(left: 16,top: 4,right: 16),
                                                   width: MediaQuery.of(context).size.width/2,
                                                   child: MaterialButton(
                                                       elevation: 0,
@@ -1231,18 +1232,19 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                       },
                                                       color: Colors.white,
                                                       textColor: Colors.black,
-                                                      padding: const EdgeInsets.all(8),
+                                                      padding: const EdgeInsets.all(6),
                                                       shape: RoundedRectangleBorder(
                                                         borderRadius: BorderRadius.circular(30),
                                                         side: const BorderSide(
-                                                          color: Color(0xFF979393FF), // Set the border color
-                                                          width: 1.0,         // Set the border width
+                                                          color: Colors.grey,
+                                                          width: 0.5,
                                                         ),
                                                       ),
                                                       child:Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                          Icon(Icons.edit_note_outlined,color: Colors.blue[800],),
+                                                          Icon(Icons.edit_note_outlined,color: Colors.indigo[800],),
+                                                          SizedBox(width:10),
                                                           const Text("Write a review",style: TextStyle(color:Colors.black,fontSize: 15,),),
                                                         ],
                                                       )
@@ -1258,8 +1260,8 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               const Padding(
-                                                padding: const EdgeInsets.only(left: 12.0),
-                                                child: Text("Reviews",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                                padding: EdgeInsets.only(left: 12.0,top: 10,bottom: 10),
+                                                child: Text("Reviews",style: TextStyle(fontSize: 19,fontWeight: FontWeight.bold),),
                                               ),
                                               StreamBuilder(
                                                 stream: FirebaseFirestore.instance
@@ -1297,42 +1299,51 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                           print(reviewlist[index].name);
 
                                                           return Container(
-                                                            height: 200,
-                                                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 15),
-                                                            decoration: const BoxDecoration(
-                                                              border: Border(
-                                                                bottom: BorderSide(
-                                                                  color: Colors.grey, // Choose your border color
-                                                                  width: 1.0, // Adjust the border width as needed
-                                                                ),
+                                                            // height: 200,
+                                                            margin: EdgeInsets.only(bottom: 8),
+
+                                                            padding: const EdgeInsets.only(left: 8.0,right:8,top: 15),
+                                                            decoration:  BoxDecoration(
+
+                                                              border: Border.all(
+                                                                color: Colors.grey.shade300,
+                                                                width:0.7
                                                               ),
+                                                              borderRadius: BorderRadius.circular(20)
+                                                              // border: Border(
+                                                              //   bottom: BorderSide(
+                                                              //     color: Colors.grey,
+                                                              //     width: 1.0,
+                                                              //   ),
+                                                              // ),
                                                             ),
                                                             child: Column(
                                                               crossAxisAlignment: CrossAxisAlignment.start,
                                                               children: [
                                                                 Row(
                                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                                   children: [
                                                                     FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                                                                       future: FirebaseFirestore.instance.collection('users').doc(reviewlist[index].email).get(),
                                                                       builder: (context, snapshot) {
                                                                         if (snapshot.connectionState == ConnectionState.waiting) {
                                                                           return  CircleAvatar(
-                                                                              backgroundColor: Colors.blue[800],
-                                                                              radius: 23,
+                                                                              backgroundColor: Colors.indigo[600],
+                                                                              radius: 19,
                                                                               backgroundImage:NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"));
 
                                                                         } else if (snapshot.hasError) {
                                                                           return  CircleAvatar(
-                                                                              backgroundColor: Colors.blue[800],
-                                                                              radius: 23,
+                                                                              backgroundColor: Colors.indigo[600],
+                                                                              radius: 19,
                                                                               backgroundImage:NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"));
 
                                                                         } else {
                                                                           Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
                                                                           String? profileImageUrl = userData['prof_img']; // Assuming 'prof_img' is the field containing the profile image URL
                                                                           return CircleAvatar(
-                                                                            radius: 23,
+                                                                            radius: 19,
                                                                             backgroundImage: userData['prof_img'] != ""
                                                                                 ? NetworkImage(userData['prof_img']) : NetworkImage("https://cdn-icons-png.flaticon.com/512/9131/9131590.png"),
                                                                           );
@@ -1578,7 +1589,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                     )
                                                                         :
                                                                     IconButton(
-                                                                      icon:const Icon(FontAwesomeIcons.ellipsisVertical),
+                                                                      icon:const Icon(FontAwesomeIcons.ellipsisVertical,size: 18,),
                                                                       onPressed: () {
                                                                         showDialog(context: context, builder: (BuildContext context) {
                                                                           return AlertDialog(
@@ -1613,7 +1624,7 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
 
                                                                   ],
                                                                 ),
-                                                                const SizedBox(height: 10,),
+                                                                const SizedBox(height: 4,),
                                                                 Row(
                                                                   children: [
                                                                     RatingBar.builder(
@@ -1627,14 +1638,13 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                       itemBuilder: (context, _) =>  Icon(
                                                                         Icons.star,
                                                                         color: Colors.amber,
-                                                                        // size: 10, // Adjust the size of the stars as needed
+                                                                        // size: 10,
                                                                       ),
                                                                       ignoreGestures: true,
                                                                       onRatingUpdate: (rating) {
                                                                         // rating=rrating;
                                                                         // rrating=rating;
                                                                         print(rating);
-                                                                        // You can update the rating here if needed
                                                                       },
                                                                     ),
                                                                     Padding(
@@ -1656,8 +1666,8 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                                   ),
 
                                                                 ),
-                                                                Padding(
-                                                                  padding: const EdgeInsets.only(top: 8.0),
+                                                                Container(
+                                                                  padding: const EdgeInsets.only(top: 3.0),
                                                                   child: Row(
 
                                                                     children: [
@@ -1746,8 +1756,6 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                           ),
                                         )
 
-
-                                        // Add more widgets as needed
                                       ],
                                     ),
                                   ),
@@ -1767,8 +1775,8 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                               children: [
                                                 Center(
                                                   child: Container(
-                                                    height:MediaQuery.of(context).size.width/7,
-                                                    margin: const EdgeInsets.only(left: 16,top: 18,right: 16,bottom: 10),
+                                                    // height:MediaQuery.of(context).size.width/10,
+                                                    margin: const EdgeInsets.only(left: 16,top: 12,right: 16,bottom: 5),
                                                     width: MediaQuery.of(context).size.width/2.6,
                                                     child: MaterialButton(
                                                         elevation: 0,
@@ -1829,19 +1837,19 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                         },
                                                         color: Colors.white,
                                                         textColor: Colors.black,
-                                                        padding: const EdgeInsets.all(12),
+                                                        padding: const EdgeInsets.all(8),
                                                         shape: RoundedRectangleBorder(
                                                           borderRadius: BorderRadius.circular(30),
                                                           side: const BorderSide(
-                                                            color: Color(0xFF979393FF),
-                                                            width: 1.0,
+                                                            color: Colors.grey,
+                                                            width: 0.5,
                                                           ),
                                                         ),
                                                         child:Row(
                                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                           children: [
-                                                            Icon(Icons.add_a_photo,color: Colors.blue[800],),
-                                                            Text("Add Photos",style: TextStyle(color:Colors.blue[800],fontSize: 15,),),
+                                                            Icon(Icons.add_a_photo,color: Colors.indigo[700],),
+                                                            Text("Add Photos",style: TextStyle(color:Colors.indigo[700],fontSize: 15,),),
                                                           ],)
                                                     ),
                                                   ),
@@ -1874,7 +1882,22 @@ class _RestroomPageUserState extends State<RestroomPageUser> {
                                                     List<String> imageUrls = List<String>.from(data['images'] ?? []);
 
                                                     if (imageUrls.isEmpty) {
-                                                      return Text('No images found.');
+                                                      return Center(
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          // mainAxisAlignment: MainAxisAlignment.,
+                                                          children: [
+                                                            // SizedBox(height: 20,),
+                                                            SizedBox(
+                                                              height:MediaQuery.of(context).size.height/3,
+                                                              child: Lottie.asset("assets/pic.json"),
+                                                              // Lottie.network("https://lottie.host/168e3f7a-b3aa-4246-8116-b245913faee8/ny6G3sREHN.json"),
+                                                            ),
+                                                            // SizedBox(height: 10,),
+                                                            Text('No images found.',style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
+                                                          ],
+                                                        ),
+                                                      );
                                                     }
                                                     return Expanded(
                                                       // height: 500,

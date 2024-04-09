@@ -82,7 +82,7 @@ class WelcomePage extends StatelessWidget {
                             fontFamily: 'Merriweather Sans',
                             color: Colors.black,
 
-                            fontSize: 26,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),),
                       ),
@@ -91,10 +91,10 @@ class WelcomePage extends StatelessWidget {
                         minWidth:double.infinity,
                         height: 50,
                         onPressed:(){
-                          Navigator.push(context,MaterialPageRoute(builder: (context)=>LoginPage()
+                          Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>LoginPage()
                               // Navigator.push(context,MaterialPageRoute(builder: (context)=>AdminPage(email: "admin@gmail.com")
-
-                          ));//FOR  ADMIN
+                          )
+                          );//FOR  ADMIN
                         },
                         color: Colors.blue[900],
                         shape: RoundedRectangleBorder(
@@ -107,7 +107,7 @@ class WelcomePage extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: 'Merriweather Sans',
                             color: Colors.white,
-                            fontSize: 26,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

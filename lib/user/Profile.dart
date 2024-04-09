@@ -218,6 +218,8 @@ class _UserProfileState extends State<UserProfile> {
                         ),
                       ),
                       Positioned(
+                        bottom: -10,
+                        left: 60,
                         child: IconButton(
                           onPressed:() async{
                             print("pressed");
@@ -228,8 +230,7 @@ class _UserProfileState extends State<UserProfile> {
                           iconSize: 30,
                           color: Colors.black,
                         ),
-                        bottom: -10,
-                        left: 60,
+
                       ),
                     ],
                   ),
@@ -369,7 +370,7 @@ class _UserProfileState extends State<UserProfile> {
                               giveSuggestionModalSheet(context);
 
                             },
-                            color: Colors.indigo[400],
+                            color: Colors.indigo[600],
                             shape: RoundedRectangleBorder(
                                 side: const BorderSide(
                                   color:Color.fromRGBO(63, 81, 181, 1),

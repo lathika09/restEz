@@ -13,6 +13,26 @@ class AddVerifiedRestroom extends StatefulWidget {
 }
 
 class _AddVerifiedRestroomState extends State<AddVerifiedRestroom> {
+  Future<String> fetchLocationByEmail(String email) async {
+    try {
+      final QuerySnapshot adminSnapshot = await FirebaseFirestore.instance
+          .collection('admins')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (adminSnapshot.docs.isNotEmpty) {
+        final adminDoc = adminSnapshot.docs.first;
+        return adminDoc['location'] as String;
+      } else {
+        throw 'No document found with email: $email';
+      }
+    } catch (error) {
+      print('Error fetching location by email: $error');
+      return "";
+    }
+  }
+
   String? selectedFilter;
   final List<String> _filterOptions = ['true','false'];
 
@@ -452,12 +472,25 @@ class _AddVerifiedRestroomState extends State<AddVerifiedRestroom> {
           actions: <Widget>[
             TextButton(
               child: Text('OK'),
-              onPressed: () {
+              onPressed: ()async {
                 Navigator.of(context).pop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => SuggestionStatus(adminEmail: widget.adminEmail,),),
-                );
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => SuggestionStatus(adminEmail: widget.adminEmail,),),
+                // );
+                final location = await fetchLocationByEmail(widget.adminEmail);
+                if (location != "") {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) =>
+                    // UserProfile(name: "Hari Kumar")
+                    SuggestionStatus( adminEmail: widget.adminEmail, loc: location,)
+                    ),
+                  );
+                }
+                else {
+                  print('Location not found for ${widget.adminEmail}');
+                }
               },
             ),
           ],

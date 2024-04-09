@@ -62,7 +62,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
       }
     }
     catch (e) {
-      print('Error converting address to coordinates: $e');
+      log('Error converting address to coordinates: $e');
       throw Exception('Failed to convert address to coordinates.');
     }
   }
@@ -156,8 +156,6 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                           onConfirm: (values) {
                                             setState(() {
                                               selectedGender = values.toList();
-                                              // Convert selected weekday strings to integers
-                                              // selectedWeekdayIntegers = selectedSlot.map((weekday) => dayNameToValue[weekday]!).toList();
                                             });
                                           },
                                         ),
@@ -295,7 +293,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                                   // Pick image
                                                   final XFile? image = await picker.pickImage(source: ImageSource.camera, imageQuality: 70);
                                                   if (image != null) {
-                                                    print(" data : ${widget.images}");
+                                                    log(" data : ${widget.images}");
                                                     log('Image Path: ${image.path}');
                                                     await sendImage(widget.rest_id, widget.images, File(image.path));
                                                   }
@@ -368,7 +366,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                                                        child:
                                                        GridView.builder(
                                                          shrinkWrap: true,
-                                                         physics: ScrollPhysics(),
+                                                         physics: const ScrollPhysics(),
                                                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                                            crossAxisCount: 2, // You can adjust the number of columns here
                                                            crossAxisSpacing: 0,
@@ -481,7 +479,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
                     },
                     color: Colors.indigo[900],
                     textColor: Colors.white,
-                    padding: EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                       side: const BorderSide(
@@ -515,7 +513,7 @@ class _EditRestroomDataState extends State<EditRestroomData> {
 
       await uploadTask.whenComplete(() async {
         final imageUrl = await ref.getDownloadURL();
-        print('Image uploaded to Firebase Storage: $imageUrl');
+        log('Image uploaded to Firebase Storage: $imageUrl');
         List<dynamic> imagesList =urlsList??[];
         imagesList.add(imageUrl);
 
@@ -542,12 +540,12 @@ class _EditRestroomDataState extends State<EditRestroomData> {
           },
         );
 
-        print('Image URL saved in Firestore.');
+        log('Image URL saved in Firestore.');
       });
     }
     catch (e, stackTrace) {
-      print('Error uploading image: $e');
-      print('Stack trace: $stackTrace');
+      log('Error uploading image: $e');
+      log('Stack trace: $stackTrace');
       _showErrorDialog(context, 'Error uploading image: $e');
     }
   }

@@ -89,14 +89,14 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: true,
-      backgroundColor: Colors.blue[800],
+      backgroundColor: Colors.indigo[700],
       elevation:2,
       title: Text(widget.appTitle!,style: const TextStyle(fontSize: 24,color: Colors.white,fontWeight: FontWeight.bold),),
       leading: widget.icon!=null ? Container(
         margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 10,),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color:Colors.blue[800],
+          color:Colors.indigo[700],
         ),
         child: IconButton(
           onPressed: (){

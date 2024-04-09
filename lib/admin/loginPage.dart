@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rest_ez_app/screens/welcome.dart';
 // import 'package:rest_ez_app/admin/signup.dart';
 import '../constant/imageString.dart';
 import 'home.dart';
@@ -27,8 +28,10 @@ class LoginPage extends StatelessWidget {
           backgroundColor: Colors.white,
           leading: IconButton(
               onPressed: (){
-                Navigator.pop(context);
-                },
+                // Navigator.pop(context);
+                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>WelcomePage()));
+
+              },
               icon: const Icon(
                 Icons.arrow_back_ios,
                 size:20,
@@ -141,7 +144,7 @@ class LoginPage extends StatelessWidget {
                                 email: login_email.text,
                                 password: login_pswd.text,
                               ).then((value) {
-                                Navigator.push(context,MaterialPageRoute(builder: (context)=>AdminPage(email: login_email.text,)));
+                                Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>AdminPage(email: login_email.text,)));
 
                               });
                             }
@@ -176,6 +179,10 @@ class LoginPage extends StatelessWidget {
                                   case 'network-request-failed':
                                     errorMessage = 'Poor Internet connection.Try using better connection.';
                                     break;
+                                  case 'invalid-credential':
+                                    errorMessage = 'Invalid password. Please enter a valid password.';
+                                    break;
+
                                   default:
                                     errorMessage = 'An error occurred during sign-in.';
                                     break;
@@ -194,7 +201,7 @@ class LoginPage extends StatelessWidget {
                             }
                           }
                         },
-                        color: Colors.blue[600],
+                        color: Colors.indigo[600],
                         shape: RoundedRectangleBorder(
                             side: const BorderSide(
                                 color:Colors.black
