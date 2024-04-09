@@ -60,6 +60,7 @@ class _UserPageState extends State<UserPage> {
   Set<Polyline> polylineSet={};
 
   Set<Marker> markersSet={};
+  Set<Marker> userMarker={};
   Set<Circle> circlesSet={};
 
   String userName="";
@@ -96,7 +97,6 @@ class _UserPageState extends State<UserPage> {
     }
 
   }
-  // Function to calculate the distance between two points (in kilometers)
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const double radiusEarth = 6371; // Earth's radius in kilometers
     double dLat = (lat2 - lat1) * pi / 180;
@@ -114,7 +114,7 @@ class _UserPageState extends State<UserPage> {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('restrooms')
         .get();
-    // Filter documents within the radius
+
     querySnapshot.docs.forEach((DocumentSnapshot document) {
       GeoPoint? restroomLocation = (document.data() as Map<String, dynamic>)['location'];
       List<String>? genderArray = List<String>.from(document['gender']);
@@ -157,6 +157,43 @@ class _UserPageState extends State<UserPage> {
     print(markersSet);
   }
 
+  void addUserMarker() async {
+    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    // GeoPoint? restroomLocation = (document.data() as Map<String, dynamic>)['location'];
+
+
+    setState(() {
+      userMarker.add(Marker(
+        markerId: MarkerId('currentLocation'),
+        position: LatLng(cPosition.latitude, cPosition.longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Custom icon for current location
+      ));
+      LatLng latLng = LatLng(cPosition.latitude, cPosition.longitude);
+
+      userMarker.add(Marker(
+        markerId: MarkerId(latLng.toString()),
+        position: latLng,
+        icon: BitmapDescriptor.defaultMarker,
+        infoWindow: InfoWindow(
+          title: 'Current Location',
+          // snippet: 'Ratings : ${document['ratings']}',
+          onTap: () async {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => RestroomPageUser(
+            //       document: document,
+            //       dist: distance.toStringAsFixed(1),
+            //       pos: cPosition,
+            //       restroomloc: latLng,
+            //     ),
+            //   ),
+            // );
+          },
+        ),
+      ));
+    });
+  }
 
 
   void addMarker(LatLng latLng,DocumentSnapshot document) async{
@@ -170,7 +207,18 @@ class _UserPageState extends State<UserPage> {
   restroomLocation.longitude,
   );
   double distanceInOneDecimalPoint = double.parse(distance.toStringAsFixed(1));
+  BitmapDescriptor userIcon = await BitmapDescriptor.fromAssetImage(
+    ImageConfiguration(devicePixelRatio: 2.5),
+    'assets/user_loc.png',
+  );
     setState(() {
+      markersSet.add(Marker(
+        markerId: MarkerId('currentLocation'),
+        position: LatLng(cPosition.latitude, cPosition.longitude),
+        icon: userIcon //BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue), // Custom icon for current location
+      )
+      );
+
       markersSet.add(Marker(
         markerId: MarkerId(latLng.toString()),
         position: latLng,

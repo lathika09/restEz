@@ -107,6 +107,7 @@ flutter:
     - assets/pic.json
     - assets/report.json
     - assets/no_rest.json
+    - assets/user_loc.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
